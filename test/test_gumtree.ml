@@ -219,6 +219,120 @@ let bounds_tolerance_suppresses_small_diffs () =
     | Compare.Bounds_diff _ -> true | _ -> false) diffs_strict in
   Alcotest.(check bool) "bounds diffs with tolerance 0.0" true (List.length bounds_diffs_strict > 0)
 
+(* Helper: build node_id -> parent_id map by pre-order walk *)
+let build_parent_map root =
+  let tbl = Hashtbl.create 64 in
+  let next = ref 0 in
+  let rec go parent (n : node) =
+    let id = !next in
+    incr next;
+    Hashtbl.replace tbl id parent;
+    List.iter (go (Some id)) n.children
+  in
+  go None root;
+  (tbl, !next)
+
+let is_ancestor parent_map x y =
+  let rec go cur =
+    if cur = x then true
+    else match Hashtbl.find parent_map cur with
+      | None -> false
+      | Some p -> go p
+  in
+  x <> y && go y
+
+(* --- Regression tests from exhaustive witness extraction ---
+   These cases failed before the intersection + ancestor repair pipeline
+   was added. They verify the fix prevents these specific violations. *)
+
+let symmetry_witness_1 () =
+  (* Without intersection, match(a,b) and match(b,a) had different counts.
+     Extracted from exhaustive testing at size 3 x 5. *)
+  let a = make_node ~tag:"DIV" ~children:[
+    make_node ~tag:"DIV" ();
+    make_node ~tag:"SECTION" ();
+  ] () in
+  let b = make_node ~tag:"SPAN" ~children:[
+    make_node ~tag:"DIV" ();
+    make_node ~tag:"DIV" ~children:[
+      make_node ~tag:"SECTION" ();
+      make_node ~tag:"DIV" ();
+    ] ();
+  ] () in
+  let m_ab = Gumtree.match_trees a b in
+  let m_ba = Gumtree.match_trees b a in
+  let count m n =
+    let c = ref 0 in
+    for i = 0 to n - 1 do
+      if Gumtree.is_matched_a m i then incr c
+    done; !c
+  in
+  Alcotest.(check int) "symmetric match count"
+    (count m_ab (Gumtree.size_a m_ab))
+    (count m_ba (Gumtree.size_a m_ba))
+
+let ancestor_preservation_witness_1 () =
+  (* Without ancestor repair, a matched ancestor pair violated the
+     ancestor relationship in tree B. Extracted from exhaustive testing
+     at size 2 x 5. *)
+  let a = make_node ~tag:"DIV" ~children:[
+    make_node ~tag:"DIV" ();
+  ] () in
+  let b = make_node ~tag:"SPAN" ~children:[
+    make_node ~tag:"DIV" ~children:[
+      make_node ~tag:"DIV" ();
+    ] ();
+    make_node ~tag:"SECTION" ~children:[
+      make_node ~tag:"DIV" ();
+    ] ();
+  ] () in
+  let m = Gumtree.match_trees a b in
+  let (pmap_a, n_a) = build_parent_map a in
+  let (pmap_b, _) = build_parent_map b in
+  let pairs = ref [] in
+  for i = 0 to n_a - 1 do
+    match Gumtree.partner_of_a m i with
+    | Some j -> pairs := (i, j) :: !pairs
+    | None -> ()
+  done;
+  let ok = List.for_all (fun (x, x') ->
+    List.for_all (fun (y, y') ->
+      if is_ancestor pmap_a x y then is_ancestor pmap_b x' y'
+      else true
+    ) !pairs
+  ) !pairs in
+  Alcotest.(check bool) "ancestor preservation holds" true ok
+
+let ancestor_preservation_witness_2 () =
+  (* Second witness: different B structure, same violation pattern. *)
+  let a = make_node ~tag:"DIV" ~children:[
+    make_node ~tag:"DIV" ();
+  ] () in
+  let b = make_node ~tag:"SPAN" ~children:[
+    make_node ~tag:"DIV" ~children:[
+      make_node ~tag:"DIV" ();
+    ] ();
+    make_node ~tag:"DIV" ~children:[
+      make_node ~tag:"DIV" ();
+    ] ();
+  ] () in
+  let m = Gumtree.match_trees a b in
+  let (pmap_a, n_a) = build_parent_map a in
+  let (pmap_b, _) = build_parent_map b in
+  let pairs = ref [] in
+  for i = 0 to n_a - 1 do
+    match Gumtree.partner_of_a m i with
+    | Some j -> pairs := (i, j) :: !pairs
+    | None -> ()
+  done;
+  let ok = List.for_all (fun (x, x') ->
+    List.for_all (fun (y, y') ->
+      if is_ancestor pmap_a x y then is_ancestor pmap_b x' y'
+      else true
+    ) !pairs
+  ) !pairs in
+  Alcotest.(check bool) "ancestor preservation holds" true ok
+
 (* --- QCheck property tests --- *)
 
 let gen_css_value =
@@ -345,29 +459,6 @@ let matching_count_symmetry =
       in
       count m_ab (Gumtree.size_a m_ab) = count m_ba (Gumtree.size_a m_ba))
 
-(* Helper: build node_id -> parent_id map by pre-order walk *)
-let build_parent_map root =
-  let tbl = Hashtbl.create 64 in
-  let next = ref 0 in
-  let rec go parent (n : node) =
-    let id = !next in
-    incr next;
-    Hashtbl.replace tbl id parent;
-    List.iter (go (Some id)) n.children
-  in
-  go None root;
-  (tbl, !next)
-
-let is_ancestor parent_map x y =
-  (* Walk up from y; return true if we reach x *)
-  let rec go cur =
-    if cur = x then true
-    else match Hashtbl.find parent_map cur with
-      | None -> false
-      | Some p -> go p
-  in
-  x <> y && go y
-
 let ancestor_preservation =
   QCheck.Test.make ~count:50
     ~name:"ancestor_preservation"
@@ -413,6 +504,13 @@ let () =
         child_reorder_produces_moved_node;
       Alcotest.test_case "bounds tolerance suppresses small diffs" `Quick
         bounds_tolerance_suppresses_small_diffs;
+    ];
+    "regression", [
+      Alcotest.test_case "symmetry witness 1" `Quick symmetry_witness_1;
+      Alcotest.test_case "ancestor preservation witness 1" `Quick
+        ancestor_preservation_witness_1;
+      Alcotest.test_case "ancestor preservation witness 2" `Quick
+        ancestor_preservation_witness_2;
     ];
     "properties",
       List.map QCheck_alcotest.to_alcotest [
