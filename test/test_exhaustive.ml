@@ -2,6 +2,12 @@
 
     Run with: [dune build @exhaustive]
 
+    Stops at the first failure by default, printing the failing tree pair
+    as copy-pasteable OCaml source. Pass [--collect-all] to enumerate all
+    failures (slower — runs every pair even after a failure):
+
+    [dune exec test/test_exhaustive.exe -- --collect-all]
+
     Enumerates all ordered labeled trees up to size 5 with 3 tags (DIV, SPAN,
     SECTION) and checks structural invariants on every pair. Also runs
     stratified random tests on larger trees of specific shapes.
@@ -199,8 +205,8 @@ let check_ancestor_preservation m a b =
 
 (* --- Failure collection with witnesses --- *)
 
-(* Collect at most [max_witnesses] failing (property, tree_a, tree_b) triples
-   per property name. *)
+let collect_all = Array.exists (fun s -> s = "--collect-all") Sys.argv
+
 type witness_set = {
   mutable count : int;
   mutable examples : (node * node) list;
@@ -208,18 +214,22 @@ type witness_set = {
 
 let max_witnesses = 3
 
-let make_witness_set () = { count = 0; examples = [] }
-
 let witnesses : (string, witness_set) Hashtbl.t = Hashtbl.create 8
+
+exception Fail_fast of string * node * node
 
 let record_failure prop a b =
   let ws = match Hashtbl.find_opt witnesses prop with
     | Some ws -> ws
-    | None -> let ws = make_witness_set () in Hashtbl.replace witnesses prop ws; ws
+    | None ->
+      let ws = { count = 0; examples = [] } in
+      Hashtbl.replace witnesses prop ws; ws
   in
   ws.count <- ws.count + 1;
   if List.length ws.examples < max_witnesses then
-    ws.examples <- (a, b) :: ws.examples
+    ws.examples <- (a, b) :: ws.examples;
+  if not collect_all then
+    raise (Fail_fast (prop, a, b))
 
 let dump_witnesses () =
   let props = Hashtbl.fold (fun k v acc -> (k, v) :: acc) witnesses [] in
@@ -375,10 +385,20 @@ let run_stratified_random () =
 (* --- Main --- *)
 
 let () =
-  Printf.printf "Running bounded exhaustive tests (all tree pairs up to size 5, 3 tags)...\n%!";
-  run_bounded_exhaustive ();
-  Printf.printf "Running stratified random tests...\n%!";
-  run_stratified_random ();
+  if collect_all then
+    Printf.printf "Mode: --collect-all (enumerate all failures)\n%!"
+  else
+    Printf.printf "Mode: fail-fast (stop at first failure; use --collect-all to enumerate)\n%!";
+  begin try
+    Printf.printf "Running bounded exhaustive tests (all tree pairs up to size 5, 3 tags)...\n%!";
+    run_bounded_exhaustive ();
+    Printf.printf "Running stratified random tests...\n%!";
+    run_stratified_random ()
+  with Fail_fast (prop, a, b) ->
+    Printf.printf "\nFAILED: %s\n  let a =\n%s\n  let b =\n%s\n"
+      prop (tree_to_string a) (tree_to_string b);
+    exit 1
+  end;
   let n = total_failure_count () in
   if n = 0 then
     Printf.printf "All exhaustive and stratified tests passed.\n%!"
