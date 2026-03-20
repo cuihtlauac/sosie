@@ -28,6 +28,9 @@ module Capture = Capture
 module Snapshot = Snapshot
 (** Snapshot parsing and serialization. *)
 
+module Snapshot_gen = Snapshot_gen
+(** Snapshot round-trip generator: snapshot to HTML. *)
+
 module Extractor_js_source : sig
   val source : string
 end

@@ -15,6 +15,10 @@
  (libraries sosie alcotest))
 
 (test
+ (name test_snapshot_gen)
+ (libraries sosie alcotest))
+
+(test
  (name test_ws)
  (libraries sosie alcotest threads.posix))
 
@@ -28,8 +32,13 @@
  (name test_capture_integration)
  (libraries sosie alcotest))
 
+(executable
+ (name test_round_trip)
+ (libraries sosie alcotest base64))
+
 (rule
  (alias integration)
  (action (progn
   (run ./test_cdp_integration.exe)
-  (run ./test_capture_integration.exe))))
+  (run ./test_capture_integration.exe)
+  (run ./test_round_trip.exe))))
