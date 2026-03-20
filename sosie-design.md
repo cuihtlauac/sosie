@@ -544,6 +544,18 @@ sosie compare \
   --modified snapshots-pr/ \
   --config sosie.yml \
   --report report.html
+
+sosie audit-whitelist \
+  --url http://localhost:8080/learn \
+  --viewport 1280x800 \
+  --config sosie.yml \
+  --output audit-learn.png
+
+sosie show-config \
+  --url http://localhost:8080/learn \
+  --config sosie.yml
+
+sosie self-test
 ```
 
 `capture` launches Chromium headless, connects via CDP, captures, normalizes,
@@ -647,6 +659,120 @@ The whitelist is the **trust boundary**: sosie's "equivalent" verdict means
 whitelist is safe (more properties checked = stronger verdict); shrinking it
 weakens the guarantee and should be justified.
 
+## Visual tooling
+
+Sosie's configuration involves visual choices: which CSS properties to compare,
+which page regions to ignore, what tolerance to apply. These choices should not
+be reviewed by reading CSS property names or YAML — they should be reviewed
+visually. The same principle sosie applies to CSS refactoring (don't make humans
+compare rendered pages) must apply to sosie's own configuration: **remove round
+trips inside the human brain.**
+
+### `sosie audit-whitelist` — show what sosie is blind to
+
+The highest-value tool. For a given page and whitelist, show the user exactly
+which visual effects fall outside sosie's coverage.
+
+How it works:
+1. Capture a screenshot of the page as-is via CDP
+2. Generate a "reset" stylesheet from the whitelist complement: for every CSS
+   property NOT on the whitelist, emit `* { <property>: initial !important }`
+3. Inject the reset stylesheet via `CSS.addStyleSheet`, capture a second
+   screenshot
+4. Produce a pixel-diff overlay of the two screenshots
+
+- If the two screenshots are identical → the whitelist covers everything
+  visible on this page. No blind spots.
+- If they differ → the highlighted regions show precisely which visual effects
+  sosie cannot see (a `text-shadow` disappears, a `background-image` vanishes,
+  a `letter-spacing` changes).
+
+The user looks at an image, not a property list. They see "that shadow
+disappeared — do I care about shadows?" and either add `text-shadow` to the
+whitelist or consciously accept the blind spot.
+
+The reset stylesheet is generated mechanically from the whitelist — it's the
+set complement. ~100 lines of OCaml on top of the existing CDP connection.
+
+```
+sosie audit-whitelist \
+  --url http://localhost:8080/learn \
+  --viewport 1280x800 \
+  --config sosie.yml \
+  --output audit-learn.png
+```
+
+### `sosie show-config` — visualize normalization rules
+
+Open a page in headed (non-headless) Chromium with visual overlays showing
+what sosie will ignore:
+
+- **Masked text**: highlighted in yellow with the replacement shown
+  (e.g., `[DATE]` overlaid on the original text)
+- **Dropped subtrees**: red semi-transparent overlay with "IGNORED" label
+- **Dropped attributes**: blue border on elements that have dropped attributes
+- **Rounding quantum**: subtle grid lines showing the `round_bounds` value
+
+The overlays are injected via `Runtime.evaluate` — a few `querySelectorAll`
+loops adding highlight elements. ~200 lines of JS, no build system.
+
+```
+sosie show-config \
+  --url http://localhost:8080/learn \
+  --config sosie.yml
+```
+
+This opens the page in a visible browser window. The user sees their actual
+page with visual annotations. No YAML to mentally parse, no CSS selectors to
+imagine — the masked regions and ignored subtrees are painted directly on the
+page.
+
+### `sosie diff-view` — spatial diff visualization
+
+When sosie reports diffs, show them spatially on the actual pages instead of
+as text paths. This is what `--report report.html` produces:
+
+- Load both page screenshots side by side
+- Highlight differing elements with colored outlines (red for style diffs,
+  orange for bounds diffs, blue for structural diffs)
+- Click an element to see the property-level diff in a tooltip
+- Filter by diff type (style only, bounds only, structural only)
+
+This replaces the text output:
+```
+/html/body/div[2]/section[1]/h2
+  font-size: "30px" -> "28px"
+```
+with: the `<h2>` is highlighted on both pages, and hovering shows the
+font-size change. The user sees the element in context, not an XPath they
+have to mentally locate.
+
+~500 lines of JS. The HTML report is self-contained (inline screenshots as
+data URIs, inline JS, no external dependencies).
+
+### Interactive whitelist editor (phase 2)
+
+A locally-served web UI for tuning the whitelist:
+
+1. Open the target page in a CDP-controlled tab
+2. Click any element → a panel shows all its computed CSS properties, grouped
+   into "checked by sosie" (green) and "not checked" (gray)
+3. Toggle a property off → the page re-renders with that property reset to
+   `initial` — the user sees the visual effect immediately
+4. Toggle a property on → it's added to the whitelist
+5. Export the final whitelist to `sosie.yml`
+
+This turns whitelist review from "read a list of CSS property names and
+imagine what they do" into "click things and see what happens." ~500 lines
+of JS + small web UI. Deferred to phase 2.
+
+### Design principle
+
+Every human review step in the trust chain must be visual. If sosie is a
+visual equivalence tool, its own configuration and validation UX must be
+visual too. Text-based configuration is the authoring format; visual tooling
+is the review format.
+
 ## Resolved questions
 
 1. **Pseudo-elements** (`::before`, `::after`). `captureSnapshot` includes them
@@ -694,9 +820,9 @@ weakens the guarantee and should be justified.
    are manageable. Complex pages (5000+ elements) could produce multi-MB
    snapshots — worth monitoring.
 
-9. **HTML report format.** `--report report.html` is advertised in the CLI but
-   unspecified. Needs design (inline screenshots? side-by-side element
-   highlighting?).
+9. **HTML report format.** Resolved: the `diff-view` spatial visualization
+   (see Visual Tooling section). Self-contained HTML with inline screenshots,
+   element highlighting, and click-to-inspect tooltips.
 
 ## Testing and validation
 
