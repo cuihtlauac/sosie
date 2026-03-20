@@ -523,25 +523,25 @@ testing would have missed.
 
 ## Milestone map
 
-| Step | Milestone | Depends on | Key risk addressed |
-|------|-----------|------------|-------------------|
-| 0 | Project builds | — | — |
-| 1a | Raw JS extractor works in browser console | 0 | Snapshot schema correct across engines |
-| 1b | CDP bridge works | 0 | WebSocket + CDP protocol |
-| 1c | JSOO extractor replaces raw JS | 1a | Type safety, schema consistency |
-| 2 | Raw snapshot from ocaml.org | 1b, 1c | JS and CDP outputs agree |
-| 3 | Typed AST from real data | 2 | Tree reconstruction correctness |
-| 4 | Round-trip tests pass | 3 | Capture pipeline fidelity |
-| 5 | Normalization on real pages | 3 | Deterministic snapshots |
-| 6 | First comparison works | 3, 5 | Diff detection on real pages |
-| 7 | First real refactoring validated | 6 | **Tool is useful** |
-| 8 | GumTree matcher works | 6 | Structural changes tolerated |
-| 9 | Mutation score measured | 7 | **Tool is trustworthy** |
-| 10 | Visual tooling | 7 | Human review is visual |
-| 11 | CI integration for ocaml.org | 7 | **Tool is deployed** |
-| 12 | Hardening | 11 | Production readiness |
-| 13 | npm distribution + GitHub Action | 12 | **Mass adoption** |
-| 14 | Multi-engine (Firefox, Safari) | 12 | **Browser diversity** |
+| | Step | Milestone | Depends on | Key risk addressed |
+|---|------|-----------|------------|-------------------|
+| [x] | 0 | Project builds | — | — |
+| [x] | 1a | Raw JS extractor works in browser console | 0 | Snapshot schema correct across engines |
+| [x] | 1b | CDP bridge works | 0 | WebSocket + CDP protocol |
+| [x] | 1c | JSOO extractor replaces raw JS | 1a | Type safety, schema consistency |
+| [ ] | 2 | Raw snapshot from ocaml.org | 1b, 1c | JS and CDP outputs agree |
+| [ ] | 3 | Typed AST from real data | 2 | Tree reconstruction correctness |
+| [ ] | 4 | Round-trip tests pass | 3 | Capture pipeline fidelity |
+| [ ] | 5 | Normalization on real pages | 3 | Deterministic snapshots |
+| [ ] | 6 | First comparison works | 3, 5 | Diff detection on real pages |
+| [ ] | 7 | First real refactoring validated | 6 | **Tool is useful** |
+| [ ] | 8 | GumTree matcher works | 6 | Structural changes tolerated |
+| [ ] | 9 | Mutation score measured | 7 | **Tool is trustworthy** |
+| [ ] | 10 | Visual tooling | 7 | Human review is visual |
+| [ ] | 11 | CI integration for ocaml.org | 7 | **Tool is deployed** |
+| [ ] | 12 | Hardening | 11 | Production readiness |
+| [ ] | 13 | npm distribution + GitHub Action | 12 | **Mass adoption** |
+| [ ] | 14 | Multi-engine (Firefox, Safari) | 12 | **Browser diversity** |
 
 Steps 1-7 form the critical path to a working tool on ocaml.org.
 Steps 8-12 improve it and make it production-ready.
