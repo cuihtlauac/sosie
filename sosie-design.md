@@ -563,6 +563,12 @@ writes JSON. `compare` reads two sets of normalized snapshots and produces
 diffs. They are separate commands — you can capture on different machines or at
 different times.
 
+When diffs are found, `compare` produces a spatial HTML report by default
+(the `diff-view` format — side-by-side pages with highlighted elements and
+click-to-inspect tooltips). XPaths are hard for humans to parse; a red box
+around a button is actionable in seconds. Text output is available via
+`--report report.txt` for CI pipelines and scripting.
+
 ### Error handling
 
 - **Chromium crash**: detect WebSocket close, report with the URL that was being
@@ -648,10 +654,21 @@ sees:
   text-decoration
 - **Borders**: border-{top,right,bottom,left}-{width,style,color}, border-radius
 - **Effects**: box-shadow, z-index
+- **Layering**: paint-order (the resolved stacking order from CDP). Note:
+  `z-index` alone is insufficient — `opacity`, `transform`, and `will-change`
+  create new stacking contexts that can change element layering without any
+  `z-index` change. `paint-order` captures the actual resolved layering and
+  should always be compared.
 - **Interaction**: cursor
 
 Everything else is either already captured in the bounding box geometry or
 invisible.
+
+**Tolerance note.** `line-height` deserves special attention: `line-height: 1.5`
+resolves to pixels based on `font-size`, so a small font-size change cascades
+to line-height. The `value_tolerance` config should apply to `line-height`
+(and other font-dependent properties) just as `bounds_tolerance` applies to
+bounding rectangles.
 
 The whitelist is the **trust boundary**: sosie's "equivalent" verdict means
 "equivalent with respect to these properties." It should be documented in
@@ -822,7 +839,18 @@ is the review format.
 
 9. **HTML report format.** Resolved: the `diff-view` spatial visualization
    (see Visual Tooling section). Self-contained HTML with inline screenshots,
-   element highlighting, and click-to-inspect tooltips.
+   element highlighting, and click-to-inspect tooltips. Now the default output.
+
+## Design decisions
+
+1. **Pseudo-element → real element replacement.** When a refactoring replaces
+   a `::before` pseudo-element (e.g., a CSS icon) with an actual `<img>` or
+   `<svg>` tag, sosie reports this as a structural diff (`Tag_mismatch` or
+   `Extra_node`). This is a conscious choice: the tool should not silently
+   treat structurally different DOM as equivalent. The user inspects the diff
+   and decides if it's acceptable. Making sosie guess that `::before` and
+   `<img>` are "the same thing" would violate the conservative principle
+   (prefer false positives over false negatives).
 
 ## Testing and validation
 
