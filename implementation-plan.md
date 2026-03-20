@@ -298,7 +298,7 @@ This is the deliverable: a PR check that blocks visual regressions.
 
 ---
 
-## Step 12: Harden and generalize
+## Step 12: Harden
 
 With ocaml.org working as the testbed, address remaining items:
 
@@ -312,7 +312,82 @@ With ocaml.org working as the testbed, address remaining items:
 - **Performance:** Profile capture-all on the full ocaml.org route list
   (~50 routes × 3 viewports × 2 schemes = 300 captures). Optimize if
   needed (parallel tabs, incremental capture).
-- **Documentation:** Usage guide, sosie.yml reference, whitelist reference.
+
+---
+
+## Step 13: npm distribution (esbuild model)
+
+Once sosie works and is validated on ocaml.org, distribute it to the
+wider web ecosystem. The goal: `npx sosie capture --url http://localhost:3000`
+works on a fresh machine with only Node.js installed.
+
+### Cross-compilation
+
+Set up CI builds for all target platforms:
+- `linux-x64` (GitHub Actions, most CI)
+- `linux-arm64` (ARM servers, Graviton)
+- `darwin-x64` (Intel Mac)
+- `darwin-arm64` (Apple Silicon)
+- `win32-x64` (Windows, if feasible)
+
+OCaml's native compiler produces static binaries. Cross-compilation via
+`dune` + `ocaml-cross` or separate CI runners per platform.
+
+### npm package structure
+
+```
+sosie/                         # main package (thin loader)
+  package.json
+  bin/sosie                    # JS script: detect platform, exec binary
+@sosie/cli-linux-x64/         # platform packages (optionalDependencies)
+  package.json
+  bin/sosie                    # native OCaml binary
+@sosie/cli-darwin-arm64/
+  ...
+```
+
+The main `sosie` package declares platform packages as
+`optionalDependencies`. npm installs only the one matching the user's
+platform. The `bin/sosie` script finds and execs the native binary.
+
+### Bundled Chromium
+
+On first run or during `npm install`, auto-download a revision-locked
+Chromium:
+- Use the Chrome for Testing download API (same mechanism as Puppeteer).
+- Cache in `~/.cache/sosie/chromium/` (XDG-compliant).
+- Pin the exact Chromium revision in the sosie release — every developer
+  and CI run uses the same browser build.
+- Override via `SOSIE_CHROMIUM_PATH` for managed environments.
+
+### GitHub Action
+
+```yaml
+- name: UI Equivalence Check
+  uses: sosie-org/sosie-action@v1
+  with:
+    baseline: ./snapshots-main
+    current: ./snapshots-pr
+    config: sosie.yml
+```
+
+The action bundles the sosie binary and pinned Chromium. Zero setup for
+the user.
+
+### Documentation for adopters
+
+- Quick start: `npx sosie capture --url ...` in 30 seconds.
+- `sosie.yml` reference with examples for common frameworks (Next.js,
+  Rails, Django, static sites).
+- Normalization presets for common framework noise.
+- Migration guide from BackstopJS / Percy / Chromatic.
+
+### Contributor on-ramp
+
+The OCaml implementation is invisible to users. It surfaces in:
+- `sosie self-test` output: "Powered by OCaml"
+- Error messages that are precise enough to be notable
+- `CONTRIBUTING.md` with opam/dune setup instructions for contributors
 
 ---
 
@@ -331,11 +406,16 @@ With ocaml.org working as the testbed, address remaining items:
 | 8 | GumTree matcher works | 6 | Structural changes tolerated |
 | 9 | Mutation score measured | 7 | **Tool is trustworthy** |
 | 10 | Visual tooling | 7 | Human review is visual |
-| 11 | CI integration | 7 | **Tool is deployed** |
+| 11 | CI integration for ocaml.org | 7 | **Tool is deployed** |
 | 12 | Hardening | 11 | Production readiness |
+| 13 | npm distribution + GitHub Action | 12 | **Mass adoption** |
 
-Steps 1-7 form the critical path to a working tool. Steps 8-12 improve it.
-The first "real value" moment is Step 7 (a developer uses sosie on an actual
-refactoring). The first "trust" moment is Step 9 (quantitative mutation
-score). The first "deployment" moment is Step 11 (CI blocks visual
-regressions).
+Steps 1-7 form the critical path to a working tool on ocaml.org.
+Steps 8-12 improve it and make it production-ready.
+Step 13 takes it to the wider web ecosystem.
+
+Key moments:
+- **Step 7** — first real refactoring validated. The tool is useful.
+- **Step 9** — mutation score measured. The tool is trustworthy.
+- **Step 11** — CI integration. The tool is deployed on ocaml.org.
+- **Step 13** — npm distribution. The tool is available to everyone.

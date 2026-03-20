@@ -1272,16 +1272,105 @@ earn it through:
    negative found in use becomes a permanent test case. The test suite
    grows monotonically with usage, and the trust grows with it.
 
+## Distribution
+
+### For OCaml projects: opam
+
+The native distribution channel. `opam install sosie` builds from source.
+This is the right path for ocaml.org, Cascade, and other OCaml projects.
+
+### For everyone else: npm (esbuild model)
+
+To achieve adoption beyond the OCaml ecosystem, sosie must be installable
+in seconds with `npm install -g sosie` or `npx sosie`. Web developers live
+in npm. Meeting them there is a prerequisite for mass adoption.
+
+The proven pattern (esbuild, Tailwind, Biome, oxlint):
+
+1. **Platform-specific binary packages.** Publish pre-compiled binaries as
+   scoped npm packages: `@sosie/cli-linux-x64`, `@sosie/cli-darwin-arm64`,
+   `@sosie/cli-linux-arm64`, `@sosie/cli-win32-x64`, etc. Each package
+   contains a single native binary built from the OCaml source.
+
+2. **Thin loader package.** The main `sosie` npm package has an `install`
+   script that detects OS and architecture, downloads the correct binary
+   package via `optionalDependencies`, and places it on `PATH`. No OCaml
+   runtime, no compilation, no opam.
+
+3. **`npx sosie` just works.** The user never sees a `.ml` file.
+
+This requires cross-compilation to each target (OCaml's cross-compilation
+story via `dune` and `ocaml-cross` is adequate for Linux and macOS; Windows
+may need `ocaml-cross` or a separate CI build).
+
+### Bundled Chromium
+
+The design currently lists Chromium as a system dependency. For zero-friction
+onboarding, sosie should auto-download a revision-locked Chromium on first
+run:
+
+- Use the same Chrome for Testing download mechanism as Puppeteer
+  (`@puppeteer/browsers` or a direct download from the Chrome for Testing
+  API).
+- Cache it in `~/.cache/sosie/chromium/` (XDG-compliant).
+- Pin the exact Chromium revision in the sosie release. This eliminates
+  "works on my Chrome but not yours" — every developer and CI run uses the
+  same browser build.
+- Allow override via `SOSIE_CHROMIUM_PATH` for environments that provide
+  their own Chromium.
+
+This means `npx sosie capture --url http://localhost:3000` works on a fresh
+machine with only Node.js installed. No `apt install chromium`, no manual
+setup.
+
+### GitHub Action
+
+A drop-in CI integration:
+
+```yaml
+- name: UI Equivalence Check
+  uses: sosie-org/sosie-action@v1
+  with:
+    baseline: ./snapshots-main
+    current: ./snapshots-pr
+    config: sosie.yml
+```
+
+The action bundles the sosie binary and a pinned Chromium. Teams get the
+full pipeline without knowing the tool is written in OCaml.
+
+### Architecture constraint
+
+The npm distribution imposes one constraint on the implementation: **sosie
+must be a single statically-linked binary** (or at most binary + bundled
+Chromium). No dynamic library dependencies beyond libc. OCaml's native
+compiler produces static binaries by default, so this is not an obstacle.
+
+### Adoption funnel
+
+```
+npx sosie capture --url ...        → zero-friction trial
+npm install -g sosie               → local development
+sosie.yml committed to repo        → team adoption
+sosie-action in CI                 → enforced visual equivalence
+```
+
+The OCaml implementation is invisible to users. It surfaces only in
+`sosie self-test` output ("Powered by OCaml for high-performance tree
+matching") and in the contributor documentation. Developers who notice the
+tool is faster and more precise than JS-based alternatives will find their
+way to the source.
+
 ## Why OCaml
 
 - Algebraic types for the AST and diff representation
 - Pattern matching for the tree walker
 - Normalization rules compose as `snapshot -> snapshot` functions
+- Single static binary — no runtime, no GC pauses, ideal for npm-bin
+  distribution
 - Could share types/libraries with Cascade (color canonicalization, selector
   parsing for `drop_subtrees`)
 - Could live in the Cascade project as `cascade.sosie` or stand alone
-- The only non-OCaml part is launching Chromium — a system dependency, not a
-  library dependency
 
 ## Relationship to Cascade
 
