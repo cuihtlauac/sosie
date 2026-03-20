@@ -704,26 +704,115 @@ Testing is not a secondary concern — it is the mechanism by which sosie earns
 the trust described in the Key Requirement section. Sosie's correctness claim
 is strong: "these two pages render identically with respect to the configured
 properties." A bug that produces a false equivalence silently lets a visual
-regression through. Testing must cover every layer independently and then
-end-to-end, with a bias toward catching false negatives (missed differences)
-over false positives (spurious diffs).
+regression through.
 
-### Layer 1: Pure functions (unit tests)
+The key insight is that **testing should not require human visual inspection of
+hundreds of pages.** Category theory tells us where to start: just as
+parser/pretty-printer round-trip tests should start from the AST (the canonical
+side), not from the text (which has more degrees of freedom), sosie's tests
+should start from snapshots, not from arbitrary HTML.
 
-These are standard OCaml tests (alcotest or inline expect tests). No browser
+### The morphism structure
+
+The system involves three spaces:
+
+```
+Source ──R──> Visual ──f──> Snapshot
+  (HTML+CSS)    (what eyes see)    (what sosie captures)
+```
+
+- **R**: browser rendering. Source → Visual.
+- **C = f ∘ R**: sosie capture. Source → Snapshot.
+- **f**: extraction of whitelisted properties from visual output.
+
+Sosie's soundness claim is: **C(a) = C(b) ⟹ R(a) = R(b)**. This holds iff f
+is mono (injective) — distinct visual outputs always produce distinct snapshots.
+The property whitelist determines whether f is mono.
+
+The other direction, G ∘ C ≠ id in general — many HTML sources produce the
+same snapshot. That's the whole point: the equivalence relation collapses
+source differences that don't affect visual output.
+
+### The snapshot generator G
+
+Define a **generator** G : Snapshot → Source that produces minimal HTML+CSS
+with known visual properties (absolute positioning, inline styles, known
+fonts):
+
+```
+Snapshot ──G──> Source ──C──> Snapshot
+         generate       capture
+```
+
+The round-trip property is: **C ∘ G = id_Snapshot**. Generate HTML from a
+snapshot and recapture it → get back the same snapshot. This is a
+retraction/section structure: C is a retraction (left inverse) of G.
+
+The generator is simple — it doesn't need to produce realistic HTML, just HTML
+where every visual property is controlled:
+
+```html
+<!-- G(snapshot) for a node with known bounds and styles -->
+<div style="position:absolute; left:10px; top:20px; width:100px; height:50px;
+            background-color:#ff0000; font-size:16px; font-family:monospace;
+            opacity:0.8; z-index:5; border:2px solid #00ff00">
+  Hello
+</div>
+```
+
+You know *by construction* what the snapshot should contain. No human judgment
 needed.
 
-**Tree reconstruction.** Given a CDP-shaped JSON fixture (column-oriented with
+### Round-trip tests (the primary validation mechanism)
+
+**Capture round-trips (needs browser, no human).** Generate snapshots
+(programmatically or via QCheck/property-based testing), produce HTML via G,
+capture via C, compare to the original snapshot. Each failure is a concrete
+counterexample: "this snapshot with font-size=17px and opacity=0.3 doesn't
+round-trip."
+
+```ocaml
+(* Property-based: generate random snapshots, round-trip through HTML *)
+let prop_capture_round_trip =
+  QCheck.Test.make arbitrary_snapshot (fun s ->
+    let html = generate s in
+    let s' = capture html in
+    snapshot_equal s s')
+```
+
+This validates the entire capture pipeline (CDP decoding, string table, tree
+reconstruction, CSS value parsing) across thousands of random property
+combinations without ever looking at a browser window.
+
+**Matcher round-trips (no browser).** Start from a tree A, apply known
+transformations (wrap subtree, reorder children, change text), call the result
+B. The ground-truth edit script is known by construction. Run `match(A, B)` and
+verify it recovers the expected matching. Again: start from the canonical side
+(the known transformation), not from arbitrary tree pairs.
+
+**Normalization algebraic properties (no browser).** Normalization is a pure
+function with checkable algebraic laws:
+- **Idempotency**: `normalize(normalize(s)) = normalize(s)`
+- **Monotonicity**: adding rules to the normalization config never produces
+  *more* detail (normalization only removes information)
+- **Independence**: order of independent rules doesn't affect the result (e.g.,
+  `Round_bounds` and `Canonicalize_colors` commute)
+
+### Unit tests (Layer 1, no browser)
+
+Standard OCaml tests (alcotest or inline expect tests).
+
+**Tree reconstruction.** Given CDP-shaped JSON fixtures (column-oriented with
 `parentIndex`, `nodeType`, `attributes`, etc.), assert the reconstructed tree
-has the expected shape, parent-child relationships, and attribute values. Test
-edge cases:
+has the expected shape, parent-child relationships, and attribute values. Edge
+cases:
 - Root node (`parentIndex = -1`)
 - Text nodes (no layout entry)
 - Pseudo-elements (`::before` / `::after` ordering among siblings)
 - Nodes with `display: none` (present in DOM, absent from layout)
 - Empty string table references (`-1` sentinels)
 
-**CSS value parsing.** Assert round-trip correctness:
+**CSS value parsing.** Assert parse correctness:
 - `"16px"` → `Px 16.0`, `"400"` → `Num 400.0`
 - `"rgb(59, 130, 246)"` and `"#3b82f6"` → same `Color` value
 - Malformed values → `Str` fallback (not an exception)
@@ -738,10 +827,9 @@ rule, assert the expected transformation:
 - `Canonicalize_colors` normalizes `rgb()`, `#hex`, named colors to same form
 - `Canonicalize_fonts` keeps first named + first generic; pure-generic stacks
   collapse correctly
-- Normalization is idempotent: `normalize rules (normalize rules s) = normalize rules s`
 
-**Tree matcher (GumTree phases).** This is the most critical unit to test.
-Construct pairs of trees by hand and assert the expected matching/diff:
+**Tree matcher (GumTree phases).** Construct pairs of trees by hand and assert
+the expected matching/diff:
 
 | Test case | Tree A | Tree B | Expected |
 |-----------|--------|--------|----------|
@@ -761,18 +849,14 @@ Construct pairs of trees by hand and assert the expected matching/diff:
 **Snapshot comparison.** Assert that `compare` refuses mismatched `version`
 fields and reports missing routes correctly.
 
-### Layer 2: CDP integration tests
+### CDP integration tests (Layer 2, needs browser)
 
-These require a running Chromium instance. They validate that the capture
-pipeline produces correct snapshots from known HTML.
+These validate that the capture pipeline produces correct snapshots from known
+HTML. The round-trip tests (above) are the primary mechanism here.
 
-**Test fixture pages.** A set of minimal HTML files served by a local HTTP
-server (OCaml `cohttp` or just `python3 -m http.server`), each designed to
-test one thing:
+**Additional fixture pages** for properties that are hard to generate
+synthetically:
 
-- `fixed-layout.html`: a page with hardcoded `width`, `height`, `color`,
-  `font-size` on every element. Assert the captured snapshot has exactly the
-  expected bounds and style values.
 - `font-loading.html`: a page that loads a web font via `@font-face`. Assert
   the captured `font-family` reflects the loaded font, not the fallback. (This
   validates the `document.fonts.ready` wait.)
@@ -784,20 +868,18 @@ test one thing:
   bounds reflect the transformed position.
 
 **Determinism test.** Capture the same page twice with the same viewport and
-scheme. Assert the two snapshots are identical after normalization. This
-validates that no non-determinism leaks through (timestamps, random IDs, etc.).
+scheme. Assert the two snapshots are identical after normalization.
 
 **Viewport/scheme test.** Capture a responsive page at two viewport sizes.
 Assert bounds differ as expected. Capture in light and dark scheme. Assert
 colors differ as expected.
 
-### Layer 3: End-to-end (the "sosie tests sosie" level)
+### End-to-end tests (Layer 3)
 
 These validate the full workflow: capture → normalize → compare.
 
 **Identity test.** Capture a page, compare the snapshot to itself. Assert zero
-diffs. This is the most basic soundness check — if sosie reports diffs between
-a page and itself, something is fundamentally broken.
+diffs. The most basic soundness check.
 
 **Known-equivalent refactoring.** Two HTML files that are structurally different
 but visually identical:
@@ -819,36 +901,34 @@ Same styles on all elements. Assert: `Wrapper_inserted` diff reported, but no
 
 **Regression suite.** As sosie is used on real projects, collect pairs of
 snapshots where a bug was found (false positive or false negative). Add them as
-regression tests. This is the long-term quality mechanism.
+permanent regression tests.
 
 ### CI integration
 
-Tests are split by what they require:
+| Suite | Requires | Speed |
+|-------|----------|-------|
+| Unit tests + algebraic properties | Nothing | < 1s |
+| Round-trip (property-based) | Chromium | ~10-30s |
+| CDP integration fixtures | Chromium | ~5-10s |
+| End-to-end | Chromium | ~10-30s |
 
-| Suite | Requires | Runs in CI? | Speed |
-|-------|----------|-------------|-------|
-| Unit tests (Layer 1) | Nothing | Yes, always | < 1s |
-| CDP integration (Layer 2) | Chromium | Yes, with `chromium` in CI image | ~5-10s |
-| End-to-end (Layer 3) | Chromium + HTTP server | Yes, with `chromium` | ~10-30s |
+Chromium is available in standard CI images (GitHub Actions `ubuntu-latest`,
+Debian/Ubuntu `apt install chromium`). No Playwright, no npm.
 
-Chromium is available in standard CI images (GitHub Actions `ubuntu-latest`
-includes it; Debian/Ubuntu CI can `apt install chromium`). No Playwright, no
-npm.
+### The trust argument
 
-### What "correct" means
+Sosie's correctness reduces to two independently verifiable claims:
 
-Sosie's correctness has two sides:
-- **Soundness**: if sosie says "equivalent," the pages really do look the same
-  with respect to the configured properties. Tested by the known-different
-  tests (Layer 3) — sosie must report the diff.
-- **Completeness**: if sosie says "different," there really is a visual
-  difference. Tested by the known-equivalent and identity tests — sosie must
-  report zero diffs.
+1. **Capture fidelity**: the capture pipeline faithfully extracts the
+   properties it claims to extract. **Verified by round-trip tests**
+   (automated, no human needed). C ∘ G = id.
 
-False negatives (missed differences) are worse than false positives (spurious
-diffs), because the tool's purpose is to prove equivalence. The testing
-strategy is biased accordingly: more known-different test cases than
-known-equivalent ones.
+2. **Whitelist completeness**: the property whitelist covers all visually
+   significant CSS properties. **Verified by human audit** (one-time, focused
+   document review of ~20 properties against the CSS spec).
+
+No other faith is required. The round-trip tests eliminate the need to visually
+inspect hundreds of pages. The whitelist audit is a bounded, tractable task.
 
 ### Trust budget
 
@@ -858,10 +938,9 @@ earn it through:
 1. **Transparent scope.** The user can inspect the property whitelist and
    normalization config to understand exactly what is and isn't checked.
    No hidden assumptions.
-2. **Self-tests.** Sosie ships with its own test suite of known-equivalent
-   and known-different page pairs. A user can run `sosie self-test` with
-   their Chromium to verify the tool works correctly in their environment
-   before relying on it.
+2. **Self-tests.** `sosie self-test` runs the round-trip and fixture tests
+   with the user's local Chromium, verifying the tool works in their
+   environment before they rely on it.
 3. **Diff auditability.** Every diff is traceable: which element, which
    property, what the old and new values are. A user can always verify a
    reported diff by inspecting the element in the browser.
