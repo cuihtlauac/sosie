@@ -46,6 +46,17 @@ tool invocations. `opam exec --` is the correct way.
 - No `--no-verify`. If a hook fails, fix the issue.
 - Do not amend published commits.
 
+### Dependencies
+
+- **Minimize the dependency surface.** Prefer Stdlib and Unix over
+  third-party libraries when the task is straightforward. A 120-line
+  module is better than a transitive closure of 76 packages.
+- **No async runtime.** sosie is a sequential CLI tool. Use blocking
+  Unix I/O, not Eio, Lwt, or Async. The WebSocket client and process
+  launcher use `Unix` directly.
+- Before adding a dependency, check: Is this something we could write
+  in under 200 lines? If yes, write it.
+
 ### Testing
 
 - **Exhaustive unit test coverage.** Every public function has tests. Every

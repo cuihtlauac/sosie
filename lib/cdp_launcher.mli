@@ -2,8 +2,7 @@
 
     Provides utilities to locate a Chromium binary and launch it with
     remote debugging enabled, returning the WebSocket URL for CDP
-    connections. The Chromium process lifecycle is tied to an Eio switch:
-    when the switch is released, the process is killed. *)
+    connections. *)
 
 val find_chromium : unit -> string
 (** [find_chromium ()] returns the path to a Chromium binary.
@@ -11,23 +10,11 @@ val find_chromium : unit -> string
     common installation paths on Linux and macOS.
     @raise Failure if no Chromium binary is found. *)
 
-val launch :
-  sw:Eio.Switch.t ->
-  proc_mgr:_ Eio.Process.mgr ->
-  net:Eio_unix.Net.t ->
-  clock:_ Eio.Time.clock ->
-  ?port:int ->
-  ?headless:bool ->
-  unit ->
-  string
-(** [launch ~sw ~proc_mgr ~net ~clock ()] starts a headless Chromium
-    instance and returns the WebSocket debugger URL from the
-    [/json/version] endpoint.
+val with_chromium : ?port:int -> ?headless:bool -> (string -> 'a) -> 'a
+(** [with_chromium f] starts a headless Chromium instance, passes the
+    page-level WebSocket debugger URL to [f], and kills the process
+    when [f] returns or raises.
 
-    The Chromium process is killed when [sw] is released.
-
-    @param clock Eio clock for retry sleeps while waiting for Chromium's
-      HTTP endpoint to become available.
     @param port CDP remote debugging port (default: 0, meaning Chromium
       picks a free port).
     @param headless Run in headless mode (default: [true]).

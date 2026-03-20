@@ -12,9 +12,7 @@
  (depends
   (ocaml (>= 5.4))
   yojson
-  eio
-  eio_main
-  httpun-ws-eio
+  digestif
   base64
   cmdliner
   js_of_ocaml

@@ -13,9 +13,8 @@
 type connection
 (** An active CDP WebSocket connection. *)
 
-val connect : sw:Eio.Switch.t -> net:Eio_unix.Net.t -> string -> connection
-(** [connect ~sw ~net url] connects to the CDP WebSocket endpoint at [url].
-    The connection is closed when [sw] is released.
+val connect : string -> connection
+(** [connect url] connects to the CDP WebSocket endpoint at [url].
     @param url The WebSocket debugger URL
       (e.g. ["ws://127.0.0.1:9222/devtools/page/..."]).
     @raise Failure if the connection cannot be established or the

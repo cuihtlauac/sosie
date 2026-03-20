@@ -8,41 +8,31 @@
 open Sosie
 
 let browser_get_version () =
-  Eio_main.run @@ fun env ->
-  Eio.Switch.run @@ fun sw ->
-  let net = Eio.Stdenv.net env in
-  let proc_mgr = Eio.Stdenv.process_mgr env in
-  let clock = Eio.Stdenv.clock env in
-  let ws_url = Cdp_launcher.launch ~sw ~proc_mgr ~net ~clock () in
-  let conn = Cdp.connect ~sw ~net ws_url in
-  let result = Cdp.send conn "Browser.getVersion" (`Assoc []) in
-  (match result with
-  | `Assoc fields ->
-      Alcotest.(check bool) "has product" true
-        (List.mem_assoc "product" fields);
-      let product =
-        match List.assoc_opt "product" fields with
-        | Some (`String s) -> s
-        | _ -> ""
-      in
-      Alcotest.(check bool) "product contains Chrome" true
-        (String.starts_with ~prefix:"Chrome" product
-        || String.starts_with ~prefix:"Headless" product)
-  | _ -> Alcotest.fail "expected JSON object from Browser.getVersion");
-  Cdp.close conn
+  Cdp_launcher.with_chromium (fun ws_url ->
+    let conn = Cdp.connect ws_url in
+    let result = Cdp.send conn "Browser.getVersion" (`Assoc []) in
+    (match result with
+    | `Assoc fields ->
+        Alcotest.(check bool) "has product" true
+          (List.mem_assoc "product" fields);
+        let product =
+          match List.assoc_opt "product" fields with
+          | Some (`String s) -> s
+          | _ -> ""
+        in
+        Alcotest.(check bool) "product contains Chrome" true
+          (String.starts_with ~prefix:"Chrome" product
+          || String.starts_with ~prefix:"Headless" product)
+    | _ -> Alcotest.fail "expected JSON object from Browser.getVersion");
+    Cdp.close conn)
 
 let evaluate_simple_expression () =
-  Eio_main.run @@ fun env ->
-  Eio.Switch.run @@ fun sw ->
-  let net = Eio.Stdenv.net env in
-  let proc_mgr = Eio.Stdenv.process_mgr env in
-  let clock = Eio.Stdenv.clock env in
-  let ws_url = Cdp_launcher.launch ~sw ~proc_mgr ~net ~clock () in
-  let conn = Cdp.connect ~sw ~net ws_url in
-  let result = Cdp.evaluate_js conn "1 + 1" in
-  Alcotest.(check string) "1 + 1 = 2" "2"
-    (Yojson.Safe.to_string result);
-  Cdp.close conn
+  Cdp_launcher.with_chromium (fun ws_url ->
+    let conn = Cdp.connect ws_url in
+    let result = Cdp.evaluate_js conn "1 + 1" in
+    Alcotest.(check string) "1 + 1 = 2" "2"
+      (Yojson.Safe.to_string result);
+    Cdp.close conn)
 
 let () =
   Alcotest.run "cdp-integration"

@@ -1,6 +1,6 @@
 (library
  (name sosie)
- (libraries sosie_shared yojson eio eio.unix httpun-ws httpun-ws-eio httpun bigstringaf base64))
+ (libraries sosie_shared yojson unix digestif base64))
 
 (rule
  (target extractor_js_source.ml)

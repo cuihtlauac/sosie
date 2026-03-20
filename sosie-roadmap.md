@@ -73,7 +73,8 @@ Launch Chromium headless, connect via WebSocket, send CDP commands.
 Start with `Browser.getVersion`. Then use `Runtime.evaluate` to execute
 the JS extractor from Step 1a.
 
-**Dependencies:** WebSocket library (`httpun-ws-eio` or hand-rolled).
+**Dependencies:** WebSocket library (originally `httpun-ws-eio`, replaced
+in Step 1d with a hand-rolled blocking client over Unix sockets).
 
 **Output:** A module `Cdp` with:
 - `connect : unit -> connection`
@@ -122,6 +123,35 @@ pages. Structural equality after parsing into `Snapshot_types.snapshot`.
 
 See `plans/jsoo-extractor-refactor.md` for the detailed implementation
 plan.
+
+---
+
+## Step 1d: Replace Eio + httpun-ws with blocking Unix WebSocket
+
+**Motivation:** The CDP bridge pulled in Eio, httpun-ws-eio, httpun-ws,
+httpun, gluten-eio, gluten, faraday, angstrom, bigstringaf — 76+
+transitive packages. sosie's usage is strictly sequential: one CDP
+command at a time, blocking until the response arrives. The entire async
+machinery existed only because `httpun-ws-eio` required it.
+
+**What was done:**
+- New `lib/ws.ml` (~170 lines): RFC 6455 blocking WebSocket client over
+  `Unix.file_descr`. Handshake via `Digestif.SHA1` + `Base64`. Frame
+  read/write with masking. Continuation frame reassembly. Ping/Pong.
+- Rewrote `lib/cdp.ml`: connection is `{ ws: Ws.t; next_id; events }`.
+  No promises, no mutex, no fibers. Blocking `Ws.recv` loop.
+- Rewrote `lib/cdp_launcher.ml`: `Unix.create_process` + `Unix.pipe`
+  for Chromium launch, `Unix.open_connection` for HTTP, `Unix.sleepf`
+  for retries. New `with_chromium` bracket API.
+- Removed all Eio boilerplate from `bin/main.ml` and integration tests.
+
+**Dropped direct deps:** `eio`, `eio_main`, `eio.unix`, `httpun-ws-eio`,
+`httpun-ws`, `httpun`, `bigstringaf`.
+
+**Kept:** `digestif` (SHA-1 for handshake), `base64` (nonce encoding).
+
+**Test:** 10 new frame round-trip tests in `test/test_ws.ml`. All 43
+unit tests pass. Integration tests updated (Eio boilerplate removed).
 
 ---
 
@@ -529,6 +559,7 @@ testing would have missed.
 | [x] | 1a | Raw JS extractor works in browser console | 0 | Snapshot schema correct across engines |
 | [x] | 1b | CDP bridge works | 0 | WebSocket + CDP protocol |
 | [x] | 1c | JSOO extractor replaces raw JS | 1a | Type safety, schema consistency |
+| [x] | 1d | Blocking Unix WebSocket (drop Eio) | 1b | Dependency minimization |
 | [ ] | 2 | Raw snapshot from ocaml.org | 1b, 1c | JS and CDP outputs agree |
 | [ ] | 3 | Typed AST from real data | 2 | Tree reconstruction correctness |
 | [ ] | 4 | Round-trip tests pass | 3 | Capture pipeline fidelity |

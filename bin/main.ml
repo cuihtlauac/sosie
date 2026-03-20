@@ -16,26 +16,21 @@ let viewport_conv = Arg.conv (parse_viewport, fun fmt (w, h) ->
     Format.fprintf fmt "%dx%d" w h)
 
 let run_capture url viewport color_scheme output =
-  Eio_main.run @@ fun env ->
-  Eio.Switch.run @@ fun sw ->
-  let net = Eio.Stdenv.net env in
-  let proc_mgr = Eio.Stdenv.process_mgr env in
-  let clock = Eio.Stdenv.clock env in
-  let ws_url = Sosie.Cdp_launcher.launch ~sw ~proc_mgr ~net ~clock () in
-  let conn = Sosie.Cdp.connect ~sw ~net ws_url in
-  let extractor_js = Sosie.Extractor_js_source.source in
-  let json =
-    Sosie.Capture.capture conn ~extractor_js ~url ~viewport ~color_scheme ()
-  in
-  let pretty = Yojson.Safe.pretty_to_string json in
-  (match output with
-  | None -> print_string pretty; print_newline ()
-  | Some path ->
-      let oc = open_out path in
-      output_string oc pretty;
-      output_char oc '\n';
-      close_out oc);
-  Sosie.Cdp.close conn
+  Sosie.Cdp_launcher.with_chromium (fun ws_url ->
+    let conn = Sosie.Cdp.connect ws_url in
+    let extractor_js = Sosie.Extractor_js_source.source in
+    let json =
+      Sosie.Capture.capture conn ~extractor_js ~url ~viewport ~color_scheme ()
+    in
+    let pretty = Yojson.Safe.pretty_to_string json in
+    (match output with
+    | None -> print_string pretty; print_newline ()
+    | Some path ->
+        let oc = open_out path in
+        output_string oc pretty;
+        output_char oc '\n';
+        close_out oc);
+    Sosie.Cdp.close conn)
 
 let capture_cmd =
   let doc = "Capture a DOM snapshot from a URL." in

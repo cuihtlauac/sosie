@@ -30,14 +30,10 @@ let find_chromium () =
 (** Read the actual listening port from Chromium's stderr output.
     Chromium prints a line like:
     [DevTools listening on ws://127.0.0.1:PORT/devtools/browser/UUID] *)
-let read_debug_port stderr_r =
-  let buf = Eio.Buf_read.of_flow ~max_size:(64 * 1024) stderr_r in
+let read_debug_port stderr_ic =
   let rec find_line () =
-    let line = Eio.Buf_read.line buf in
-    if String.length line > 0
-       && String.starts_with ~prefix:"DevTools listening on " line
-    then
-      (* Extract port from ws://127.0.0.1:PORT/... *)
+    let line = input_line stderr_ic in
+    if String.starts_with ~prefix:"DevTools listening on " line then
       let url_start = String.length "DevTools listening on " in
       let url = String.sub line url_start (String.length line - url_start) in
       let rest =
@@ -72,41 +68,46 @@ let read_debug_port stderr_r =
 
     {b Connection not closed promptly.} Despite [Connection: close] in
     the request, Chrome does not close the TCP connection immediately
-    after sending the response body. Using [Eio.Flow.read_all] or
-    [Eio.Buf_read.take_all] would block waiting for EOF that never
-    comes (or comes very late). We must parse Content-Length from the
-    headers and read exactly that many bytes. *)
-let http_get_json ~net ~port path =
+    after sending the response body. We must parse Content-Length from
+    the headers and read exactly that many bytes. *)
+let http_get_json ~port path =
   let host = "127.0.0.1" in
-  let service = string_of_int port in
-  Eio.Net.with_tcp_connect ~host ~service net (fun socket ->
-      let request =
-        Printf.sprintf
-          "GET %s HTTP/1.1\r\nHost: %s:%d\r\nConnection: close\r\n\r\n"
-          path host port
-      in
-      Eio.Flow.copy_string request socket;
-      let buf = Eio.Buf_read.of_flow ~max_size:(64 * 1024) socket in
-      let _status_line = Eio.Buf_read.line buf in
-      let content_length = ref 0 in
-      let rec read_headers () =
-        let line = Eio.Buf_read.line buf in
-        if line = "" then ()
-        else begin
-          let lower = String.lowercase_ascii line in
-          (* Match "content-length:" without assuming a space after the colon. *)
-          if String.starts_with ~prefix:"content-length:" lower then begin
-            let v = String.sub lower 15 (String.length lower - 15) in
-            content_length := int_of_string (String.trim v)
-          end;
-          read_headers ()
-        end
-      in
-      read_headers ();
-      if !content_length = 0 then failwith "no Content-Length in response"
-      else
-        let body = Eio.Buf_read.take !content_length buf in
-        Yojson.Safe.from_string body)
+  let addr =
+    Unix.ADDR_INET (Unix.inet_addr_of_string host, port)
+  in
+  let ic, oc = Unix.open_connection addr in
+  Fun.protect ~finally:(fun () ->
+      close_in_noerr ic; close_out_noerr oc)
+    (fun () ->
+       let request =
+         Printf.sprintf
+           "GET %s HTTP/1.1\r\nHost: %s:%d\r\nConnection: close\r\n\r\n"
+           path host port
+       in
+       output_string oc request;
+       flush oc;
+       let _status_line = input_line ic in
+       let content_length = ref 0 in
+       let rec read_headers () =
+         let line = input_line ic in
+         let trimmed = String.trim line in
+         if trimmed = "" then ()
+         else begin
+           let lower = String.lowercase_ascii trimmed in
+           if String.starts_with ~prefix:"content-length:" lower then begin
+             let v = String.sub lower 15 (String.length lower - 15) in
+             content_length := int_of_string (String.trim v)
+           end;
+           read_headers ()
+         end
+       in
+       read_headers ();
+       if !content_length = 0 then failwith "no Content-Length in response"
+       else begin
+         let body = Bytes.create !content_length in
+         really_input ic body 0 !content_length;
+         Yojson.Safe.from_string (Bytes.to_string body)
+       end)
 
 (** Fetch the WebSocket debugger URL for the first page target, retrying
     until Chromium's HTTP endpoint becomes available.
@@ -118,7 +119,7 @@ let http_get_json ~net ~port path =
     [Emulation.*], [Page.*]) require connecting to a page target. The
     [/json/list] endpoint returns all targets; we pick the first one
     with ["type": "page"]. *)
-let fetch_page_ws_url ~net ~clock port =
+let fetch_page_ws_url port =
   let max_attempts = 20 in
   let rec loop attempt =
     if attempt > max_attempts then
@@ -129,7 +130,7 @@ let fetch_page_ws_url ~net ~clock port =
     else
       let result =
         try
-          let json = http_get_json ~net ~port "/json/list" in
+          let json = http_get_json ~port "/json/list" in
           match json with
           | `List targets ->
               List.find_map
@@ -150,30 +151,38 @@ let fetch_page_ws_url ~net ~clock port =
       match result with
       | Some url -> url
       | None ->
-          Eio.Time.sleep clock 0.2;
+          Unix.sleepf 0.2;
           loop (attempt + 1)
   in
   loop 1
 
-let launch ~sw ~proc_mgr ~net ~clock ?(port = 0) ?(headless = true) () =
+let with_chromium ?(port = 0) ?(headless = true) f =
   let chromium = find_chromium () in
-  let stderr_r, stderr_w = Eio.Process.pipe ~sw proc_mgr in
   let args =
-    [
-      chromium;
-      Printf.sprintf "--remote-debugging-port=%d" port;
-      (if headless then "--headless=new" else "--no-first-run");
-      "--no-first-run";
-      "--no-default-browser-check";
-      "--disable-gpu";
-      "--disable-extensions";
-      "--disable-background-networking";
-      "about:blank";
-    ]
+    Array.of_list
+      [
+        chromium;
+        Printf.sprintf "--remote-debugging-port=%d" port;
+        (if headless then "--headless=new" else "--no-first-run");
+        "--no-first-run";
+        "--no-default-browser-check";
+        "--disable-gpu";
+        "--disable-extensions";
+        "--disable-background-networking";
+        "about:blank";
+      ]
   in
-  let _proc =
-    Eio.Process.spawn ~sw proc_mgr ~stderr:stderr_w args
+  let stderr_r, stderr_w = Unix.pipe () in
+  let pid =
+    Unix.create_process chromium args Unix.stdin Unix.stdout stderr_w
   in
-  Eio.Flow.close stderr_w;
-  let actual_port = read_debug_port stderr_r in
-  fetch_page_ws_url ~net ~clock actual_port
+  Unix.close stderr_w;
+  let stderr_ic = Unix.in_channel_of_descr stderr_r in
+  Fun.protect ~finally:(fun () ->
+      (try Unix.kill pid Sys.sigterm with Unix.Unix_error _ -> ());
+      (try ignore (Unix.waitpid [] pid) with Unix.Unix_error _ -> ());
+      close_in_noerr stderr_ic)
+    (fun () ->
+       let actual_port = read_debug_port stderr_ic in
+       let ws_url = fetch_page_ws_url actual_port in
+       f ws_url)

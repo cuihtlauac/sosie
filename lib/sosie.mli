@@ -13,6 +13,9 @@ module Snapshot_types = Sosie_shared.Snapshot_types
 module Property_whitelist = Sosie_shared.Property_whitelist
 (** Canonical CSS property whitelist. *)
 
+module Ws = Ws
+(** Blocking WebSocket client over Unix sockets. *)
+
 module Cdp = Cdp
 (** Chrome DevTools Protocol bridge. *)
 

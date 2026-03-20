@@ -11,18 +11,13 @@ let extractor_js = Extractor_js_source.source
 
 (** Helper: launch Chromium, connect, capture, close. *)
 let with_capture ?viewport ?color_scheme url f =
-  Eio_main.run @@ fun env ->
-  Eio.Switch.run @@ fun sw ->
-  let net = Eio.Stdenv.net env in
-  let proc_mgr = Eio.Stdenv.process_mgr env in
-  let clock = Eio.Stdenv.clock env in
-  let ws_url = Cdp_launcher.launch ~sw ~proc_mgr ~net ~clock () in
-  let conn = Cdp.connect ~sw ~net ws_url in
-  let json =
-    Capture.capture conn ~extractor_js ~url ?viewport ?color_scheme ()
-  in
-  f json;
-  Cdp.close conn
+  Cdp_launcher.with_chromium (fun ws_url ->
+    let conn = Cdp.connect ws_url in
+    let json =
+      Capture.capture conn ~extractor_js ~url ?viewport ?color_scheme ()
+    in
+    f json;
+    Cdp.close conn)
 
 (** Extract a string field from a JSON object. *)
 let json_string key json =
