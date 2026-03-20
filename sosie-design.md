@@ -343,27 +343,25 @@ val normalize : normalize_rule list -> snapshot -> snapshot
 
 A project-specific config file declares the rules:
 
-```yaml
-# sosie.yml for ocaml.org
-normalize:
-  drop_attributes: [class, style, data-x-*]
-  sort_attributes: true
-  round_bounds: 0.5
-  canonicalize_colors: true
-  canonicalize_fonts: true
-  mask_text:
-    - selector: "time"
-      replacement: "[DATE]"
-    - selector: ".changelog-body"
-      replacement: "[CONTENT]"
-  mask_text_matching:
-    - pattern: "\\d{4}-\\d{2}-\\d{2}"
-      replacement: "[DATE]"
-    - pattern: "OCaml \\d+\\.\\d+\\.\\d+"
-      replacement: "OCaml [VERSION]"
-  drop_subtrees:
-    - "#planet-feed"
-    - ".swiper-wrapper"
+```json
+{
+  "normalize": {
+    "drop_attributes": ["class", "style", "data-x-*"],
+    "sort_attributes": true,
+    "round_bounds": 0.5,
+    "canonicalize_colors": true,
+    "canonicalize_fonts": true,
+    "mask_text": [
+      { "selector": "time", "replacement": "[DATE]" },
+      { "selector": ".changelog-body", "replacement": "[CONTENT]" }
+    ],
+    "mask_text_matching": [
+      { "pattern": "\\d{4}-\\d{2}-\\d{2}", "replacement": "[DATE]" },
+      { "pattern": "OCaml \\d+\\.\\d+\\.\\d+", "replacement": "OCaml [VERSION]" }
+    ],
+    "drop_subtrees": ["#planet-feed", ".swiper-wrapper"]
+  }
+}
 ```
 
 Normalization is a pure function: `snapshot -> snapshot`. It runs independently
@@ -526,7 +524,7 @@ sosie capture \
   --url http://localhost:8080/learn \
   --viewport 375x667 \
   --scheme dark \
-  --config sosie.yml \
+  --config sosie.json \
   --output snapshots/learn-375x667-dark.json
 
 sosie capture-all \
@@ -534,30 +532,30 @@ sosie capture-all \
   --routes /,/learn,/install,/packages,/community \
   --viewports 375x667,768x1024,1280x800 \
   --schemes light,dark \
-  --config sosie.yml \
+  --config sosie.json \
   --output snapshots/
 
 sosie compare \
   --baseline snapshots-main/ \
   --modified snapshots-pr/ \
-  --config sosie.yml \
+  --config sosie.json \
   --report report.txt
 
 sosie compare \
   --baseline snapshots-main/ \
   --modified snapshots-pr/ \
-  --config sosie.yml \
+  --config sosie.json \
   --report report.html
 
 sosie audit-whitelist \
   --url http://localhost:8080/learn \
   --viewport 1280x800 \
-  --config sosie.yml \
+  --config sosie.json \
   --output audit-learn.png
 
 sosie show-config \
   --url http://localhost:8080/learn \
-  --config sosie.yml
+  --config sosie.json
 
 sosie self-test
 ```
@@ -605,7 +603,7 @@ sosie capture-all \
   --routes routes.txt \
   --viewports 375x667,768x1024,1280x800 \
   --schemes light,dark \
-  --config sosie.yml \
+  --config sosie.json \
   --output baseline/
 kill %1
 
@@ -618,7 +616,7 @@ sosie capture-all \
   --routes routes.txt \
   --viewports 375x667,768x1024,1280x800 \
   --schemes light,dark \
-  --config sosie.yml \
+  --config sosie.json \
   --output modified/
 kill %1
 
@@ -626,7 +624,7 @@ kill %1
 sosie compare \
   --baseline baseline/ \
   --modified modified/ \
-  --config sosie.yml \
+  --config sosie.json \
   --report report.txt
 ```
 
@@ -676,7 +674,7 @@ bounding rectangles.
 
 The whitelist is the **trust boundary**: sosie's "equivalent" verdict means
 "equivalent with respect to these properties." It should be documented in
-`sosie.yml` and reviewed alongside the code it validates. Extending the
+`sosie.json` and reviewed alongside the code it validates. Extending the
 whitelist is safe (more properties checked = stronger verdict); shrinking it
 weakens the guarantee and should be justified.
 
@@ -684,7 +682,7 @@ weakens the guarantee and should be justified.
 
 Sosie's configuration involves visual choices: which CSS properties to compare,
 which page regions to ignore, what tolerance to apply. These choices should not
-be reviewed by reading CSS property names or YAML — they should be reviewed
+be reviewed by reading CSS property names or JSON — they should be reviewed
 visually. The same principle sosie applies to CSS refactoring (don't make humans
 compare rendered pages) must apply to sosie's own configuration: **remove round
 trips inside the human brain.**
@@ -719,7 +717,7 @@ set complement. ~100 lines of OCaml on top of the existing CDP connection.
 sosie audit-whitelist \
   --url http://localhost:8080/learn \
   --viewport 1280x800 \
-  --config sosie.yml \
+  --config sosie.json \
   --output audit-learn.png
 ```
 
@@ -740,11 +738,11 @@ loops adding highlight elements. ~200 lines of JS, no build system.
 ```
 sosie show-config \
   --url http://localhost:8080/learn \
-  --config sosie.yml
+  --config sosie.json
 ```
 
 This opens the page in a visible browser window. The user sees their actual
-page with visual annotations. No YAML to mentally parse, no CSS selectors to
+page with visual annotations. No JSON to mentally parse, no CSS selectors to
 imagine — the masked regions and ignored subtrees are painted directly on the
 page.
 
@@ -781,7 +779,7 @@ A locally-served web UI for tuning the whitelist:
 3. Toggle a property off → the page re-renders with that property reset to
    `initial` — the user sees the visual effect immediately
 4. Toggle a property on → it's added to the whitelist
-5. Export the final whitelist to `sosie.yml`
+5. Export the final whitelist to `sosie.json`
 
 This turns whitelist review from "read a list of CSS property names and
 imagine what they do" into "click things and see what happens." ~500 lines
@@ -1342,7 +1340,7 @@ A drop-in CI integration:
   with:
     baseline: ./snapshots-main
     current: ./snapshots-pr
-    config: sosie.yml
+    config: sosie.json
 ```
 
 The action bundles the sosie binary and a pinned Chromium. Teams get the
@@ -1360,7 +1358,7 @@ compiler produces static binaries by default, so this is not an obstacle.
 ```
 npx sosie capture --url ...        → zero-friction trial
 npm install -g sosie               → local development
-sosie.yml committed to repo        → team adoption
+sosie.json committed to repo        → team adoption
 sosie-action in CI                 → enforced visual equivalence
 ```
 

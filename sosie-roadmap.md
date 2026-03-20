@@ -233,9 +233,9 @@ all rules from a config.
 **Output:** Module `Normalize` with:
 - `type rule` (the normalize_rule type from the design)
 - `apply : rule list -> Snapshot.t -> Snapshot.t`
-- `of_yaml : string -> rule list` (parse sosie.yml)
+- Config file parsing moved to Step 7 (`Config` module, JSON format).
 
-**Write a first `sosie.yml` for ocaml.org:** mask dates, drop class
+**Write a first `sosie.json` for ocaml.org:** mask dates, drop class
 attributes, drop dynamic feed, round bounds to 0.5px. This config will be
 refined throughout the project as we learn what varies between captures.
 
@@ -272,7 +272,7 @@ This is enough to start refactoring ocaml.org CSS classes.
 
 ---
 
-## Step 7: CLI and first real refactoring
+## Step 7: CLI and first real refactoring [done]
 
 Wire everything into a CLI: `sosie capture`, `sosie compare`,
 `sosie capture-all`.
@@ -293,6 +293,29 @@ reveals what's missing). This is where we learn:
 
 This step produces the first "user story": a developer refactors CSS, runs
 sosie, sees zero diffs (or sees exactly the diffs they introduced).
+
+### Step 7 addendum (2026-03-20): JSON config instead of YAML
+
+The design doc originally specified YAML for `sosie.yml`. The project has
+no YAML dependency, and the config schema maps directly to JSON. Since
+`yojson` is already a dependency, we use JSON (`sosie.json`) to avoid
+adding a YAML library. The schema is identical — only the serialization
+format changed.
+
+Implemented modules:
+- `Config` (`lib/config.ml`): JSON config parser → normalize rules + compare config.
+  Supports selector parsing (`#id`, `.class`, `tag`, `*`), attribute patterns
+  (`exact`, `prefix*`), all normalize rule types, and compare config fields
+  with defaults for missing fields.
+- `Diff_fmt` (`lib/diff_fmt.ml`): Human-readable diff formatter with
+  XPath path rendering and summary with counts by diff type.
+- `sosie compare --baseline FILE --modified FILE [--config FILE]`: reads two
+  snapshots, normalizes, compares, prints diffs. Exit 0 if equivalent, 1 if
+  diffs found (for CI use).
+- `sosie capture-all`: batch capture across routes × viewports × schemes,
+  reusing a single Chromium instance.
+
+Tests: 16 config tests, 15 diff formatter tests. All 176 tests pass.
 
 ---
 
@@ -452,7 +475,7 @@ Chromium:
   with:
     baseline: ./snapshots-main
     current: ./snapshots-pr
-    config: sosie.yml
+    config: sosie.json
 ```
 
 The action bundles the sosie binary and pinned Chromium. Zero setup for
@@ -461,7 +484,7 @@ the user.
 ### Documentation for adopters
 
 - Quick start: `npx sosie capture --url ...` in 30 seconds.
-- `sosie.yml` reference with examples for common frameworks (Next.js,
+- `sosie.json` reference with examples for common frameworks (Next.js,
   Rails, Django, static sites).
 - Normalization presets for common framework noise.
 - Migration guide from BackstopJS / Percy / Chromatic.
@@ -499,14 +522,14 @@ and Chromium (chromedriver) all support it.
 sosie capture \
   --url http://localhost:8080/learn \
   --engine firefox \
-  --config sosie.yml \
+  --config sosie.json \
   --output snapshots/learn-firefox.json
 
 sosie capture-all \
   --engines chromium,firefox,webkit \
   --base-url http://localhost:8080 \
   --routes routes.txt \
-  --config sosie.yml \
+  --config sosie.json \
   --output snapshots/
 ```
 
@@ -515,7 +538,7 @@ The comparison is always same-engine before vs. after:
 sosie compare \
   --baseline snapshots-main/ \
   --modified snapshots-pr/ \
-  --config sosie.yml
+  --config sosie.json
 ```
 
 This compares `learn-chromium-before` vs. `learn-chromium-after`, then
@@ -546,7 +569,7 @@ testing would have missed.
 | [x] | 4 | Round-trip tests pass | 3 | Capture pipeline fidelity |
 | [x] | 5 | Normalization on real pages | 3 | Deterministic snapshots |
 | [x] | 6 | First comparison works | 3, 5 | Diff detection on real pages |
-| [ ] | 7 | First real refactoring validated | 6 | **Tool is useful** |
+| [x] | 7 | First real refactoring validated | 6 | **Tool is useful** |
 | [ ] | 8 | GumTree matcher works | 6 | Structural changes tolerated |
 | [ ] | 9 | Mutation score measured | 7 | **Tool is trustworthy** |
 | [ ] | 10 | Visual tooling | 7 | Human review is visual |

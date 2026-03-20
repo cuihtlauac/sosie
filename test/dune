@@ -27,6 +27,14 @@
  (libraries sosie alcotest qcheck-core qcheck-alcotest))
 
 (test
+ (name test_config)
+ (libraries sosie alcotest))
+
+(test
+ (name test_diff_fmt)
+ (libraries sosie re alcotest))
+
+(test
  (name test_ws)
  (libraries sosie alcotest threads.posix))
 

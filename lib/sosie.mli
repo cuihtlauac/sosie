@@ -37,6 +37,12 @@ module Normalize = Normalize
 module Compare = Compare
 (** Lockstep snapshot comparison. *)
 
+module Config = Config
+(** Configuration file parser. *)
+
+module Diff_fmt = Diff_fmt
+(** Human-readable diff formatting. *)
+
 module Extractor_js_source : sig
   val source : string
 end

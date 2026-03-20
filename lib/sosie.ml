@@ -10,4 +10,6 @@ module Snapshot = Snapshot
 module Snapshot_gen = Snapshot_gen
 module Normalize = Normalize
 module Compare = Compare
+module Config = Config
+module Diff_fmt = Diff_fmt
 module Extractor_js_source = Extractor_js_source
