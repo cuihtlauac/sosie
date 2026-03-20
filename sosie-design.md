@@ -620,6 +620,153 @@ invisible.
    unspecified. Needs design (inline screenshots? side-by-side element
    highlighting?).
 
+## Testing and validation
+
+Sosie's correctness claim is strong: "these two pages render identically." A
+bug in sosie — a false equivalence — silently lets visual regressions through.
+Testing must cover every layer independently and then end-to-end.
+
+### Layer 1: Pure functions (unit tests)
+
+These are standard OCaml tests (alcotest or inline expect tests). No browser
+needed.
+
+**Tree reconstruction.** Given a CDP-shaped JSON fixture (column-oriented with
+`parentIndex`, `nodeType`, `attributes`, etc.), assert the reconstructed tree
+has the expected shape, parent-child relationships, and attribute values. Test
+edge cases:
+- Root node (`parentIndex = -1`)
+- Text nodes (no layout entry)
+- Pseudo-elements (`::before` / `::after` ordering among siblings)
+- Nodes with `display: none` (present in DOM, absent from layout)
+- Empty string table references (`-1` sentinels)
+
+**CSS value parsing.** Assert round-trip correctness:
+- `"16px"` → `Px 16.0`, `"400"` → `Num 400.0`
+- `"rgb(59, 130, 246)"` and `"#3b82f6"` → same `Color` value
+- Malformed values → `Str` fallback (not an exception)
+
+**Normalization rules.** For each rule type, construct a snapshot, apply the
+rule, assert the expected transformation:
+- `Drop_attributes [Exact "class"]` removes class but preserves id
+- `Prefix "data-"` removes `data-x-foo` but not `datafoo`
+- `Mask_text` on a `<time>` element replaces text; non-matching elements
+  are untouched
+- `Round_bounds 0.5` rounds `16.3` to `16.5`, `16.7` to `16.5`
+- `Canonicalize_colors` normalizes `rgb()`, `#hex`, named colors to same form
+- `Canonicalize_fonts` keeps first named + first generic; pure-generic stacks
+  collapse correctly
+- Normalization is idempotent: `normalize rules (normalize rules s) = normalize rules s`
+
+**Tree matcher (GumTree phases).** This is the most critical unit to test.
+Construct pairs of trees by hand and assert the expected matching/diff:
+
+| Test case | Tree A | Tree B | Expected |
+|-----------|--------|--------|----------|
+| Identical | `<div><p>hello</p></div>` | same | no diffs |
+| Text change | `<p>hello</p>` | `<p>world</p>` | `Text_diff` |
+| Style change | `font-size: 16px` | `font-size: 18px` | `Style_diff` |
+| Wrapper inserted | `<div>A B C</div>` | `<div><section>A B C</section></div>` | `Wrapper_inserted`, no content diffs |
+| Wrapper removed | inverse of above | | `Wrapper_removed` |
+| Child reorder | `<div>A B C</div>` | `<div>A C B</div>` | `Extra_node` or `Moved_node` diffs |
+| Extra child | `<div>A B</div>` | `<div>A B C</div>` | `Extra_node` on right |
+| Sibling type change | `<div><p>x</p></div>` | `<div><span>x</span></div>` | `Tag_mismatch` |
+| Deep identical subtrees | large shared subtree | same with new wrapper at root | wrapper diff only, subtree matched by hash |
+| Hash collision | two `<div></div>` siblings | same | matched by position, no false diffs |
+| Bounds tolerance | `width: 100.0` | `width: 100.3` (tolerance 0.5) | no diff |
+| Bounds tolerance exceeded | `width: 100.0` | `width: 101.0` (tolerance 0.5) | `Bounds_diff` |
+
+**Snapshot comparison.** Assert that `compare` refuses mismatched `version`
+fields and reports missing routes correctly.
+
+### Layer 2: CDP integration tests
+
+These require a running Chromium instance. They validate that the capture
+pipeline produces correct snapshots from known HTML.
+
+**Test fixture pages.** A set of minimal HTML files served by a local HTTP
+server (OCaml `cohttp` or just `python3 -m http.server`), each designed to
+test one thing:
+
+- `fixed-layout.html`: a page with hardcoded `width`, `height`, `color`,
+  `font-size` on every element. Assert the captured snapshot has exactly the
+  expected bounds and style values.
+- `font-loading.html`: a page that loads a web font via `@font-face`. Assert
+  the captured `font-family` reflects the loaded font, not the fallback. (This
+  validates the `document.fonts.ready` wait.)
+- `display-none.html`: elements with `display: none`. Assert they appear in
+  the DOM tree but have no layout entry.
+- `pseudo-elements.html`: elements with `::before` / `::after` content. Assert
+  pseudo-elements appear in the tree with correct text and bounds.
+- `transform.html`: an element with `transform: translateX(50px)`. Assert
+  bounds reflect the transformed position.
+
+**Determinism test.** Capture the same page twice with the same viewport and
+scheme. Assert the two snapshots are identical after normalization. This
+validates that no non-determinism leaks through (timestamps, random IDs, etc.).
+
+**Viewport/scheme test.** Capture a responsive page at two viewport sizes.
+Assert bounds differ as expected. Capture in light and dark scheme. Assert
+colors differ as expected.
+
+### Layer 3: End-to-end (the "sosie tests sosie" level)
+
+These validate the full workflow: capture → normalize → compare.
+
+**Identity test.** Capture a page, compare the snapshot to itself. Assert zero
+diffs. This is the most basic soundness check — if sosie reports diffs between
+a page and itself, something is fundamentally broken.
+
+**Known-equivalent refactoring.** Two HTML files that are structurally different
+but visually identical:
+- `v1.html`: `<div class="old-class" style="color: red">text</div>`
+- `v2.html`: `<div class="new-class" style="color: red">text</div>`
+With `drop_attributes: [class]` in config, assert zero diffs.
+
+**Known-different refactoring.** Two HTML files that differ visually:
+- `v1.html`: `<p style="font-size: 16px">text</p>`
+- `v2.html`: `<p style="font-size: 18px">text</p>`
+Assert exactly one `Style_diff` on `font-size`.
+
+**Wrapper-transparent test.** The critical test for the GumTree matcher:
+- `v1.html`: `<main><h1>Title</h1><p>Body</p></main>`
+- `v2.html`: `<main><div class="wrapper"><h1>Title</h1><p>Body</p></div></main>`
+Same styles on all elements. Assert: `Wrapper_inserted` diff reported, but no
+`Style_diff` or `Bounds_diff` (the wrapper doesn't change visual output because
+`<div>` is transparent by default).
+
+**Regression suite.** As sosie is used on real projects, collect pairs of
+snapshots where a bug was found (false positive or false negative). Add them as
+regression tests. This is the long-term quality mechanism.
+
+### CI integration
+
+Tests are split by what they require:
+
+| Suite | Requires | Runs in CI? | Speed |
+|-------|----------|-------------|-------|
+| Unit tests (Layer 1) | Nothing | Yes, always | < 1s |
+| CDP integration (Layer 2) | Chromium | Yes, with `chromium` in CI image | ~5-10s |
+| End-to-end (Layer 3) | Chromium + HTTP server | Yes, with `chromium` | ~10-30s |
+
+Chromium is available in standard CI images (GitHub Actions `ubuntu-latest`
+includes it; Debian/Ubuntu CI can `apt install chromium`). No Playwright, no
+npm.
+
+### What "correct" means
+
+Sosie's correctness has two sides:
+- **Soundness**: if sosie says "equivalent," the pages really do look the same.
+  Tested by the known-different tests (Layer 3) — sosie must report the diff.
+- **Completeness**: if sosie says "different," there really is a visual
+  difference. Tested by the known-equivalent and identity tests — sosie must
+  report zero diffs.
+
+False negatives (missed differences) are worse than false positives (spurious
+diffs), because the tool's purpose is to prove equivalence. The testing
+strategy is biased accordingly: more known-different test cases than
+known-equivalent ones.
+
 ## Why OCaml
 
 - Algebraic types for the AST and diff representation
