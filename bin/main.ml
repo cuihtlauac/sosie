@@ -95,12 +95,12 @@ let run_compare baseline modified config_path =
     let snap_b = read_snapshot modified in
     let norm_a = Sosie.Normalize.apply config.normalize snap_a in
     let norm_b = Sosie.Normalize.apply config.normalize snap_b in
-    let diffs = Sosie.Compare.compare config.compare norm_a norm_b in
+    let diffs = Sosie.Compare.compare_matched config.compare norm_a norm_b in
     if diffs = [] then (
       print_endline (Sosie.Diff_fmt.summary diffs);
       exit 0)
     else (
-      print_endline (Sosie.Diff_fmt.format_diffs norm_a.root diffs);
+      print_endline (Sosie.Diff_fmt.format_diffs ~root_b:norm_b.root norm_a.root diffs);
       print_newline ();
       print_endline (Sosie.Diff_fmt.summary diffs);
       exit 1)

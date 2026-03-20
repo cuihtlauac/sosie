@@ -37,6 +37,12 @@ module Normalize = Normalize
 module Compare = Compare
 (** Lockstep snapshot comparison. *)
 
+module Lcs = Lcs
+(** Longest common subsequence. *)
+
+module Gumtree = Gumtree
+(** GumTree-style three-phase tree matcher. *)
+
 module Config = Config
 (** Configuration file parser. *)
 

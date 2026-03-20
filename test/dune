@@ -31,6 +31,14 @@
  (libraries sosie alcotest))
 
 (test
+ (name test_lcs)
+ (libraries sosie alcotest))
+
+(test
+ (name test_gumtree)
+ (libraries sosie alcotest qcheck-core qcheck-alcotest))
+
+(test
  (name test_diff_fmt)
  (libraries sosie re alcotest))
 

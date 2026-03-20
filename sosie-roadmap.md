@@ -319,7 +319,7 @@ Tests: 16 config tests, 15 diff formatter tests. All 176 tests pass.
 
 ---
 
-## Step 8: GumTree matcher
+## Step 8: GumTree matcher [done]
 
 Replace the lockstep comparison with the three-phase GumTree matcher.
 
@@ -342,6 +342,40 @@ Replace the lockstep comparison with the three-phase GumTree matcher.
 **On ocaml.org:** Re-run the refactoring from Step 7 (if it involved
 structural changes) and verify the matcher tolerates wrapper insertions
 while still catching visual changes.
+
+### Step 8 addendum (2026-03-20): implementation notes
+
+Implemented without new dependencies — LCS is ~40 lines of standard DP,
+structural hashing uses `Hashtbl.hash`.
+
+New modules:
+- `Lcs` (`lib/lcs.ml`): generic LCS diff with `Keep`/`Insert`/`Delete` edits.
+- `Gumtree` (`lib/gumtree.ml`): three-phase matcher. Phase 1 matches by
+  structural hash (unique hashes matched directly, ambiguous hashes
+  disambiguated by parent match and sibling index). Phase 2 matches
+  remaining nodes by dice coefficient (threshold 0.5). Phase 3 aligns
+  children of matched pairs via LCS.
+
+Design decision: roots are always matched (anchored) if they share the same
+tag. Without this, the dice threshold can fail on small trees where one extra
+child pushes the coefficient below 0.5.
+
+New diff variants: `Moved_node`, `Wrapper_inserted`, `Wrapper_removed`.
+The lockstep `Compare.compare` is preserved. `Compare.compare_matched` is
+the new default used by the CLI. `Diff_fmt` accepts optional `~root_b` for
+formatting diffs that reference positions in both trees.
+
+The original plan called for `patience_diff` for LCS — replaced with a
+hand-rolled DP implementation to avoid pulling in `base` + `core` + `ppx_jane`.
+
+Tests: 12 LCS unit tests, 10 GumTree unit tests (identical trees, text/style
+changes, wrapper inserted/removed, extra child, deep identical subtrees, hash
+collision siblings, tag change), 3 QCheck property tests (self-comparison
+empty, injectivity, tolerance monotonicity). 3 new diff_fmt tests for the
+new diff types.
+
+Bounded exhaustive testing and stratified random testing deferred to a
+follow-up commit (separate test executable under `dune build @exhaustive`).
 
 ---
 
@@ -570,7 +604,7 @@ testing would have missed.
 | [x] | 5 | Normalization on real pages | 3 | Deterministic snapshots |
 | [x] | 6 | First comparison works | 3, 5 | Diff detection on real pages |
 | [x] | 7 | First real refactoring validated | 6 | **Tool is useful** |
-| [ ] | 8 | GumTree matcher works | 6 | Structural changes tolerated |
+| [x] | 8 | GumTree matcher works | 6 | Structural changes tolerated |
 | [ ] | 9 | Mutation score measured | 7 | **Tool is trustworthy** |
 | [ ] | 10 | Visual tooling | 7 | Human review is visual |
 | [ ] | 11 | CI integration for ocaml.org | 7 | **Tool is deployed** |

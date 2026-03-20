@@ -16,8 +16,9 @@ let css_value_to_string = function
 
 let opt_to_string = function Some s -> Printf.sprintf "%S" s | None -> "(none)"
 
-let format_diff root diff =
+let format_diff ?root_b root diff =
   let path_str path = Compare.path_to_string root path in
+  let path_str_b path = Compare.path_to_string (Option.value ~default:root root_b) path in
   match diff with
   | Compare.Bounds_diff { path; property; a; b } ->
     Printf.sprintf "%s  bounds %s: %.4g -> %.4g" (path_str path) property a b
@@ -33,9 +34,15 @@ let format_diff root diff =
   | Compare.Extra_node { path; side; tag } ->
     let side_str = match side with `Left -> "baseline" | `Right -> "modified" in
     Printf.sprintf "%s  extra %s node: %s" (path_str path) side_str tag
+  | Compare.Moved_node { old_path; new_path } ->
+    Printf.sprintf "%s  moved to %s" (path_str old_path) (path_str_b new_path)
+  | Compare.Wrapper_inserted { path; wrapper_tag } ->
+    Printf.sprintf "%s  wrapper inserted: %s" (path_str_b path) wrapper_tag
+  | Compare.Wrapper_removed { path; wrapper_tag } ->
+    Printf.sprintf "%s  wrapper removed: %s" (path_str path) wrapper_tag
 
-let format_diffs root diffs =
-  String.concat "\n" (List.map (format_diff root) diffs)
+let format_diffs ?root_b root diffs =
+  String.concat "\n" (List.map (format_diff ?root_b root) diffs)
 
 let summary diffs =
   match diffs with
@@ -47,6 +54,9 @@ let summary diffs =
     let paint = ref 0 in
     let tag = ref 0 in
     let extra = ref 0 in
+    let moved = ref 0 in
+    let wrapper_ins = ref 0 in
+    let wrapper_rem = ref 0 in
     List.iter (function
       | Compare.Bounds_diff _ -> incr bounds
       | Compare.Style_diff _ -> incr style
@@ -54,9 +64,15 @@ let summary diffs =
       | Compare.Paint_order_diff _ -> incr paint
       | Compare.Tag_mismatch _ -> incr tag
       | Compare.Extra_node _ -> incr extra
+      | Compare.Moved_node _ -> incr moved
+      | Compare.Wrapper_inserted _ -> incr wrapper_ins
+      | Compare.Wrapper_removed _ -> incr wrapper_rem
     ) diffs;
     let parts = ref [] in
     let add n label = if n > 0 then parts := Printf.sprintf "%d %s" n label :: !parts in
+    add !wrapper_rem "wrapper-removed";
+    add !wrapper_ins "wrapper-inserted";
+    add !moved "moved";
     add !extra "extra";
     add !tag "tag";
     add !paint "paint-order";

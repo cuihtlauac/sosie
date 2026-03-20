@@ -53,6 +53,9 @@ type diff =
       side : [ `Left | `Right ];
       tag : string;
     }
+  | Moved_node of { old_path : path; new_path : path }
+  | Wrapper_inserted of { path : path; wrapper_tag : string }
+  | Wrapper_removed of { path : path; wrapper_tag : string }
 
 type config = {
   check_bounds : bool;
@@ -176,3 +179,186 @@ let rec compare_nodes config path (a : node) (b : node) =
 
 let compare config (a : snapshot) (b : snapshot) =
   compare_nodes config [] a.root b.root
+
+(* --- GumTree-matched comparison --- *)
+
+(* Build id -> (node, path) index by pre-order walk.
+   IDs are assigned in pre-order to match Gumtree.annotate's numbering. *)
+let index_tree root =
+  let tbl = Hashtbl.create 64 in
+  let rec count n = 1 + List.fold_left (fun acc c -> acc + count c) 0 n.children in
+  let rec go path id (n : node) =
+    Hashtbl.replace tbl id (n, List.rev path);
+    let next = ref (id + 1) in
+    List.iteri (fun i child ->
+      let child_id = !next in
+      go (i :: path) child_id child;
+      next := child_id + count child
+    ) n.children
+  in
+  go [] 0 root;
+  tbl
+
+(* Detect wrapper insertion: a node in B is a "wrapper" if it has exactly one
+   child, that child is matched, and the matched partner in A was a child of
+   the B-node's matched parent's partner. *)
+let detect_wrappers matching tbl_a tbl_b =
+  let wrappers_inserted = ref [] in
+  let wrappers_removed = ref [] in
+  let n_b = Gumtree.size_b matching in
+  let n_a = Gumtree.size_a matching in
+  (* Wrapper inserted: unmatched node in B with single child that's matched *)
+  for b_id = 0 to n_b - 1 do
+    if not (Gumtree.is_matched_b matching b_id) then begin
+      let (b_node, b_path) = Hashtbl.find tbl_b b_id in
+      (* Check if all children of this unmatched B node are matched *)
+      let b_child_count = List.length b_node.children in
+      if b_child_count > 0 then begin
+        (* Check if this looks like a wrapper: it wraps children that existed
+           before. A simple heuristic: unmatched node whose children are all
+           matched. *)
+        let all_children_ids =
+          (* Get the child ids: they follow b_id in pre-order *)
+          let collect_child_ids parent_id n =
+            let next = ref (parent_id + 1) in
+            List.map (fun child ->
+              let cid = !next in
+              let rec count nd = 1 + List.fold_left (fun acc c -> acc + count c) 0 nd.children in
+              next := cid + count child;
+              cid
+            ) n.children
+          in
+          collect_child_ids b_id b_node
+        in
+        let all_matched = List.for_all (Gumtree.is_matched_b matching) all_children_ids in
+        if all_matched && b_child_count >= 1 then
+          wrappers_inserted := Wrapper_inserted { path = b_path; wrapper_tag = b_node.tag }
+                               :: !wrappers_inserted
+      end
+    end
+  done;
+  (* Wrapper removed: unmatched node in A with children that are all matched *)
+  for a_id = 0 to n_a - 1 do
+    if not (Gumtree.is_matched_a matching a_id) then begin
+      let (a_node, a_path) = Hashtbl.find tbl_a a_id in
+      let a_child_count = List.length a_node.children in
+      if a_child_count > 0 then begin
+        let all_children_ids =
+          let collect_child_ids parent_id n =
+            let next = ref (parent_id + 1) in
+            List.map (fun child ->
+              let cid = !next in
+              let rec count nd = 1 + List.fold_left (fun acc c -> acc + count c) 0 nd.children in
+              next := cid + count child;
+              cid
+            ) n.children
+          in
+          collect_child_ids a_id a_node
+        in
+        let all_matched = List.for_all (Gumtree.is_matched_a matching) all_children_ids in
+        if all_matched && a_child_count >= 1 then
+          wrappers_removed := Wrapper_removed { path = a_path; wrapper_tag = a_node.tag }
+                              :: !wrappers_removed
+      end
+    end
+  done;
+  (List.rev !wrappers_inserted, List.rev !wrappers_removed)
+
+(* Detect moved nodes: matched nodes whose paths differ and whose parents
+   are matched to different partners *)
+let detect_moves matching tbl_a tbl_b =
+  let moves = ref [] in
+  let n_a = Gumtree.size_a matching in
+  for a_id = 0 to n_a - 1 do
+    match Gumtree.partner_of_a matching a_id with
+    | None -> ()
+    | Some b_id ->
+      let (_a_node, a_path) = Hashtbl.find tbl_a a_id in
+      let (_b_node, b_path) = Hashtbl.find tbl_b b_id in
+      if a_path <> b_path then begin
+        (* Only report as moved if not explainable by wrapper insertion/removal.
+           Simple check: if path lengths differ by exactly 1, it's likely a
+           wrapper change, not a move. We report moves when the parent
+           relationship changed. *)
+        let parent_changed =
+          match a_path, b_path with
+          | _ :: _, _ :: _ ->
+            (* Compare parent paths *)
+            let a_parent = List.rev (List.tl (List.rev a_path)) in
+            let b_parent = List.rev (List.tl (List.rev b_path)) in
+            a_parent <> b_parent
+          | _ -> false
+        in
+        if parent_changed then
+          moves := Moved_node { old_path = a_path; new_path = b_path } :: !moves
+      end
+  done;
+  List.rev !moves
+
+let compare_matched_node config matching tbl_a tbl_b =
+  let diffs = ref [] in
+  let n_a = Gumtree.size_a matching in
+  (* For each matched pair, compare properties *)
+  for a_id = 0 to n_a - 1 do
+    match Gumtree.partner_of_a matching a_id with
+    | None -> ()
+    | Some b_id ->
+      let (a_node, a_path) = Hashtbl.find tbl_a a_id in
+      let (b_node, _b_path) = Hashtbl.find tbl_b b_id in
+      if not (String.equal a_node.tag b_node.tag) then
+        diffs := Tag_mismatch { path = a_path; a = a_node.tag; b = b_node.tag } :: !diffs
+      else begin
+        if config.check_bounds then
+          diffs := !diffs @ compare_bounds config a_path a_node.bounds b_node.bounds;
+        if config.check_visual then
+          diffs := !diffs @ compare_styles config a_path a_node.styles b_node.styles;
+        if config.check_text && a_node.text <> b_node.text then
+          diffs := !diffs @ [ Text_diff { path = a_path; a = a_node.text; b = b_node.text } ];
+        if config.check_paint_order && a_node.paint_order <> b_node.paint_order then
+          diffs := !diffs @ [ Paint_order_diff { path = a_path; a = a_node.paint_order;
+                                                  b = b_node.paint_order } ]
+      end
+  done;
+  (* Unmatched nodes in A (not wrappers) → Extra_node Left *)
+  for a_id = 0 to n_a - 1 do
+    if not (Gumtree.is_matched_a matching a_id) then begin
+      let (a_node, a_path) = Hashtbl.find tbl_a a_id in
+      diffs := Extra_node { path = a_path; side = `Left; tag = a_node.tag } :: !diffs
+    end
+  done;
+  (* Unmatched nodes in B → Extra_node Right *)
+  let n_b = Gumtree.size_b matching in
+  for b_id = 0 to n_b - 1 do
+    if not (Gumtree.is_matched_b matching b_id) then begin
+      let (b_node, b_path) = Hashtbl.find tbl_b b_id in
+      diffs := Extra_node { path = b_path; side = `Right; tag = b_node.tag } :: !diffs
+    end
+  done;
+  List.rev !diffs
+
+let compare_matched config (a : snapshot) (b : snapshot) =
+  let matching = Gumtree.match_trees a.root b.root in
+  let tbl_a = index_tree a.root in
+  let tbl_b = index_tree b.root in
+  let prop_diffs = compare_matched_node config matching tbl_a tbl_b in
+  let (wrappers_ins, wrappers_rem) = detect_wrappers matching tbl_a tbl_b in
+  let moves = detect_moves matching tbl_a tbl_b in
+  (* Filter out Extra_node diffs for nodes that are explained by wrapper
+     insertion/removal *)
+  let wrapper_paths_b = List.map (function
+    | Wrapper_inserted { path; _ } -> path
+    | _ -> assert false
+  ) wrappers_ins in
+  let wrapper_paths_a = List.map (function
+    | Wrapper_removed { path; _ } -> path
+    | _ -> assert false
+  ) wrappers_rem in
+  let prop_diffs = List.filter (fun d ->
+    match d with
+    | Extra_node { path; side = `Right; _ } ->
+      not (List.mem path wrapper_paths_b)
+    | Extra_node { path; side = `Left; _ } ->
+      not (List.mem path wrapper_paths_a)
+    | _ -> true
+  ) prop_diffs in
+  prop_diffs @ wrappers_ins @ wrappers_rem @ moves

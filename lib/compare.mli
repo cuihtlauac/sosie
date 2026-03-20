@@ -46,6 +46,18 @@ type diff =
       side : [ `Left | `Right ];
       tag : string;
     }
+  | Moved_node of {
+      old_path : path;
+      new_path : path;
+    }
+  | Wrapper_inserted of {
+      path : path;
+      wrapper_tag : string;
+    }
+  | Wrapper_removed of {
+      path : path;
+      wrapper_tag : string;
+    }
 (** A single difference between two snapshot trees. *)
 
 type config = {
@@ -73,6 +85,21 @@ val compare :
 
     When a [Tag_mismatch] is found, recursion into that subtree stops.
     Extra children on either side produce [Extra_node] diffs.
+
+    @param config comparison configuration
+    @param a the "before" snapshot
+    @param b the "after" snapshot
+    @return list of diffs, empty if the snapshots are equivalent *)
+
+val compare_matched :
+  config ->
+  Sosie_shared.Snapshot_types.snapshot ->
+  Sosie_shared.Snapshot_types.snapshot ->
+  diff list
+(** [compare_matched config a b] uses GumTree matching to tolerate structural
+    changes (wrapper insertion/removal, child reorder) while detecting visual
+    regressions. Produces [Moved_node], [Wrapper_inserted], and
+    [Wrapper_removed] diffs in addition to the standard property diffs.
 
     @param config comparison configuration
     @param a the "before" snapshot

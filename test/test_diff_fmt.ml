@@ -84,6 +84,29 @@ let format_paint_order () =
   Alcotest.(check bool) "contains paint-order" true
     (let r = Re.Pcre.re "paint-order" |> Re.compile in Re.execp r s)
 
+let format_moved_node () =
+  let root2 = make_node ~tag:"HTML" ~children:[
+    make_node ~tag:"BODY" (); make_node ~tag:"HEAD" ()
+  ] () in
+  let d = Compare.Moved_node { old_path = [0]; new_path = [0] } in
+  let s = Diff_fmt.format_diff ~root_b:root2 root d in
+  Alcotest.(check bool) "contains moved" true
+    (let r = Re.Pcre.re "moved to" |> Re.compile in Re.execp r s)
+
+let format_wrapper_inserted () =
+  let d = Compare.Wrapper_inserted { path = [0]; wrapper_tag = "SECTION" } in
+  let s = Diff_fmt.format_diff root d in
+  Alcotest.(check bool) "contains wrapper inserted" true
+    (let r = Re.Pcre.re "wrapper inserted" |> Re.compile in Re.execp r s);
+  Alcotest.(check bool) "contains tag" true
+    (let r = Re.Pcre.re "SECTION" |> Re.compile in Re.execp r s)
+
+let format_wrapper_removed () =
+  let d = Compare.Wrapper_removed { path = [0]; wrapper_tag = "SECTION" } in
+  let s = Diff_fmt.format_diff root d in
+  Alcotest.(check bool) "contains wrapper removed" true
+    (let r = Re.Pcre.re "wrapper removed" |> Re.compile in Re.execp r s)
+
 (* --- summary --- *)
 
 let summary_no_diffs () =
@@ -105,6 +128,20 @@ let summary_counts () =
     (let r = Re.Pcre.re "1 style" |> Re.compile in Re.execp r s);
   Alcotest.(check bool) "has text" true
     (let r = Re.Pcre.re "1 text" |> Re.compile in Re.execp r s)
+
+let summary_structural () =
+  let diffs = [
+    Compare.Moved_node { old_path = [0]; new_path = [1] };
+    Compare.Wrapper_inserted { path = [0]; wrapper_tag = "DIV" };
+    Compare.Wrapper_removed { path = [1]; wrapper_tag = "SPAN" };
+  ] in
+  let s = Diff_fmt.summary diffs in
+  Alcotest.(check bool) "has moved" true
+    (let r = Re.Pcre.re "1 moved" |> Re.compile in Re.execp r s);
+  Alcotest.(check bool) "has wrapper-inserted" true
+    (let r = Re.Pcre.re "1 wrapper-inserted" |> Re.compile in Re.execp r s);
+  Alcotest.(check bool) "has wrapper-removed" true
+    (let r = Re.Pcre.re "1 wrapper-removed" |> Re.compile in Re.execp r s)
 
 (* --- format_diffs --- *)
 
@@ -138,10 +175,14 @@ let () =
       Alcotest.test_case "tag mismatch" `Quick format_tag_mismatch;
       Alcotest.test_case "extra node" `Quick format_extra_node;
       Alcotest.test_case "paint order" `Quick format_paint_order;
+      Alcotest.test_case "moved node" `Quick format_moved_node;
+      Alcotest.test_case "wrapper inserted" `Quick format_wrapper_inserted;
+      Alcotest.test_case "wrapper removed" `Quick format_wrapper_removed;
     ];
     "summary", [
       Alcotest.test_case "no diffs" `Quick summary_no_diffs;
       Alcotest.test_case "counts by type" `Quick summary_counts;
+      Alcotest.test_case "counts structural types" `Quick summary_structural;
     ];
     "format_diffs", [
       Alcotest.test_case "empty list" `Quick format_diffs_empty;
