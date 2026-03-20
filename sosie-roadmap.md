@@ -545,7 +545,7 @@ testing would have missed.
 | [x] | 3 | Typed AST with round-trip parsing | 2 | Snapshot parsing correctness |
 | [x] | 4 | Round-trip tests pass | 3 | Capture pipeline fidelity |
 | [x] | 5 | Normalization on real pages | 3 | Deterministic snapshots |
-| [ ] | 6 | First comparison works | 3, 5 | Diff detection on real pages |
+| [x] | 6 | First comparison works | 3, 5 | Diff detection on real pages |
 | [ ] | 7 | First real refactoring validated | 6 | **Tool is useful** |
 | [ ] | 8 | GumTree matcher works | 6 | Structural changes tolerated |
 | [ ] | 9 | Mutation score measured | 7 | **Tool is trustworthy** |

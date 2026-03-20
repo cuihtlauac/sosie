@@ -34,6 +34,9 @@ module Snapshot_gen = Snapshot_gen
 module Normalize = Normalize
 (** Snapshot normalization rules. *)
 
+module Compare = Compare
+(** Lockstep snapshot comparison. *)
+
 module Extractor_js_source : sig
   val source : string
 end
