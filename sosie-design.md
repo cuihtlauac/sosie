@@ -1,12 +1,74 @@
 # sosie — DOM equivalence checker for UI-conservative refactoring
 
-## Motivation
+## The problem
 
-Refactoring EML templates in ocaml.org (extracting CSS component classes,
-decomposing large pages into components) is blocked by the absence of a way to
-prove the refactoring is UI conservative. Screenshot-based tools (Playwright,
-BackstopJS) compare pixels, which is both too strict (subpixel rendering noise)
-and not structural (can't tell you *what* changed).
+Refactoring HTML and CSS under UI preservation is an industry-wide open
+problem. Teams routinely need to:
+
+- Extract CSS component classes from monolithic stylesheets
+- Migrate design systems (Bootstrap → custom, CSS-in-JS → vanilla CSS)
+- Upgrade component libraries across major versions
+- Restructure templates into reusable components
+- Remove dead CSS rules
+
+All of these change the HTML structure, the CSS rules, or both — while
+intending to preserve what the user sees. Yet there is no widely adopted tool
+that answers: **"did this refactoring change the visual output?"**
+
+### Why existing tools fail
+
+**Pixel diffing** (BackstopJS, Percy, Chromatic, Playwright screenshots)
+compares bitmaps. It is both too strict (subpixel rendering differences across
+OS/GPU/font configurations produce false positives) and not structural (a 1px
+shift and a color change look the same). Teams learn to ignore the output or
+maintain large "acceptable diff" baselines. Flakiness destroys trust.
+
+**CSS diffing** compares stylesheets, not their rendered effect. A refactoring
+that produces identical rendering but different source — the whole point of
+refactoring — always shows diffs.
+
+**Manual QA** is the most common approach: refactor, eyeball it, hope for the
+best. This is why large CSS refactorings are rare, risky, and often abandoned.
+
+## Key requirement: trustworthiness
+
+The value of sosie is the strength of its "equivalent" verdict. If the tool
+says two pages render the same, they must render the same. A single false
+negative (missed visual regression) that reaches production destroys trust and
+makes the tool worthless. Conversely, a small rate of false positives (spurious
+diffs) is tolerable — the user inspects the diff, sees it's harmless, moves on.
+Noise is annoying; silent breakage is fatal.
+
+This asymmetry drives every design decision:
+
+- **Explicit equivalence scope.** Sosie declares exactly which CSS properties
+  it compares (the whitelist) and which it ignores. There is no hidden
+  coverage gap — the user knows what is checked and what is not. This is
+  unlike pixel diffing where coverage is implicit and opaque.
+- **Configurable normalization.** Anything the tool ignores (dynamic content,
+  attribute changes, float rounding) is stated in the config file, not buried
+  in the implementation. The config is auditable and version-controlled.
+- **No approximations in comparison.** Once two nodes are matched, their
+  properties are compared exactly (modulo configured tolerance). There is no
+  fuzzy matching, no "close enough" heuristic.
+- **Conservative tree matching.** The GumTree-style matcher is designed to
+  err on the side of reporting diffs. Unmatched nodes are reported, not
+  silently dropped. Ambiguous hash collisions are resolved by position, not
+  guessed.
+- **Deterministic output.** Same inputs → same diffs. No randomness, no
+  timing dependence, no environment sensitivity. The normalize step absorbs
+  everything that could vary between runs.
+- **Testable at every layer.** Pure functions (normalization, matching,
+  comparison) are unit-testable without a browser. CDP integration is
+  testable with fixture pages. End-to-end is testable with known-equivalent
+  and known-different HTML pairs. See the Testing section.
+
+The trust model is: **sosie's "equivalent" verdict is as strong as the
+property whitelist is complete.** If the whitelist covers the visual properties
+that matter for your project, the verdict is reliable. If it doesn't, sosie
+tells you exactly what it checked — you know where the blind spots are.
+
+## Approach
 
 Rendering engines are pure systems: given a fixed `(DOM, Stylesheet,
 ViewportSize)`, they compute a deterministic layout tree — a tree of boxes with
@@ -14,12 +76,22 @@ absolute positions, dimensions, and resolved style values. This is a fixpoint of
 the CSS constraint system. We can capture this fixpoint via the Chrome DevTools
 Protocol and compare it structurally.
 
-The idea is to build an OCaml tool that:
+Sosie:
 
 1. Captures the resolved DOM + layout + computed styles from a browser via CDP
 2. Normalizes the snapshot (strips dynamic content, canonicalizes values)
 3. Compares two normalized snapshots under a configurable equivalence relation
 4. Reports structured diffs or declares equivalence
+
+The tool is framework-agnostic — it captures from URLs. It doesn't care if the
+page is React, Next.js, Rails, Django, OCaml/Dream, or static HTML.
+
+### Origin: ocaml.org
+
+The immediate motivation is refactoring EML templates in
+[ocaml.org](https://github.com/ocaml/ocaml.org) (extracting CSS component
+classes, decomposing large pages into reusable components). But the problem
+and the approach are general.
 
 ## Formal background
 
@@ -569,6 +641,12 @@ sees:
 Everything else is either already captured in the bounding box geometry or
 invisible.
 
+The whitelist is the **trust boundary**: sosie's "equivalent" verdict means
+"equivalent with respect to these properties." It should be documented in
+`sosie.yml` and reviewed alongside the code it validates. Extending the
+whitelist is safe (more properties checked = stronger verdict); shrinking it
+weakens the guarantee and should be justified.
+
 ## Resolved questions
 
 1. **Pseudo-elements** (`::before`, `::after`). `captureSnapshot` includes them
@@ -622,9 +700,13 @@ invisible.
 
 ## Testing and validation
 
-Sosie's correctness claim is strong: "these two pages render identically." A
-bug in sosie — a false equivalence — silently lets visual regressions through.
-Testing must cover every layer independently and then end-to-end.
+Testing is not a secondary concern — it is the mechanism by which sosie earns
+the trust described in the Key Requirement section. Sosie's correctness claim
+is strong: "these two pages render identically with respect to the configured
+properties." A bug that produces a false equivalence silently lets a visual
+regression through. Testing must cover every layer independently and then
+end-to-end, with a bias toward catching false negatives (missed differences)
+over false positives (spurious diffs).
 
 ### Layer 1: Pure functions (unit tests)
 
@@ -756,8 +838,9 @@ npm.
 ### What "correct" means
 
 Sosie's correctness has two sides:
-- **Soundness**: if sosie says "equivalent," the pages really do look the same.
-  Tested by the known-different tests (Layer 3) — sosie must report the diff.
+- **Soundness**: if sosie says "equivalent," the pages really do look the same
+  with respect to the configured properties. Tested by the known-different
+  tests (Layer 3) — sosie must report the diff.
 - **Completeness**: if sosie says "different," there really is a visual
   difference. Tested by the known-equivalent and identity tests — sosie must
   report zero diffs.
@@ -766,6 +849,25 @@ False negatives (missed differences) are worse than false positives (spurious
 diffs), because the tool's purpose is to prove equivalence. The testing
 strategy is biased accordingly: more known-different test cases than
 known-equivalent ones.
+
+### Trust budget
+
+Every false negative spends trust. The tool starts with zero trust and must
+earn it through:
+
+1. **Transparent scope.** The user can inspect the property whitelist and
+   normalization config to understand exactly what is and isn't checked.
+   No hidden assumptions.
+2. **Self-tests.** Sosie ships with its own test suite of known-equivalent
+   and known-different page pairs. A user can run `sosie self-test` with
+   their Chromium to verify the tool works correctly in their environment
+   before relying on it.
+3. **Diff auditability.** Every diff is traceable: which element, which
+   property, what the old and new values are. A user can always verify a
+   reported diff by inspecting the element in the browser.
+4. **Regression accumulation.** Each real-world false positive or false
+   negative found in use becomes a permanent test case. The test suite
+   grows monotonically with usage, and the trust grows with it.
 
 ## Why OCaml
 
