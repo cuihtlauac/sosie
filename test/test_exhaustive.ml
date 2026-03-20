@@ -6,13 +6,11 @@
     SECTION) and checks structural invariants on every pair. Also runs
     stratified random tests on larger trees of specific shapes.
 
-    Checked invariants:
+    Checked invariants (all must hold on every pair):
     - Injectivity: no node in A maps to two nodes in B, and vice versa.
-    - Self-match completeness: match(A,A) matches every node to itself.
-
-    Measured (non-fatal) statistics:
-    - Symmetry violations: pairs where |match(A,B)| <> |match(B,A)|.
-      GumTree's greedy phases make this expected for some inputs. *)
+    - Symmetry: |match(A,B)| = |match(B,A)|.
+    - Ancestor preservation: matched ancestor pairs preserve hierarchy.
+    - Self-match completeness: match(A,A) matches every node to itself. *)
 
 open Sosie
 open Sosie_shared.Snapshot_types
@@ -108,6 +106,27 @@ let all_trees s n_tags =
     label_tree shape n_tags
   ) shapes
 
+(* --- Tree serialization (OCaml source for unit tests) --- *)
+
+let rec pp_tree buf indent (nd : node) =
+  let pad = String.make indent ' ' in
+  match nd.children with
+  | [] ->
+    Buffer.add_string buf (Printf.sprintf "%smake_node ~tag:%S ()" pad nd.tag)
+  | children ->
+    Buffer.add_string buf (Printf.sprintf "%smake_node ~tag:%S ~children:[\n" pad nd.tag);
+    List.iteri (fun i c ->
+      pp_tree buf (indent + 2) c;
+      if i < List.length children - 1 then Buffer.add_string buf ";\n"
+      else Buffer.add_string buf "\n"
+    ) children;
+    Buffer.add_string buf (Printf.sprintf "%s] ()" pad)
+
+let tree_to_string nd =
+  let buf = Buffer.create 256 in
+  pp_tree buf 4 nd;
+  Buffer.contents buf
+
 (* --- Property checking --- *)
 
 let check_injectivity m =
@@ -140,14 +159,89 @@ let matched_count m =
   done;
   !c
 
+let build_parent_map root =
+  let tbl = Hashtbl.create 64 in
+  let next = ref 0 in
+  let rec go parent (n : node) =
+    let id = !next in
+    incr next;
+    Hashtbl.replace tbl id parent;
+    List.iter (go (Some id)) n.children
+  in
+  go None root;
+  (tbl, !next)
+
+let is_ancestor parent_map x y =
+  let rec go cur =
+    if cur = x then true
+    else match Hashtbl.find parent_map cur with
+      | None -> false
+      | Some p -> go p
+  in
+  x <> y && go y
+
+let check_ancestor_preservation m a b =
+  let (pmap_a, n_a) = build_parent_map a in
+  let (pmap_b, _) = build_parent_map b in
+  let pairs = ref [] in
+  for i = 0 to n_a - 1 do
+    match Gumtree.partner_of_a m i with
+    | Some j -> pairs := (i, j) :: !pairs
+    | None -> ()
+  done;
+  let pairs = !pairs in
+  List.for_all (fun (x, x') ->
+    List.for_all (fun (y, y') ->
+      if is_ancestor pmap_a x y then is_ancestor pmap_b x' y'
+      else true
+    ) pairs
+  ) pairs
+
+(* --- Failure collection with witnesses --- *)
+
+(* Collect at most [max_witnesses] failing (property, tree_a, tree_b) triples
+   per property name. *)
+type witness_set = {
+  mutable count : int;
+  mutable examples : (node * node) list;
+}
+
+let max_witnesses = 3
+
+let make_witness_set () = { count = 0; examples = [] }
+
+let witnesses : (string, witness_set) Hashtbl.t = Hashtbl.create 8
+
+let record_failure prop a b =
+  let ws = match Hashtbl.find_opt witnesses prop with
+    | Some ws -> ws
+    | None -> let ws = make_witness_set () in Hashtbl.replace witnesses prop ws; ws
+  in
+  ws.count <- ws.count + 1;
+  if List.length ws.examples < max_witnesses then
+    ws.examples <- (a, b) :: ws.examples
+
+let dump_witnesses () =
+  let props = Hashtbl.fold (fun k v acc -> (k, v) :: acc) witnesses [] in
+  let props = List.sort (fun (a, _) (b, _) -> String.compare a b) props in
+  List.iter (fun (prop, ws) ->
+    Printf.printf "\n=== %s: %d failures, showing %d witnesses ===\n"
+      prop ws.count (List.length ws.examples);
+    List.iteri (fun i (a, b) ->
+      Printf.printf "\n-- witness %d --\n  let a =\n%s\n  let b =\n%s\n"
+        (i + 1) (tree_to_string a) (tree_to_string b)
+    ) ws.examples
+  ) props
+
+let total_failure_count () =
+  Hashtbl.fold (fun _ ws acc -> acc + ws.count) witnesses 0
+
 (* --- Bounded exhaustive tests --- *)
 
 let run_bounded_exhaustive () =
   let n_tags = 3 in
   let max_size = 5 in
-  let failures = ref [] in
   let total_pairs = ref 0 in
-  let symmetry_violations = ref 0 in
   let trees_by_size = Array.init (max_size + 1) (fun s ->
     if s = 0 then [] else all_trees s n_tags
   ) in
@@ -160,28 +254,23 @@ let run_bounded_exhaustive () =
           incr total_pairs;
           let m = Gumtree.match_trees a b in
           if not (check_injectivity m) then
-            failures := Printf.sprintf "injectivity (size %d x %d)" sa sb
-              :: !failures;
-          (* Symmetry: informational *)
+            record_failure "injectivity" a b;
           let m_ba = Gumtree.match_trees b a in
           if matched_count m <> matched_count m_ba then
-            incr symmetry_violations;
+            record_failure "symmetry" a b;
+          if not (check_ancestor_preservation m a b) then
+            record_failure "ancestor_preservation" a b;
         ) trees_b
       ) trees_a
     done
   done;
-  (* Self-match completeness *)
   for s = 1 to max_size do
     List.iter (fun a ->
       if not (check_self_match_completeness a) then
-        failures := Printf.sprintf "self_match_completeness (size %d)" s
-          :: !failures
+        record_failure "self_match_completeness" a a
     ) trees_by_size.(s)
   done;
-  Printf.printf "Bounded exhaustive: %d pairs, %d symmetry violations (%.2f%%)\n%!"
-    !total_pairs !symmetry_violations
-    (100.0 *. float_of_int !symmetry_violations /. float_of_int !total_pairs);
-  !failures
+  Printf.printf "Bounded exhaustive: %d pairs checked\n%!" !total_pairs
 
 (* --- Stratified random tests --- *)
 
@@ -252,7 +341,6 @@ let perturb_remove_leaf (nd : node) : node =
   | _ -> nd
 
 let run_stratified_random () =
-  let failures = ref [] in
   let shapes = [
     ("path", make_path);
     ("star", make_star);
@@ -266,39 +354,36 @@ let run_stratified_random () =
     ("wrap", perturb_wrap);
     ("remove_leaf", perturb_remove_leaf);
   ] in
-  List.iter (fun (shape_name, make_shape) ->
+  List.iter (fun (_shape_name, make_shape) ->
     List.iter (fun size ->
       let tree = make_shape size in
-      (* Self-match completeness *)
       if not (check_self_match_completeness tree) then
-        failures := Printf.sprintf "%s/%d/self_match" shape_name size
-          :: !failures;
-      (* Perturbed pairs: check injectivity *)
-      List.iter (fun (pert_name, perturb) ->
+        record_failure "self_match_completeness" tree tree;
+      List.iter (fun (_pert_name, perturb) ->
         let perturbed = perturb tree in
         let m = Gumtree.match_trees tree perturbed in
         if not (check_injectivity m) then
-          failures := Printf.sprintf "%s/%d/%s/injectivity" shape_name size pert_name
-            :: !failures
+          record_failure "injectivity" tree perturbed;
+        if not (check_ancestor_preservation m tree perturbed) then
+          record_failure "ancestor_preservation" tree perturbed
       ) perturbations
     ) sizes
   ) shapes;
   Printf.printf "Stratified random: %d shapes x %d sizes x %d perturbations\n%!"
-    (List.length shapes) (List.length sizes) (List.length perturbations);
-  !failures
+    (List.length shapes) (List.length sizes) (List.length perturbations)
 
 (* --- Main --- *)
 
 let () =
-  let all_failures = ref [] in
   Printf.printf "Running bounded exhaustive tests (all tree pairs up to size 5, 3 tags)...\n%!";
-  all_failures := run_bounded_exhaustive () @ !all_failures;
+  run_bounded_exhaustive ();
   Printf.printf "Running stratified random tests...\n%!";
-  all_failures := run_stratified_random () @ !all_failures;
-  if !all_failures = [] then
+  run_stratified_random ();
+  let n = total_failure_count () in
+  if n = 0 then
     Printf.printf "All exhaustive and stratified tests passed.\n%!"
   else begin
-    Printf.printf "FAILURES:\n";
-    List.iter (fun f -> Printf.printf "  %s\n" f) !all_failures;
+    Printf.printf "\n%d total failures.\n" n;
+    dump_witnesses ();
     exit 1
   end

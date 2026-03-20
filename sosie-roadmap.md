@@ -378,14 +378,38 @@ the new diff types.
 Bounded exhaustive testing and stratified random testing completed.
 `test/test_exhaustive.ml` runs via `dune build @exhaustive`. Enumerates all
 ordered labeled trees up to size 5 with 3 tags (3402 trees at size 5,
-~15M pairs total). Checks injectivity and self-match completeness on all
-pairs. Reports symmetry violation rate as informational (0.11% — expected
-for GumTree's greedy phases). Stratified random tests cover 5 shape classes
-(path, star, caterpillar, balanced binary, left comb) at sizes 50/100/200
-with 3 perturbations (swap, wrap, remove leaf).
+~15M pairs total). Checks injectivity, symmetry, ancestor preservation, and
+self-match completeness on all pairs — all pass at 0% violation rate.
+Stratified random tests cover 5 shape classes (path, star, caterpillar,
+balanced binary, left comb) at sizes 50/100/200 with 3 perturbations (swap,
+wrap, remove leaf). Exhaustive test dumps OCaml source for failing witnesses
+when properties are violated (up to 3 per property).
 
 Additional unit tests: child reorder matching, bounds tolerance suppression.
 Additional QCheck tests: matching count symmetry, ancestor preservation.
+
+### Step 8 addendum (2026-03-20): symmetrization and ancestor repair
+
+Exhaustive testing at size 5 revealed that the raw GumTree matcher violated
+symmetry on 0.11% of pairs and ancestor preservation on a larger fraction.
+Both are inherent to the greedy, directional algorithm (Phase 1 iterates
+only hashes from tree A; Phase 2 iterates only unmatched A nodes).
+
+Fix: post-processing pipeline in `match_trees`:
+1. **Intersection**: run `match_directed(A→B)` and `match_directed(B→A)`,
+   keep only pairs agreed upon by both. Guarantees symmetry.
+2. **Bidirectional ancestor repair**: for each matched pair, walk ancestors
+   in A and verify partners are ancestors in B; then walk ancestors in B
+   and verify partners are ancestors in A. Remove violating pairs (leaves
+   first). Uses pre/post-order numbering for O(1) ancestry queries.
+
+Both steps only remove matches, never add — unmatched nodes surface as
+`Extra_node` diffs (false positives, not false negatives), consistent with
+the design's trust model. Cost: 2× matching time + O(n × depth) repair.
+
+After the fix, all four invariants (injectivity, symmetry, ancestor
+preservation, self-match completeness) hold on all 15M exhaustive pairs
+and all stratified random tests.
 
 ---
 

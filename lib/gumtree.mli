@@ -18,10 +18,19 @@ val match_trees :
   Sosie_shared.Snapshot_types.node ->
   matching
 (** [match_trees a b] computes a matching between the nodes of [a] and [b]
-    using the three-phase GumTree algorithm:
+    using the three-phase GumTree algorithm with post-processing:
     - Phase 1: bottom-up hash matching (identical subtrees)
     - Phase 2: container matching via dice coefficient
     - Phase 3: children alignment via LCS
+    - Symmetrization: intersect match(A,B) and match(B,A)
+    - Ancestor repair: remove pairs violating ancestor preservation
+
+    Invariants (verified exhaustively on all tree pairs up to size 5):
+    - Injective: no node maps to two partners.
+    - Symmetric: [|match(a,b)|] = [|match(b,a)|].
+    - Ancestor-preserving: if x ancestor of y in [a] and both matched,
+      then partner(x) ancestor of partner(y) in [b], and vice versa.
+    - Self-complete: [match_trees a a] matches every node to itself.
 
     @param a the baseline tree root
     @param b the modified tree root

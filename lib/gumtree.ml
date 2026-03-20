@@ -252,14 +252,11 @@ let phase3 m tbl_a tbl_b =
     ) edits
   ) m.a_to_b
 
-(* --- Main entry point --- *)
+(* --- Post-processing: symmetrization and ancestor repair --- *)
 
-let match_trees a b =
-  let (tbl_a, root_a, n_a) = annotate a in
-  let (tbl_b, root_b, n_b) = annotate b in
+(* Run the three-phase matcher on a single direction. *)
+let match_directed tbl_a root_a n_a tbl_b root_b n_b =
   let m = make_matching n_a n_b in
-  (* Always match roots if they share the same tag — they are the entry
-     points of both trees and should be anchored. *)
   let ra = Hashtbl.find tbl_a root_a in
   let rb = Hashtbl.find tbl_b root_b in
   if String.equal ra.node.tag rb.node.tag then
@@ -267,4 +264,96 @@ let match_trees a b =
   phase1 m tbl_a tbl_b n_a n_b;
   phase2 m tbl_a tbl_b n_a n_b;
   phase3 m tbl_a tbl_b;
+  m
+
+(* Intersect two matchings: keep only pairs (a, b) present in m_ab
+   AND (b, a) present in m_ba (i.e., both directions agree). *)
+let intersect m_ab m_ba n_a n_b =
+  let m = make_matching n_a n_b in
+  for a_id = 0 to n_a - 1 do
+    match Hashtbl.find_opt m_ab.a_to_b a_id with
+    | Some b_id ->
+      (* Check the reverse matching agrees *)
+      (match Hashtbl.find_opt m_ba.a_to_b b_id with
+       | Some a_id' when a_id' = a_id -> add_match m a_id b_id
+       | _ -> ())
+    | None -> ()
+  done;
+  m
+
+(* Compute pre/post-order numbering for O(1) ancestry queries.
+   is_ancestor x y = true iff x is a proper ancestor of y. *)
+let make_ancestry tbl n =
+  let pre = Array.make n 0 in
+  let post = Array.make n 0 in
+  let pre_c = ref 0 in
+  let post_c = ref 0 in
+  let root = ref 0 in
+  for id = 0 to n - 1 do
+    if (Hashtbl.find tbl id).parent = None then root := id
+  done;
+  let rec number id =
+    let ann = Hashtbl.find tbl id in
+    pre.(id) <- !pre_c; incr pre_c;
+    List.iter number ann.children_ids;
+    post.(id) <- !post_c; incr post_c
+  in
+  number !root;
+  fun x y -> x <> y && pre.(x) <= pre.(y) && post.(x) >= post.(y)
+
+(* Remove matched pairs that violate ancestor preservation in one direction.
+   For each pair (a, b): if any matched ancestor of [a] in [tbl_src] has
+   a partner that is NOT an ancestor of [b] in the other tree, remove the pair.
+   Processes leaves first so removals don't cascade upward. *)
+let repair_one_direction m tbl_src is_ancestor_dst src_to_dst dst_to_src =
+  let pairs = ref [] in
+  Hashtbl.iter (fun src_id dst_id ->
+    let ann = Hashtbl.find tbl_src src_id in
+    pairs := (ann.size, src_id, dst_id) :: !pairs
+  ) src_to_dst;
+  let pairs = List.sort (fun (s1, _, _) (s2, _, _) -> compare s1 s2) !pairs in
+  List.iter (fun (_size, src_id, dst_id) ->
+    if Hashtbl.mem src_to_dst src_id then begin
+      let violates = ref false in
+      let cur = ref (Hashtbl.find tbl_src src_id).parent in
+      while !cur <> None && not !violates do
+        let anc = match !cur with Some id -> id | None -> assert false in
+        (match Hashtbl.find_opt src_to_dst anc with
+         | Some anc_dst ->
+           if not (is_ancestor_dst anc_dst dst_id) then
+             violates := true
+         | None -> ());
+        cur := (Hashtbl.find tbl_src anc).parent
+      done;
+      if !violates then begin
+        Hashtbl.remove src_to_dst src_id;
+        Hashtbl.remove dst_to_src dst_id;
+        ignore m (* keep m reachable for clarity *)
+      end
+    end
+  ) pairs
+
+(* Remove pairs violating ancestor preservation in either direction.
+   A valid matching must preserve ancestry both ways: if x ancestor of y
+   in A and both matched, then partner(x) ancestor of partner(y) in B,
+   AND vice versa. *)
+let repair_ancestors m tbl_a tbl_b n_a n_b =
+  let is_ancestor_b = make_ancestry tbl_b n_b in
+  let is_ancestor_a = make_ancestry tbl_a n_a in
+  (* Forward: check A ancestors map to B ancestors *)
+  repair_one_direction m tbl_a is_ancestor_b m.a_to_b m.b_to_a;
+  (* Reverse: check B ancestors map to A ancestors *)
+  repair_one_direction m tbl_b is_ancestor_a m.b_to_a m.a_to_b
+
+(* --- Main entry point --- *)
+
+let match_trees a b =
+  let (tbl_a, root_a, n_a) = annotate a in
+  let (tbl_b, root_b, n_b) = annotate b in
+  (* Step A: run matching in both directions and intersect *)
+  let m_ab = match_directed tbl_a root_a n_a tbl_b root_b n_b in
+  let m_ba = match_directed tbl_b root_b n_b tbl_a root_a n_a in
+  let m = intersect m_ab m_ba n_a n_b in
+  (* Step B: remove pairs that violate ancestor preservation (both ways) *)
+  repair_ancestors m tbl_a tbl_b n_a n_b;
   m
