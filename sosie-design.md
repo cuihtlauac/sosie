@@ -1459,3 +1459,45 @@ they form a typed-and-verified CSS workflow:
 - `cssdiff` compares CSS files; `sosie` compares their rendered effect
 - A refactoring workflow: change styles with Cascade, prove equivalence with
   sosie
+
+## Extractor architecture addendum (2026-03-20)
+
+### Problem: raw JS extractor duplicates OCaml types
+
+The original design specifies the snapshot extraction as a "JavaScript
+function" — hand-written JS that manually constructs JSON matching the
+OCaml snapshot schema. This creates a type-safety gap: the property
+whitelist, the node structure, and the CSS value representations exist in
+two languages with no compiler-checked correspondence. A property added to
+the OCaml whitelist but not the JS extractor is a silent coverage gap —
+exactly the kind of blind spot the design's trust model is supposed to
+prevent.
+
+### Solution: js_of_ocaml extractor with shared types
+
+The JS extractor should be compiled from OCaml via js_of_ocaml. The
+snapshot types (`node`, `rect`, `visual_properties`, `snapshot`) and the
+property whitelist live in a shared OCaml library compiled to both native
+and JavaScript. The extractor uses `js_of_ocaml`'s DOM bindings
+(`getBoundingClientRect`, `getComputedStyle`, etc.) to walk the DOM and
+build OCaml values directly.
+
+| Feature            | Raw JS extractor       | JSOO extractor                 |
+|--------------------|------------------------|--------------------------------|
+| Type safety        | None (easy to miss)    | Total (compiler enforces)      |
+| AST consistency    | Manual JSON matching   | Automatic via shared types     |
+| Maintenance        | Two languages to sync  | Single language (OCaml)        |
+| Performance        | Native JS              | Highly optimized JS            |
+
+This does not change the *role* of the JS extractor in the architecture:
+it remains the canonical extraction primitive, runs in any browser via
+`executeScript`, and is validated against CDP's `DOMSnapshot.captureSnapshot`
+on Chromium. What changes is the implementation language — from hand-written
+JS to compiler-generated JS backed by the same OCaml types used everywhere
+else in sosie.
+
+The original raw JS extractor (`js/sosie-capture.js`) is retained as a test
+oracle during the transition. Once the JSOO extractor is validated against
+it on real pages, the raw JS is retired.
+
+See `plans/jsoo-extractor-refactor.md` for the implementation plan.

@@ -3,5 +3,19 @@
  (libraries sosie alcotest))
 
 (test
+ (name test_cdp)
+ (libraries sosie alcotest))
+
+(test
  (name test_snapshot_types)
  (libraries sosie_shared alcotest))
+
+; Integration tests: require Chromium, not run by default.
+; Run with: dune build @integration
+(executable
+ (name test_cdp_integration)
+ (libraries sosie alcotest eio_main))
+
+(rule
+ (alias integration)
+ (action (run ./test_cdp_integration.exe)))

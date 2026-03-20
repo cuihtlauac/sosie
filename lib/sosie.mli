@@ -6,3 +6,15 @@
 
 val version : string
 (** The sosie version string. *)
+
+module Snapshot_types = Sosie_shared.Snapshot_types
+(** Resolved layout+style tree types shared with the JSOO extractor. *)
+
+module Property_whitelist = Sosie_shared.Property_whitelist
+(** Canonical CSS property whitelist. *)
+
+module Cdp = Cdp
+(** Chrome DevTools Protocol bridge. *)
+
+module Cdp_launcher = Cdp_launcher
+(** Chromium process launcher. *)

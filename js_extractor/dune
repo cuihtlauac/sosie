@@ -1,0 +1,8 @@
+(executable
+ (name extractor)
+ (modes js)
+ (libraries js_of_ocaml sosie_shared)
+ (preprocess
+  (pps js_of_ocaml-ppx))
+ (js_of_ocaml
+  (flags (:standard --opt 3))))

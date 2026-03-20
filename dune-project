@@ -14,7 +14,12 @@
   yojson
   eio
   eio_main
+  httpun-ws-eio
+  base64
   cmdliner
+  js_of_ocaml
+  js_of_ocaml-compiler
+  js_of_ocaml-ppx
   (alcotest :with-test)
   (qcheck-core :with-test)
   (qcheck-alcotest :with-test)))

@@ -56,6 +56,17 @@ Firefox** (and Safari if available). Verify the output schema is identical
 across engines. This is the first cross-engine validation — before writing
 any OCaml.
 
+### Step 1a addendum (2026-03-20): js_of_ocaml extractor
+
+The raw JS extractor duplicates the OCaml snapshot types and property
+whitelist in an untyped language. This is a type-safety gap that undermines
+the design's trust model. The corrected approach: compile the extractor from
+OCaml via js_of_ocaml, sharing the snapshot types with the native code.
+
+The raw JS extractor (`js/sosie-capture.js`) is retained as a test oracle.
+A new Step 1c (below) introduces the JSOO extractor. Once validated, the
+raw JS is retired and the JSOO output becomes the canonical extractor.
+
 ### Step 1b: CDP bridge (Chromium automation)
 
 Launch Chromium headless, connect via WebSocket, send CDP commands.
@@ -72,6 +83,45 @@ the JS extractor from Step 1a.
 
 **Risk reduction:** This is where we learn if the WebSocket library works,
 if Chromium's CDP port is reliable, if the JSON encoding/decoding is correct.
+
+---
+
+## Step 1c: js_of_ocaml extractor (replaces raw JS)
+
+Replace the hand-written `js/sosie-capture.js` with an OCaml
+implementation compiled to JavaScript via js_of_ocaml. This eliminates
+the type-safety gap between the extractor and the snapshot schema.
+
+### Shared types library (lib_shared/)
+
+Extract `snapshot`, `node`, `rect`, `visual_properties`, `css_value`, and
+the property whitelist into a pure OCaml library with no platform
+dependencies. This library is compiled to both native (for the CLI/parser)
+and JavaScript (for the extractor).
+
+### JSOO extractor (js_extractor/)
+
+A `js_of_ocaml` executable (`(modes js)`) that uses `js_of_ocaml`'s DOM
+bindings to walk the DOM and build typed `snapshot` values. Same logic as
+the raw JS extractor, but type-checked against the shared types. Compiles
+to a single `.js` file exposing `sosieCapture()`.
+
+### Validation
+
+Both extractors (raw JS and JSOO) are run on the same pages. Their
+outputs must be structurally equal after parsing. Once validated, the raw
+JS is retired and the JSOO extractor becomes canonical.
+
+**Dependencies:** `js_of_ocaml`, `js_of_ocaml-compiler`, `js_of_ocaml-ppx`.
+
+**Output:** `js_extractor/extractor.bc.js` — drop-in replacement for
+`js/sosie-capture.js`.
+
+**Test:** Integration test comparing raw JS vs JSOO output on identical
+pages. Structural equality after parsing into `Snapshot_types.snapshot`.
+
+See `plans/jsoo-extractor-refactor.md` for the detailed implementation
+plan.
 
 ---
 
@@ -476,9 +526,10 @@ testing would have missed.
 | Step | Milestone | Depends on | Key risk addressed |
 |------|-----------|------------|-------------------|
 | 0 | Project builds | — | — |
-| 1a | JS extractor works in browser console | 0 | Snapshot schema correct across engines |
+| 1a | Raw JS extractor works in browser console | 0 | Snapshot schema correct across engines |
 | 1b | CDP bridge works | 0 | WebSocket + CDP protocol |
-| 2 | Raw snapshot from ocaml.org | 1a, 1b | JS and CDP outputs agree |
+| 1c | JSOO extractor replaces raw JS | 1a | Type safety, schema consistency |
+| 2 | Raw snapshot from ocaml.org | 1b, 1c | JS and CDP outputs agree |
 | 3 | Typed AST from real data | 2 | Tree reconstruction correctness |
 | 4 | Round-trip tests pass | 3 | Capture pipeline fidelity |
 | 5 | Normalization on real pages | 3 | Deterministic snapshots |
@@ -496,13 +547,16 @@ Steps 1-7 form the critical path to a working tool on ocaml.org.
 Steps 8-12 improve it and make it production-ready.
 Steps 13-14 take it to the wider ecosystem.
 
-The JS extractor (Step 1a) is written and tested across engines from day 1.
+The raw JS extractor (Step 1a) is written and tested across engines from
+day 1. Step 1c replaces it with a js_of_ocaml extractor that shares types
+with the native code, eliminating the type-safety gap.
 Multi-engine support (Step 14) is a natural extension that adds a WebDriver
 automation backend — no changes to extraction, normalization, or comparison.
 
 Key moments:
-- **Step 1a** — JS extractor tested on Chromium + Firefox. Cross-engine
+- **Step 1a** — Raw JS extractor tested on Chromium + Firefox. Cross-engine
   correctness validated before any OCaml code.
+- **Step 1c** — JSOO extractor replaces raw JS. Type safety achieved.
 - **Step 7** — first real refactoring validated. The tool is useful.
 - **Step 9** — mutation score measured. The tool is trustworthy.
 - **Step 11** — CI integration. The tool is deployed on ocaml.org.
