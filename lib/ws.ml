@@ -48,7 +48,7 @@ let parse_ws_url url =
 
 (** The magic GUID concatenated with the client nonce, then SHA-1'd and
     base64'd, to produce the expected Sec-WebSocket-Accept value. *)
-let ws_magic = "258EAFA5-E914-47DA-95CA-5AB9DC11B85A"
+let ws_magic = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
 
 let expected_accept nonce =
   let hash = Digestif.SHA1.digest_string (nonce ^ ws_magic) in
