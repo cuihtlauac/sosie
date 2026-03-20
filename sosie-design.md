@@ -924,6 +924,98 @@ function with checkable algebraic laws:
 - **Independence**: order of independent rules doesn't affect the result (e.g.,
   `Round_bounds` and `Canonicalize_colors` commute)
 
+These laws are not empirical observations — they follow from the structure of
+the normalization rules as a confluent, terminating term rewrite system. The
+rules act on disjoint parts of the node structure (attributes, bounds, colors,
+fonts, text, subtrees). Non-overlapping TRSs are confluent (Baader & Nipkow,
+1998). Termination is trivial: each rule is idempotent, reaching its normal
+form in a single pass. The one potential overlap — two `Mask_text` rules
+matching the same node — should be detected at config load time. See
+`formal-methods-survey.md` for the full argument.
+
+### Bounded exhaustive testing of the tree matcher
+
+The GumTree-style matcher is the most complex and heuristic component. Hand-
+crafted test cases (the table below) cover known scenarios, but cannot cover
+all corner cases of the hash-matching, dice-coefficient, and LCS phases
+interacting. Random testing (QCheck) samples the space but may miss rare
+configurations.
+
+**Bounded exhaustive testing** (the small scope hypothesis, Jackson 2006)
+covers the *entire* space up to a small size. If a bug exists in the matcher,
+it almost certainly manifests on trees with ≤5 nodes.
+
+Enumerate all ordered labeled trees with k=3 labels (e.g., `div`, `span`,
+`p`) up to size n. Test all pairs:
+
+| Max nodes per tree | Trees | Pairs | Runtime |
+|-------------------|-------|-------|---------|
+| 3 | ~54 | ~2,900 | < 1s |
+| 4 | ~378 | ~143K | seconds |
+| 5 | ~3,402 | ~11.6M | minutes |
+
+For every pair (A, B), verify:
+- **Injectivity**: no node is matched twice
+- **Label compatibility**: matched nodes have the same tag, or a `Tag_mismatch`
+  diff is emitted
+- **Completeness**: every unmatched node is reported as `Extra_node`
+- **Symmetry**: `compare(A, B)` and `compare(B, A)` produce consistent diffs
+- **Transitivity**: if `compare(A, B) = ∅` and `compare(B, C) = ∅`, then
+  `compare(A, C) = ∅`
+- **Ancestor preservation**: matched nodes preserve ancestor/descendant
+  relationships (if x is an ancestor of y in tree A, and both are matched,
+  then match(x) is an ancestor of match(y) in tree B)
+
+This is strictly stronger than property-based random testing — it covers the
+entire small space, not a sample. The small scope hypothesis (empirically
+validated by Andoni et al., 2003) gives high confidence that exhaustive
+testing at n=5 catches all matcher bugs that would manifest on larger trees.
+
+Implementation: a tree enumerator using the Catalan number recurrence, with
+k labels per node. ~100 lines of OCaml. The property checks are the same
+metamorphic relations listed above, applied to every pair.
+
+### CSS mutation testing
+
+Round-trip tests validate the capture pipeline. Bounded exhaustive tests
+validate the matcher. **Mutation testing validates sosie's sensitivity** — its
+ability to detect actual visual changes.
+
+The approach:
+1. Start with two identical pages A and A' (A' is a copy of A)
+2. Apply a CSS mutation operator to A', producing A_mutant
+3. Verify via pixel diff that the mutation is actually visible (filter out
+   equivalent mutants)
+4. Run `sosie compare A A_mutant`
+5. If sosie reports "equivalent," the mutant **survived** — this is a false
+   negative, the fatal error mode
+
+CSS mutation operators:
+
+| Operator | Example | What it tests |
+|----------|---------|---------------|
+| Value perturbation | `font-size: 16px` → `17px` | Numeric comparison precision |
+| Value replacement | `color: red` → `blue` | Color comparison |
+| Property removal | delete `border-radius: 8px` | Detection of missing properties |
+| Property swap | swap `color` between two elements | Per-element property tracking |
+| Unit change | `width: 100px` → `100%` (where they differ) | Value resolution |
+| Keyword change | `text-align: left` → `center` | Keyword comparison |
+
+The **mutation score** (percentage of visible mutations detected) is a
+quantitative measure of sosie's sensitivity. A score of 100% means sosie
+detects every visible CSS change — the strongest possible statement about
+false-negative rate.
+
+Surviving mutants reveal exactly where sosie is blind: which property, which
+element, which kind of change. This directly informs whitelist and tolerance
+tuning.
+
+Implementation: a mutation harness that takes an HTML file, applies each
+operator to each eligible property, and runs the pipeline. The pixel-diff
+filter (step 3) is essential — mutations that don't change the rendering
+(equivalent mutants) must not count against the mutation score. ~200 lines of
+OCaml + the existing CDP connection for pixel capture.
+
 ### Unit tests (Layer 1, no browser)
 
 Standard OCaml tests (alcotest or inline expect tests).
@@ -1034,8 +1126,11 @@ permanent regression tests.
 | Suite | Requires | Speed |
 |-------|----------|-------|
 | Unit tests + algebraic properties | Nothing | < 1s |
+| Bounded exhaustive (matcher, n≤4) | Nothing | seconds |
+| Bounded exhaustive (matcher, n≤5) | Nothing | minutes |
 | Round-trip (property-based) | Chromium | ~10-30s |
 | CDP integration fixtures | Chromium | ~5-10s |
+| Mutation testing | Chromium | ~1-5 min |
 | End-to-end | Chromium | ~10-30s |
 
 Chromium is available in standard CI images (GitHub Actions `ubuntu-latest`,
@@ -1043,18 +1138,27 @@ Debian/Ubuntu `apt install chromium`). No Playwright, no npm.
 
 ### The trust argument
 
-Sosie's correctness reduces to two independently verifiable claims:
+Sosie's correctness reduces to four independently verifiable claims:
 
 1. **Capture fidelity**: the capture pipeline faithfully extracts the
    properties it claims to extract. **Verified by round-trip tests**
    (automated, no human needed). C ∘ G = id.
 
-2. **Whitelist completeness**: the property whitelist covers all visually
-   significant CSS properties. **Verified by human audit** (one-time, focused
-   document review of ~20 properties against the CSS spec).
+2. **Matcher correctness**: the tree matcher produces valid, complete
+   matchings. **Verified by bounded exhaustive testing** on all tree pairs up
+   to size 5 (automated, no human needed, covers the entire small space).
 
-No other faith is required. The round-trip tests eliminate the need to visually
-inspect hundreds of pages. The whitelist audit is a bounded, tractable task.
+3. **Detection sensitivity**: sosie detects every visible CSS change within
+   its whitelist. **Verified by mutation testing** (automated — mutate CSS
+   properties, confirm detection via mutation score).
+
+4. **Whitelist completeness**: the property whitelist covers all visually
+   significant CSS properties. **Verified by `audit-whitelist`** (visual,
+   one-time per project) and **human audit** (focused review of ~20 properties
+   against the CSS spec).
+
+Claims 1-3 are fully automated. Claim 4 requires one-time human review,
+aided by the visual `audit-whitelist` tool. No other faith is required.
 
 ### Trust budget
 
