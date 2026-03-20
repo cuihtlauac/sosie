@@ -301,49 +301,58 @@ let make_ancestry tbl n =
   number !root;
   fun x y -> x <> y && pre.(x) <= pre.(y) && post.(x) >= post.(y)
 
-(* Remove matched pairs that violate ancestor preservation in one direction.
-   For each pair (a, b): if any matched ancestor of [a] in [tbl_src] has
-   a partner that is NOT an ancestor of [b] in the other tree, remove the pair.
-   Processes leaves first so removals don't cascade upward. *)
-let repair_one_direction m tbl_src is_ancestor_dst src_to_dst dst_to_src =
-  let pairs = ref [] in
+(* Collect pairs violating ancestor preservation in one direction.
+   For each pair (src, dst): if any matched ancestor of [src] has a
+   partner that is NOT an ancestor of [dst], the pair violates.
+   Returns the set of violating (src, dst) pairs. *)
+let collect_violations tbl_src is_ancestor_dst src_to_dst =
+  let bad = ref [] in
   Hashtbl.iter (fun src_id dst_id ->
-    let ann = Hashtbl.find tbl_src src_id in
-    pairs := (ann.size, src_id, dst_id) :: !pairs
+    let violates = ref false in
+    let cur = ref (Hashtbl.find tbl_src src_id).parent in
+    while !cur <> None && not !violates do
+      let anc = match !cur with Some id -> id | None -> assert false in
+      (match Hashtbl.find_opt src_to_dst anc with
+       | Some anc_dst ->
+         if not (is_ancestor_dst anc_dst dst_id) then
+           violates := true
+       | None -> ());
+      cur := (Hashtbl.find tbl_src anc).parent
+    done;
+    if !violates then
+      bad := (src_id, dst_id) :: !bad
   ) src_to_dst;
-  let pairs = List.sort (fun (s1, _, _) (s2, _, _) -> compare s1 s2) !pairs in
-  List.iter (fun (_size, src_id, dst_id) ->
-    if Hashtbl.mem src_to_dst src_id then begin
-      let violates = ref false in
-      let cur = ref (Hashtbl.find tbl_src src_id).parent in
-      while !cur <> None && not !violates do
-        let anc = match !cur with Some id -> id | None -> assert false in
-        (match Hashtbl.find_opt src_to_dst anc with
-         | Some anc_dst ->
-           if not (is_ancestor_dst anc_dst dst_id) then
-             violates := true
-         | None -> ());
-        cur := (Hashtbl.find tbl_src anc).parent
-      done;
-      if !violates then begin
-        Hashtbl.remove src_to_dst src_id;
-        Hashtbl.remove dst_to_src dst_id;
-        ignore m (* keep m reachable for clarity *)
-      end
-    end
-  ) pairs
+  !bad
 
 (* Remove pairs violating ancestor preservation in either direction.
-   A valid matching must preserve ancestry both ways: if x ancestor of y
-   in A and both matched, then partner(x) ancestor of partner(y) in B,
-   AND vice versa. *)
+   Collects all violations from both directions simultaneously, removes
+   them, and repeats until no more violations exist (fixpoint).
+   This is order-independent: match_trees(a,b) and match_trees(b,a)
+   produce the same match count. *)
 let repair_ancestors m tbl_a tbl_b n_a n_b =
   let is_ancestor_b = make_ancestry tbl_b n_b in
   let is_ancestor_a = make_ancestry tbl_a n_a in
-  (* Forward: check A ancestors map to B ancestors *)
-  repair_one_direction m tbl_a is_ancestor_b m.a_to_b m.b_to_a;
-  (* Reverse: check B ancestors map to A ancestors *)
-  repair_one_direction m tbl_b is_ancestor_a m.b_to_a m.a_to_b
+  let changed = ref true in
+  while !changed do
+    changed := false;
+    (* Collect violations from both directions before removing any *)
+    let fwd = collect_violations tbl_a is_ancestor_b m.a_to_b in
+    let rev = collect_violations tbl_b is_ancestor_a m.b_to_a in
+    List.iter (fun (a_id, b_id) ->
+      if Hashtbl.mem m.a_to_b a_id then begin
+        Hashtbl.remove m.a_to_b a_id;
+        Hashtbl.remove m.b_to_a b_id;
+        changed := true
+      end
+    ) fwd;
+    List.iter (fun (b_id, a_id) ->
+      if Hashtbl.mem m.b_to_a b_id then begin
+        Hashtbl.remove m.b_to_a b_id;
+        Hashtbl.remove m.a_to_b a_id;
+        changed := true
+      end
+    ) rev
+  done
 
 (* --- Main entry point --- *)
 

@@ -333,6 +333,47 @@ let ancestor_preservation_witness_2 () =
   ) !pairs in
   Alcotest.(check bool) "ancestor preservation holds" true ok
 
+let symmetry_witness_2 () =
+  (* Repair ordering asymmetry: repair_one_direction runs forward (A→B)
+     then reverse (B→A) destructively. When match_trees(b,a) is called,
+     the order flips, producing different removals. Found by stratified
+     random testing: balanced_binary(10) + mutate_tag at node 7. *)
+  let a =
+    make_node ~tag:"DIV" ~children:[
+      make_node ~tag:"DIV" ~children:[
+        make_node ~tag:"DIV" ~children:[ make_node ~tag:"SPAN" () ] ();
+        make_node ~tag:"DIV" ~children:[ make_node ~tag:"SPAN" () ] ()
+      ] ();
+      make_node ~tag:"DIV" ~children:[
+        make_node ~tag:"DIV" ~children:[ make_node ~tag:"SPAN" () ] ();
+        make_node ~tag:"SPAN" ()
+      ] ()
+    ] ()
+  in
+  let b =
+    make_node ~tag:"DIV" ~children:[
+      make_node ~tag:"DIV" ~children:[
+        make_node ~tag:"DIV" ~children:[ make_node ~tag:"SPAN" () ] ();
+        make_node ~tag:"DIV" ~children:[ make_node ~tag:"SPAN" () ] ()
+      ] ();
+      make_node ~tag:"DIV" ~children:[
+        make_node ~tag:"SPAN" ~children:[ make_node ~tag:"SPAN" () ] ();
+        make_node ~tag:"SPAN" ()
+      ] ()
+    ] ()
+  in
+  let m_ab = Gumtree.match_trees a b in
+  let m_ba = Gumtree.match_trees b a in
+  let count m n =
+    let c = ref 0 in
+    for i = 0 to n - 1 do
+      if Gumtree.is_matched_a m i then incr c
+    done; !c
+  in
+  Alcotest.(check int) "symmetric match count"
+    (count m_ab (Gumtree.size_a m_ab))
+    (count m_ba (Gumtree.size_a m_ba))
+
 (* --- QCheck property tests --- *)
 
 let gen_css_value =
@@ -511,6 +552,7 @@ let () =
         ancestor_preservation_witness_1;
       Alcotest.test_case "ancestor preservation witness 2" `Quick
         ancestor_preservation_witness_2;
+      Alcotest.test_case "symmetry witness 2" `Quick symmetry_witness_2;
     ];
     "properties",
       List.map QCheck_alcotest.to_alcotest [

@@ -1,73 +1,106 @@
 (test
  (name test_sosie)
+ (modules test_sosie)
  (libraries sosie alcotest))
 
 (test
  (name test_cdp)
+ (modules test_cdp)
  (libraries sosie alcotest))
 
 (test
  (name test_snapshot_types)
+ (modules test_snapshot_types)
  (libraries sosie_shared alcotest))
 
 (test
  (name test_snapshot)
+ (modules test_snapshot)
  (libraries sosie alcotest))
 
 (test
  (name test_snapshot_gen)
+ (modules test_snapshot_gen)
  (libraries sosie alcotest))
 
 (test
  (name test_normalize)
+ (modules test_normalize)
  (libraries sosie re alcotest qcheck-core qcheck-alcotest))
 
 (test
  (name test_compare)
+ (modules test_compare)
  (libraries sosie alcotest qcheck-core qcheck-alcotest))
 
 (test
  (name test_config)
+ (modules test_config)
  (libraries sosie alcotest))
 
 (test
  (name test_lcs)
+ (modules test_lcs)
  (libraries sosie alcotest))
 
 (test
  (name test_gumtree)
+ (modules test_gumtree)
  (libraries sosie alcotest qcheck-core qcheck-alcotest))
 
 (test
  (name test_diff_fmt)
+ (modules test_diff_fmt)
  (libraries sosie re alcotest))
 
 (test
  (name test_ws)
+ (modules test_ws)
  (libraries sosie alcotest threads.posix))
 
-; Exhaustive tests: bounded enumeration + stratified random.
+; Shared helpers for exhaustive/stratified tests.
+(library
+ (name test_tree_helpers)
+ (modules test_tree_helpers)
+ (libraries sosie))
+
+; Bounded exhaustive tests: all tree pairs up to size 5.
 ; Run with: dune build @exhaustive
 (executable
  (name test_exhaustive)
- (libraries sosie))
+ (modules test_exhaustive)
+ (libraries sosie test_tree_helpers))
 
 (rule
  (alias exhaustive)
  (action (run ./test_exhaustive.exe)))
 
+; Stratified random tests: 7 shape classes, sizes 100-5000.
+; Run with: dune build @stratified
+(executable
+ (name test_stratified)
+ (modules test_stratified)
+ (libraries sosie test_tree_helpers unix))
+
+(rule
+ (alias stratified)
+ (action (run ./test_stratified.exe)))
+
 ; Integration tests: require Chromium, not run by default.
 ; Run with: dune build @integration
 (executable
  (name test_cdp_integration)
+ (modules test_cdp_integration)
  (libraries sosie alcotest))
 
 (executable
  (name test_capture_integration)
+ (modules test_capture_integration)
  (libraries sosie alcotest))
 
 (executable
  (name test_round_trip)
+ (modules test_round_trip)
  (libraries sosie alcotest base64))
 
 (rule
