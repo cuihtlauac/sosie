@@ -1,0 +1,3 @@
+(library
+ (name sosie)
+ (libraries yojson eio))
