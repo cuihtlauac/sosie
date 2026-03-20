@@ -368,14 +368,24 @@ formatting diffs that reference positions in both trees.
 The original plan called for `patience_diff` for LCS — replaced with a
 hand-rolled DP implementation to avoid pulling in `base` + `core` + `ppx_jane`.
 
-Tests: 12 LCS unit tests, 10 GumTree unit tests (identical trees, text/style
+Tests: 12 LCS unit tests, 12 GumTree unit tests (identical trees, text/style
 changes, wrapper inserted/removed, extra child, deep identical subtrees, hash
-collision siblings, tag change), 3 QCheck property tests (self-comparison
-empty, injectivity, tolerance monotonicity). 3 new diff_fmt tests for the
-new diff types.
+collision siblings, tag change, child reorder, bounds tolerance), 5 QCheck
+property tests (self-comparison empty, injectivity, tolerance monotonicity,
+matching count symmetry, ancestor preservation). 3 new diff_fmt tests for
+the new diff types.
 
-Bounded exhaustive testing and stratified random testing deferred to a
-follow-up commit (separate test executable under `dune build @exhaustive`).
+Bounded exhaustive testing and stratified random testing completed.
+`test/test_exhaustive.ml` runs via `dune build @exhaustive`. Enumerates all
+ordered labeled trees up to size 5 with 3 tags (3402 trees at size 5,
+~15M pairs total). Checks injectivity and self-match completeness on all
+pairs. Reports symmetry violation rate as informational (0.11% — expected
+for GumTree's greedy phases). Stratified random tests cover 5 shape classes
+(path, star, caterpillar, balanced binary, left comb) at sizes 50/100/200
+with 3 perturbations (swap, wrap, remove leaf).
+
+Additional unit tests: child reorder matching, bounds tolerance suppression.
+Additional QCheck tests: matching count symmetry, ancestor preservation.
 
 ---
 

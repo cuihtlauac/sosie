@@ -46,6 +46,16 @@
  (name test_ws)
  (libraries sosie alcotest threads.posix))
 
+; Exhaustive tests: bounded enumeration + stratified random.
+; Run with: dune build @exhaustive
+(executable
+ (name test_exhaustive)
+ (libraries sosie))
+
+(rule
+ (alias exhaustive)
+ (action (run ./test_exhaustive.exe)))
+
 ; Integration tests: require Chromium, not run by default.
 ; Run with: dune build @integration
 (executable

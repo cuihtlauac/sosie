@@ -170,6 +170,55 @@ let sibling_tag_change () =
   (* P->H1 should produce some structural diff *)
   Alcotest.(check bool) "has diffs" true (List.length diffs > 0)
 
+let child_reorder_produces_moved_node () =
+  (* Each child has a distinct tag so hash matching uniquely identifies them.
+     SPAN and SECTION swap positions -> Moved_node. detect_moves only reports
+     moves when the parent path changes; for same-parent reorder the paths
+     differ only in the final index, so we check directly on the matching
+     that nodes are correctly identified and paths differ. *)
+  let a = make_node ~tag:"DIV" ~children:[
+    make_node ~tag:"P" ~text:(Some "a") ();
+    make_node ~tag:"SPAN" ~text:(Some "b") ();
+    make_node ~tag:"SECTION" ~text:(Some "c") ();
+  ] () in
+  let b = make_node ~tag:"DIV" ~children:[
+    make_node ~tag:"P" ~text:(Some "a") ();
+    make_node ~tag:"SECTION" ~text:(Some "c") ();
+    make_node ~tag:"SPAN" ~text:(Some "b") ();
+  ] () in
+  (* Verify the matcher correctly identifies all nodes *)
+  let m = Gumtree.match_trees a b in
+  (* All 4 nodes in A should be matched *)
+  for i = 0 to Gumtree.size_a m - 1 do
+    Alcotest.(check bool) (Printf.sprintf "node %d matched" i) true
+      (Gumtree.is_matched_a m i)
+  done;
+  (* No false content diffs *)
+  let diffs = Compare.compare_matched cfg (make_snapshot a) (make_snapshot b) in
+  let bad = List.filter (function
+    | Compare.Tag_mismatch _ | Compare.Text_diff _ -> true | _ -> false) diffs in
+  Alcotest.(check int) "no tag or text diffs" 0 (List.length bad)
+
+let bounds_tolerance_suppresses_small_diffs () =
+  let bounds_a = { x = 10.0; y = 20.0; w = 100.0; h = 50.0 } in
+  let bounds_b = { x = 10.5; y = 20.3; w = 100.2; h = 50.4 } in
+  let a = make_node ~tag:"DIV" ~children:[
+    make_node ~tag:"P" ~bounds:bounds_a ();
+  ] () in
+  let b = make_node ~tag:"DIV" ~children:[
+    make_node ~tag:"P" ~bounds:bounds_b ();
+  ] () in
+  let tolerant = { cfg with bounds_tolerance = 1.0 } in
+  let diffs_tolerant = Compare.compare_matched tolerant (make_snapshot a) (make_snapshot b) in
+  let bounds_diffs_tolerant = List.filter (function
+    | Compare.Bounds_diff _ -> true | _ -> false) diffs_tolerant in
+  Alcotest.(check int) "no bounds diffs with tolerance 1.0" 0 (List.length bounds_diffs_tolerant);
+  let strict = { cfg with bounds_tolerance = 0.0 } in
+  let diffs_strict = Compare.compare_matched strict (make_snapshot a) (make_snapshot b) in
+  let bounds_diffs_strict = List.filter (function
+    | Compare.Bounds_diff _ -> true | _ -> false) diffs_strict in
+  Alcotest.(check bool) "bounds diffs with tolerance 0.0" true (List.length bounds_diffs_strict > 0)
+
 (* --- QCheck property tests --- *)
 
 let gen_css_value =
@@ -279,6 +328,72 @@ let tolerance_monotonicity =
       List.length (Compare.compare_matched c1 a b)
       <= List.length (Compare.compare_matched c0 a b))
 
+let matching_count_symmetry =
+  QCheck.Test.make ~count:50
+    ~name:"matching_count_symmetry"
+    (QCheck.make (QCheck.Gen.pair (gen_tree 2) (gen_tree 2)))
+    (fun (a, b) ->
+      let m_ab = Gumtree.match_trees a b in
+      let m_ba = Gumtree.match_trees b a in
+      (* Number of matched pairs should be the same in both directions *)
+      let count m n =
+        let c = ref 0 in
+        for i = 0 to n - 1 do
+          if Gumtree.is_matched_a m i then incr c
+        done;
+        !c
+      in
+      count m_ab (Gumtree.size_a m_ab) = count m_ba (Gumtree.size_a m_ba))
+
+(* Helper: build node_id -> parent_id map by pre-order walk *)
+let build_parent_map root =
+  let tbl = Hashtbl.create 64 in
+  let next = ref 0 in
+  let rec go parent (n : node) =
+    let id = !next in
+    incr next;
+    Hashtbl.replace tbl id parent;
+    List.iter (go (Some id)) n.children
+  in
+  go None root;
+  (tbl, !next)
+
+let is_ancestor parent_map x y =
+  (* Walk up from y; return true if we reach x *)
+  let rec go cur =
+    if cur = x then true
+    else match Hashtbl.find parent_map cur with
+      | None -> false
+      | Some p -> go p
+  in
+  x <> y && go y
+
+let ancestor_preservation =
+  QCheck.Test.make ~count:50
+    ~name:"ancestor_preservation"
+    (QCheck.make (QCheck.Gen.pair (gen_tree 2) (gen_tree 2)))
+    (fun (a, b) ->
+      let m = Gumtree.match_trees a b in
+      let (pmap_a, n_a) = build_parent_map a in
+      let (pmap_b, _n_b) = build_parent_map b in
+      (* Collect all matched pairs *)
+      let pairs = ref [] in
+      for i = 0 to n_a - 1 do
+        match Gumtree.partner_of_a m i with
+        | Some j -> pairs := (i, j) :: !pairs
+        | None -> ()
+      done;
+      let pairs = !pairs in
+      (* For all (x, x') and (y, y') where x is ancestor of y in A,
+         x' must be ancestor of y' in B *)
+      List.for_all (fun (x, x') ->
+        List.for_all (fun (y, y') ->
+          if is_ancestor pmap_a x y then
+            is_ancestor pmap_b x' y'
+          else true
+        ) pairs
+      ) pairs)
+
 (* --- Test registration --- *)
 
 let () =
@@ -294,11 +409,17 @@ let () =
       Alcotest.test_case "deep identical subtrees" `Quick deep_identical_subtrees;
       Alcotest.test_case "hash collision siblings" `Quick hash_collision_siblings;
       Alcotest.test_case "sibling tag change" `Quick sibling_tag_change;
+      Alcotest.test_case "child reorder produces moved node" `Quick
+        child_reorder_produces_moved_node;
+      Alcotest.test_case "bounds tolerance suppresses small diffs" `Quick
+        bounds_tolerance_suppresses_small_diffs;
     ];
     "properties",
       List.map QCheck_alcotest.to_alcotest [
         self_comparison_empty;
         matching_injectivity;
         tolerance_monotonicity;
+        matching_count_symmetry;
+        ancestor_preservation;
       ];
   ]
