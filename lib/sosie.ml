@@ -6,4 +6,5 @@ module Ws = Ws
 module Cdp = Cdp
 module Cdp_launcher = Cdp_launcher
 module Capture = Capture
+module Snapshot = Snapshot
 module Extractor_js_source = Extractor_js_source

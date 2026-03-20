@@ -25,6 +25,9 @@ module Cdp_launcher = Cdp_launcher
 module Capture = Capture
 (** High-level DOM snapshot capture via CDP. *)
 
+module Snapshot = Snapshot
+(** Snapshot parsing and serialization. *)
+
 module Extractor_js_source : sig
   val source : string
 end

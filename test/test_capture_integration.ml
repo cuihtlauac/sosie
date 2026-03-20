@@ -60,6 +60,20 @@ let capture_about_blank_has_expected_schema () =
       let tag = json_string "tag" root in
       Alcotest.(check string) "root tag is HTML" "HTML" tag)
 
+let capture_parses_to_typed_snapshot () =
+  with_capture "about:blank" (fun json ->
+      let s = Snapshot.of_json json in
+      Alcotest.(check int) "version" 1 s.version;
+      Alcotest.(check bool) "url starts with about:blank" true
+        (String.starts_with ~prefix:"about:blank" s.url);
+      Alcotest.(check string) "root tag" "HTML" s.root.tag;
+      Alcotest.(check bool) "light scheme" true (s.color_scheme = `Light);
+      (* Round-trip: to_json then of_json produces the same snapshot *)
+      let json' = Snapshot.to_json s in
+      let s' = Snapshot.of_json json' in
+      Alcotest.(check string) "round-trip tag" s.root.tag s'.root.tag;
+      Alcotest.(check int) "round-trip version" s.version s'.version)
+
 let capture_custom_viewport () =
   with_capture ~viewport:(800, 600) "about:blank" (fun json ->
       let viewport = json_field "viewport" json in
@@ -85,5 +99,7 @@ let () =
             capture_custom_viewport;
           Alcotest.test_case "dark_scheme" `Slow
             capture_dark_scheme;
+          Alcotest.test_case "parses_to_typed_snapshot" `Slow
+            capture_parses_to_typed_snapshot;
         ] );
     ]

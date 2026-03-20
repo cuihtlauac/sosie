@@ -59,7 +59,7 @@ This asymmetry drives every design decision:
   timing dependence, no environment sensitivity. The normalize step absorbs
   everything that could vary between runs.
 - **Testable at every layer.** Pure functions (normalization, matching,
-  comparison) are unit-testable without a browser. CDP integration is
+  comparison) are unit-testable without a browser. Capture integration is
   testable with fixture pages. End-to-end is testable with known-equivalent
   and known-different HTML pairs. See the Testing section.
 
@@ -73,12 +73,12 @@ tells you exactly what it checked — you know where the blind spots are.
 Rendering engines are pure systems: given a fixed `(DOM, Stylesheet,
 ViewportSize)`, they compute a deterministic layout tree — a tree of boxes with
 absolute positions, dimensions, and resolved style values. This is a fixpoint of
-the CSS constraint system. We can capture this fixpoint via the Chrome DevTools
-Protocol and compare it structurally.
+the CSS constraint system. We can capture this fixpoint via standard Web APIs
+(`getComputedStyle`, `getBoundingClientRect`) and compare it structurally.
 
 Sosie:
 
-1. Captures the resolved DOM + layout + computed styles from a browser via CDP
+1. Captures the resolved DOM + layout + computed styles from a browser
 2. Normalizes the snapshot (strips dynamic content, canonicalizes values)
 3. Compares two normalized snapshots under a configurable equivalence relation
 4. Reports structured diffs or declares equivalence
@@ -176,18 +176,17 @@ The **browser automation** is pluggable:
 
 | Engine | Browsers | Automation | Extraction |
 |--------|----------|-----------|------------|
-| Blink | Chrome, Edge, Brave | CDP (WebSocket) | `DOMSnapshot.captureSnapshot` (fast) or JS extractor |
+| Blink | Chrome, Edge, Brave | CDP (WebSocket) | JS extractor via `Runtime.evaluate` |
 | Gecko | Firefox | WebDriver / BiDi | JS extractor via `executeScript` |
 | WebKit | Safari | WebDriver | JS extractor via `executeScript` |
 
-CDP's `DOMSnapshot.captureSnapshot` is an **optimization** for Chromium — one
-atomic call that returns the full snapshot. The JS extractor is the
-**canonical reference** that works everywhere. On Chromium, both paths must
-produce identical snapshots (tested by the round-trip framework).
+The JS extractor is the **canonical and only capture path**. CDP and
+WebDriver are used solely as automation transports to navigate to a URL and
+execute the extractor. The comparison logic is completely engine-agnostic —
+it operates on the snapshot format, not on protocol-specific data.
 
-This means multi-engine support is a natural extension, not a rewrite. The
-comparison logic is completely engine-agnostic — it operates on the snapshot
-format, not on protocol-specific data.
+Multi-engine support is a natural extension, not a rewrite: add a WebDriver
+automation backend, reuse the same extractor and comparison pipeline.
 
 ### Same-engine equivalence, not cross-engine consistency
 
@@ -217,8 +216,8 @@ necessary condition; multi-engine testing approaches a sufficient one.
 ### Chromium-first, multi-engine by design
 
 For the initial implementation targeting ocaml.org, Chromium via CDP is
-sufficient. The OCaml CDP client uses `httpun-ws` (actively maintained
-WebSocket library with eio and lwt backends). No Node.js, no Playwright.
+sufficient. The OCaml CDP client uses a hand-rolled blocking WebSocket
+implementation over Unix sockets (~170 lines). No Node.js, no Playwright.
 
 For multi-engine support, the OCaml side needs a WebDriver client (HTTP-based
 protocol, simpler than CDP WebSocket) to launch Firefox/Safari, navigate, and
@@ -234,8 +233,8 @@ browsers.
    color scheme     |                   |
                     +--------+----------+
                              |
-              JS extractor   |   or CDP DOMSnapshot
-              (any engine)   |   (Chromium optimization)
+              JS extractor   |
+              (any engine)   |
                              |
                     +--------v----------+
                     | JSON snapshot     |
@@ -260,10 +259,9 @@ browsers.
                        equivalent / diff
 ```
 
-### The CDP conversation (Chromium fast path)
+### The CDP conversation
 
-On Chromium, the capture uses CDP's `DOMSnapshot.captureSnapshot` for
-atomic, efficient extraction. The full sequence is five CDP calls:
+The capture sequence uses CDP to automate Chromium:
 
 ```
 ->  Emulation.setDeviceMetricsOverride   { width: 375, height: 667 }
@@ -273,88 +271,29 @@ atomic, efficient extraction. The full sequence is five CDP calls:
 ->  Runtime.evaluate                     { expression: "document.fonts.ready",
                                            awaitPromise: true }
 <-  result                               (fonts are loaded)
-->  DOMSnapshot.captureSnapshot          { computedStyles: [...], includeDOMRects: true }
-<-  { strings: [...], documents: [...] }
+->  Runtime.evaluate                     { expression: "<JS extractor>",
+                                           returnByValue: true }
+<-  { result: { value: { version: 1, ... } } }
 ```
 
 The `document.fonts.ready` wait is essential: web fonts loaded via `@font-face`
 may not be ready at `loadEventFired`, causing incorrect font metrics in the
 snapshot. This is the same mechanism Puppeteer and Playwright use internally.
 
-The response is a single JSON blob with the full DOM, layout, and styles.
-Approximately 50-200ms for a 500-element page.
+### Parking lot: CDP DOMSnapshot fast path
 
-### DOMSnapshot.captureSnapshot response structure
+CDP's `DOMSnapshot.captureSnapshot` could provide an alternative capture
+path on Chromium — a single atomic call returning the full DOM, layout, and
+styles in a column-oriented format (~50-200ms for a 500-element page). This
+would require a dedicated parser (`of_cdp_json`) to reconstruct the tree
+from `parentIndex` arrays, a shared string table, and sparse layout entries.
 
-Column-oriented storage with a shared string table:
-
-```json
-{
-  "strings": ["div", "class", "container", "Hello", ...],
-  "documents": [{
-    "documentURL": 0,
-    "nodes": {
-      "parentIndex": [0, 0, 1, 1, ...],
-      "nodeType": [9, 1, 1, 3, ...],
-      "nodeName": [5, 12, 18, ...],
-      "nodeValue": [-1, -1, -1, 42, ...],
-      "attributes": [[], [0,1,2,3], ...]
-    },
-    "layout": {
-      "nodeIndex": [0, 1, 3, ...],
-      "styles": [[0,1], [0,2], ...],
-      "bounds": [[0,0,1920,50], [8,60,400,200], ...],
-      "text": [5, -1, 42, ...],
-      "paintOrders": [1, 2, 3, ...],
-      "offsetRects": [...],
-      "scrollRects": [...],
-      "clientRects": [...]
-    },
-    "textBoxes": {
-      "layoutIndex": [2, 2, 5, ...],
-      "bounds": [[10,62,100,16], ...],
-      "start": [0, 5, 0, ...],
-      "length": [5, 8, 12, ...]
-    }
-  }]
-}
-```
-
-Key design points:
-- **Column-oriented**: parallel arrays, not array of objects
-- **Shared string table**: all strings deduplicated; `-1` is the sentinel for
-  "no value"
-- **Sparse data**: rare properties stored as `RareStringData` /
-  `RareBooleanData` (index/value pair arrays, not one entry per node)
-- **Layout separate from DOM**: `display:none` elements have no layout entry;
-  `layout.nodeIndex[j]` maps layout entry `j` back to DOM node index (sorted,
-  binary-searchable)
-- **Styles are whitelist-filtered**: `layout.styles[j]` is a parallel array to
-  the `computedStyles` request parameter, same order, values as string indices
-- **Attributes encoding**: flat alternating `[nameIdx, valueIdx, nameIdx,
-  valueIdx, ...]` per node
-- **Pseudo-elements**: appear as nodes named `"::before"` / `"::after"`,
-  parented to their host element, in document order
-- **Shadow DOM**: flattened into the composed (rendered) tree
-- **Transforms**: `layout.bounds` reports the post-transform axis-aligned
-  bounding box (like `getBoundingClientRect()`); `layout.offsetRects` (when
-  present) gives untransformed layout values
-
-### Tree reconstruction from column format
-
-The `parentIndex` array is in document order (depth-first pre-order). The
-reconstruction algorithm is:
-
-1. Create a node object for each index `i` from 0 to `len(parentIndex) - 1`
-2. `parentIndex[i] = -1` marks root nodes (typically the document node at
-   index 0)
-3. Iterate indices in ascending order; append node `i` to
-   `children[parentIndex[i]]` — the resulting child order is correct because
-   nodes appear in document order
-4. For each node `i`, look up `layout.nodeIndex` (binary search) to find the
-   matching layout entry `j`, if any; attach bounds and styles from `layout`
-5. Pseudo-elements `::before` / `::after` appear as regular children in
-   document order (before first real child / after last real child)
+This optimization is deferred. The JS extractor is the canonical capture
+primitive, and `Runtime.evaluate` is sufficient for current needs. If
+capture latency becomes a bottleneck on large pages, the CDP fast path can
+be revisited. The original design notes for the column-oriented format and
+tree reconstruction algorithm are preserved in git history (prior to this
+commit).
 
 ## Normalization
 
@@ -623,7 +562,7 @@ sosie show-config \
 sosie self-test
 ```
 
-`capture` launches Chromium headless, connects via CDP, captures, normalizes,
+`capture` launches Chromium headless, connects via CDP, runs the JS extractor,
 writes JSON. `compare` reads two sets of normalized snapshots and produces
 diffs. They are separate commands — you can capture on different machines or at
 different times.
@@ -640,7 +579,7 @@ around a button is actionable in seconds. Text output is available via
   captured and any partial state.
 - **Page errors (404, 500)**: check the HTTP status in the `Page.navigate`
   response before attempting capture; report the status and skip the page.
-- **Malformed CDP JSON**: use `Yojson` with proper error paths; report the raw
+- **Malformed snapshot JSON**: use `Yojson` with proper error paths; report the raw
   response on decode failure.
 - **Missing routes**: when one snapshot set has a route the other doesn't,
   report it as "route only in baseline" or "route only in modified" rather than
@@ -719,7 +658,7 @@ sees:
   text-decoration
 - **Borders**: border-{top,right,bottom,left}-{width,style,color}, border-radius
 - **Effects**: box-shadow, z-index
-- **Layering**: paint-order (the resolved stacking order from CDP). Note:
+- **Layering**: paint-order (the resolved stacking order from the extractor). Note:
   `z-index` alone is insufficient — `opacity`, `transform`, and `will-change`
   create new stacking contexts that can change element layering without any
   `z-index` change. `paint-order` captures the actual resolved layering and
@@ -952,16 +891,11 @@ The other direction, G ∘ C ≠ id in general — many HTML sources produce the
 same snapshot. That's the whole point: the equivalence relation collapses
 source differences that don't affect visual output.
 
-Since capture has two paths (JS extractor and CDP fast path), the morphism
-structure has an additional constraint:
+The JS extractor is the sole capture path:
 
 ```
-C_js ∘ G = id              (JS extractor is faithful — tested on all engines)
-C_cdp ∘ G = C_js ∘ G       (CDP path matches JS reference — tested on Chromium)
+C ∘ G = id                 (capture is faithful — tested on all engines)
 ```
-
-The JS extractor is the reference implementation. The CDP path is validated
-against it.
 
 ### The snapshot generator G
 
@@ -1010,7 +944,7 @@ let prop_capture_round_trip =
     snapshot_equal s s')
 ```
 
-This validates the entire capture pipeline (CDP decoding, string table, tree
+This validates the entire capture pipeline (JS extraction, JSON parsing, tree
 reconstruction, CSS value parsing) across thousands of random property
 combinations without ever looking at a browser window.
 
@@ -1190,15 +1124,14 @@ OCaml + the existing CDP connection for pixel capture.
 
 Standard OCaml tests (alcotest or inline expect tests).
 
-**Tree reconstruction.** Given CDP-shaped JSON fixtures (column-oriented with
-`parentIndex`, `nodeType`, `attributes`, etc.), assert the reconstructed tree
-has the expected shape, parent-child relationships, and attribute values. Edge
-cases:
-- Root node (`parentIndex = -1`)
-- Text nodes (no layout entry)
-- Pseudo-elements (`::before` / `::after` ordering among siblings)
-- Nodes with `display: none` (present in DOM, absent from layout)
-- Empty string table references (`-1` sentinels)
+**Snapshot parsing.** Given hand-crafted JSON fixtures matching the JS
+extractor's output format, assert the parsed snapshot has the expected tree
+shape, parent-child relationships, and attribute values. Edge cases:
+- Minimal snapshot (single node, no children)
+- Text nodes (`#text` tag)
+- Nodes with children and attributes
+- Missing optional fields (`text` absent vs `null`)
+- Malformed input (missing fields, wrong version, bad viewport)
 
 **CSS value parsing.** Assert parse correctness:
 - `"16px"` → `Px 16.0`, `"400"` → `Num 400.0`
@@ -1237,7 +1170,7 @@ the expected matching/diff:
 **Snapshot comparison.** Assert that `compare` refuses mismatched `version`
 fields and reports missing routes correctly.
 
-### CDP integration tests (Layer 2, needs browser)
+### Capture integration tests (Layer 2, needs browser)
 
 These validate that the capture pipeline produces correct snapshots from known
 HTML. The round-trip tests (above) are the primary mechanism here.
@@ -1299,7 +1232,7 @@ permanent regression tests.
 | Bounded exhaustive (matcher, n≤4) | Nothing | seconds |
 | Bounded exhaustive (matcher, n≤5) | Nothing | minutes |
 | Round-trip (property-based) | Chromium | ~10-30s |
-| CDP integration fixtures | Chromium | ~5-10s |
+| Capture integration fixtures | Chromium | ~5-10s |
 | Mutation testing | Chromium | ~1-5 min |
 | End-to-end | Chromium | ~10-30s |
 
@@ -1490,11 +1423,10 @@ build OCaml values directly.
 | Performance        | Native JS              | Highly optimized JS            |
 
 This does not change the *role* of the JS extractor in the architecture:
-it remains the canonical extraction primitive, runs in any browser via
-`executeScript`, and is validated against CDP's `DOMSnapshot.captureSnapshot`
-on Chromium. What changes is the implementation language — from hand-written
-JS to compiler-generated JS backed by the same OCaml types used everywhere
-else in sosie.
+it remains the canonical and only extraction primitive, runs in any browser
+via `executeScript` or `Runtime.evaluate`. What changes is the implementation
+language — from hand-written JS to compiler-generated JS backed by the same
+OCaml types used everywhere else in sosie.
 
 The original raw JS extractor (`js/sosie-capture.js`) is retained as a test
 oracle during the transition. Once the JSOO extractor is validated against

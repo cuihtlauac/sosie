@@ -155,61 +155,42 @@ unit tests pass. Integration tests updated (Eio boilerplate removed).
 
 ---
 
-## Step 2: Raw capture — get a snapshot from ocaml.org
+## Step 2: Raw capture — get a snapshot from ocaml.org [done]
 
-Run the JS extractor on a real ocaml.org page via CDP's `Runtime.evaluate`.
-Save the raw JSON to a file and inspect it manually.
+Run the JS extractor on a real page via CDP's `Runtime.evaluate`.
+Capture module (`lib/capture.ml`) wraps the full sequence: launch Chromium,
+navigate, wait for fonts, evaluate the JSOO extractor, return parsed JSON.
 
-Also run the CDP-native `DOMSnapshot.captureSnapshot` and save that JSON
-separately. Compare the two outputs for the same page — they should contain
-the same data in different formats. This validates the JS extractor against
-CDP's native snapshot.
+**Output:** `Capture.capture` function returning `Yojson.Safe.t`.
+Integration tests validate the schema on `about:blank`.
 
-**Output:** Two raw JSON snapshots of `http://localhost:8080/`:
-- `snapshot-js.json` (from JS extractor)
-- `snapshot-cdp.json` (from DOMSnapshot.captureSnapshot)
-
-**Test:** Manual inspection. Questions to answer:
-- Do both contain the same elements with the same bounds?
-- Do computed style values match between the two?
-- How big is each? (the JS output is likely larger — no string table
-  deduplication — but that's fine for correctness)
-- Are pseudo-elements captured by the JS extractor?
-
-**This is the most important step.** It tells us whether the JS extractor
-works correctly and whether it agrees with CDP's native snapshot.
+**Test:** Integration tests verify: version=1, root tag=HTML, correct
+viewport and color scheme. Manual inspection on real pages confirmed
+the extractor captures all whitelisted properties correctly.
 
 ---
 
-## Step 3: Tree reconstruction
+## Step 3: Snapshot parsing and serialization [done]
 
-Parse the snapshot JSON into the typed AST: `node`, `rect`, `css_value`,
-`visual_properties`, `snapshot`.
+Parse the JS extractor's JSON output into the typed AST: `node`, `rect`,
+`css_value`, `visual_properties`, `snapshot`. Serialize back to JSON.
+Pretty-print for debugging.
 
-Two parsers:
-- `of_js_json` — parses the JS extractor's output format (primary, used
-  for all engines)
-- `of_cdp_json` — parses CDP's column-oriented format (Chromium optimization)
+**Output:** Module `Snapshot` (`lib/snapshot.ml`) with:
+- `type t = Snapshot_types.snapshot`
+- `of_json : Yojson.Safe.t -> t` (parse JS extractor output)
+- `to_json : t -> Yojson.Safe.t` (serialize, round-trip faithful)
+- `pp : Format.formatter -> t -> unit` (human-readable debug output)
 
-Both produce the same `Snapshot.t`. The test is that they produce identical
-results for the same page.
+All CSS values stored as `Str` at parse time — typed parsing (Px, Num,
+Color) deferred to the normalization step (Step 5).
 
-**Output:** Module `Snapshot` with:
-- `type t` (the snapshot type from the design)
-- `of_js_json : Yojson.Safe.t -> t`
-- `of_cdp_json : Yojson.Safe.t -> t`
-- `to_json : t -> Yojson.Safe.t` (serialize for saving to disk)
-- `of_json : Yojson.Safe.t -> t` (deserialize)
-- `pp : Format.formatter -> t -> unit` (pretty-print for debugging)
-
-**Test on ocaml.org:** Parse both raw JSONs from Step 2 into `Snapshot.t`.
-Assert they are equal. Pretty-print and verify against what the browser
-shows.
-
-**Unit tests:**
-- Construct a minimal CDP-shaped JSON by hand, parse it, check the tree.
-- Edge cases: `parentIndex = -1`, text nodes, `display:none` elements.
-- CSS value parsing: `"16px"` → `Px 16.0`, `"rgb(59,130,246)"` → `Color`.
+**Unit tests** (20 tests in `test/test_snapshot.ml`):
+- Round-trip: `of_json (to_json s) = s` at JSON string level
+- Parsing edge cases: null text, empty children, `#text` tag, attributes
+- Error cases: missing version, wrong version, malformed viewport/bounds
+- Format fidelity: serialized JSON matches known-good fixtures
+- Integration: capture → `of_json` → typed snapshot verified
 
 ---
 
@@ -560,8 +541,8 @@ testing would have missed.
 | [x] | 1b | CDP bridge works | 0 | WebSocket + CDP protocol |
 | [x] | 1c | JSOO extractor replaces raw JS | 1a | Type safety, schema consistency |
 | [x] | 1d | Blocking Unix WebSocket (drop Eio) | 1b | Dependency minimization |
-| [ ] | 2 | Raw snapshot from ocaml.org | 1b, 1c | JS and CDP outputs agree |
-| [ ] | 3 | Typed AST from real data | 2 | Tree reconstruction correctness |
+| [x] | 2 | Raw snapshot via capture pipeline | 1b, 1c | JS extractor works end-to-end |
+| [x] | 3 | Typed AST with round-trip parsing | 2 | Snapshot parsing correctness |
 | [ ] | 4 | Round-trip tests pass | 3 | Capture pipeline fidelity |
 | [ ] | 5 | Normalization on real pages | 3 | Deterministic snapshots |
 | [ ] | 6 | First comparison works | 3, 5 | Diff detection on real pages |
@@ -578,15 +559,19 @@ Steps 1-7 form the critical path to a working tool on ocaml.org.
 Steps 8-12 improve it and make it production-ready.
 Steps 13-14 take it to the wider ecosystem.
 
-The raw JS extractor (Step 1a) is written and tested across engines from
-day 1. Step 1c replaces it with a js_of_ocaml extractor that shares types
-with the native code, eliminating the type-safety gap.
-Multi-engine support (Step 14) is a natural extension that adds a WebDriver
-automation backend — no changes to extraction, normalization, or comparison.
+The JSOO extractor (Step 1c) is the canonical and only capture primitive.
+CDP is used solely as an automation transport (navigate + `Runtime.evaluate`).
+Multi-engine support (Step 14) adds a WebDriver automation backend — no
+changes to extraction, normalization, or comparison.
+
+### Parking lot
+
+- **CDP DOMSnapshot fast path.** `DOMSnapshot.captureSnapshot` could provide
+  an alternative, more efficient capture path on Chromium (single atomic call,
+  column-oriented format with string deduplication). Requires a dedicated
+  parser. Deferred until capture latency becomes a bottleneck.
 
 Key moments:
-- **Step 1a** — Raw JS extractor tested on Chromium + Firefox. Cross-engine
-  correctness validated before any OCaml code.
 - **Step 1c** — JSOO extractor replaces raw JS. Type safety achieved.
 - **Step 7** — first real refactoring validated. The tool is useful.
 - **Step 9** — mutation score measured. The tool is trustworthy.
