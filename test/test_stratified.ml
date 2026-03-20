@@ -2,7 +2,7 @@
 
     Run with: [dune build @stratified]
 
-    Tests structural invariants on larger trees (100–5000 nodes) across 7
+    Tests structural invariants on trees of 10–1000 nodes across 7
     shape classes with 5 parameterized transformations. Uses Boltzmann
     sampling and random recursive trees for uniform/logarithmic-depth
     coverage, plus deterministic shapes (path, star, caterpillar, complete
