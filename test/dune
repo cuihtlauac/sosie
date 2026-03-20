@@ -101,7 +101,7 @@
 (executable
  (name test_round_trip)
  (modules test_round_trip)
- (libraries sosie alcotest base64))
+ (libraries sosie alcotest base64 qcheck-core qcheck-alcotest))
 
 (rule
  (alias integration)
