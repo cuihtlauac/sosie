@@ -145,48 +145,100 @@ For EML refactoring, **Level 3** is the right target.
 
 ## Architecture
 
-### No Playwright dependency
+### Separation of concerns: extraction vs. automation
 
-CDP is a WebSocket protocol. Chrome/Chromium ships with it. The only thing
-needed is:
+The design separates two things that CDP conflates:
 
-1. Launch `chromium --headless --remote-debugging-port=9222`
-2. Fetch `http://localhost:9222/json` to get the WebSocket URL
-3. Open a WebSocket, send CDP commands as JSON, receive responses
+1. **What data to capture** — DOM structure, bounding rects, computed styles.
+   This is defined by standard Web APIs (`getBoundingClientRect()`,
+   `getComputedStyle()`, DOM traversal) available in every browser.
 
-This is doable in OCaml with `httpun-ws` (actively maintained WebSocket
-library with eio and lwt backends, by Antonio Nuno Monteiro). No Node.js, no
-Playwright, no npm. The system dependency is just Chromium, which CI
-environments already have.
+2. **How to execute the capture** — launching a browser, navigating to a URL,
+   running the extraction code. This is engine-specific.
 
-Alternative: a hand-rolled WebSocket client (~300 LOC). CDP only needs text
-frames over localhost (no TLS, no compression), so the full RFC 6455 is not
-needed. This avoids the `httpun` dependency tree but means owning the code.
+The **snapshot extraction is a JavaScript function** — the reference
+implementation of "what sosie captures." It runs in any browser:
+
+```javascript
+function sosieCapture(properties) {
+  // Walk the DOM via TreeWalker
+  // For each element: getBoundingClientRect(), getComputedStyle()
+  // For pseudo-elements: getComputedStyle(el, '::before'), etc.
+  // Return structured JSON matching sosie's snapshot schema
+}
+```
+
+The **browser automation** is pluggable:
+
+| Engine | Browsers | Automation | Extraction |
+|--------|----------|-----------|------------|
+| Blink | Chrome, Edge, Brave | CDP (WebSocket) | `DOMSnapshot.captureSnapshot` (fast) or JS extractor |
+| Gecko | Firefox | WebDriver / BiDi | JS extractor via `executeScript` |
+| WebKit | Safari | WebDriver | JS extractor via `executeScript` |
+
+CDP's `DOMSnapshot.captureSnapshot` is an **optimization** for Chromium — one
+atomic call that returns the full snapshot. The JS extractor is the
+**canonical reference** that works everywhere. On Chromium, both paths must
+produce identical snapshots (tested by the round-trip framework).
+
+This means multi-engine support is a natural extension, not a rewrite. The
+comparison logic is completely engine-agnostic — it operates on the snapshot
+format, not on protocol-specific data.
+
+### Same-engine equivalence, not cross-engine consistency
+
+A refactoring is UI-conservative when, for every engine in the target set,
+the before and after snapshots are equivalent:
+
+```
+for each engine E in target_engines:
+  for each (route, viewport, scheme):
+    capture(E, before) ≈ capture(E, after)
+```
+
+Each engine is compared **against itself**. Cross-engine differences (Chrome
+renders `line-height: normal` differently from Safari) are expected and not
+sosie's concern. That is a different problem (cross-browser consistency
+testing) that could reuse sosie's infrastructure but has different
+normalization needs.
+
+### Chromium-first, multi-engine by design
+
+For the initial implementation targeting ocaml.org, Chromium via CDP is
+sufficient. The OCaml CDP client uses `httpun-ws` (actively maintained
+WebSocket library with eio and lwt backends). No Node.js, no Playwright.
+
+For multi-engine support, the OCaml side needs a WebDriver client (HTTP-based
+protocol, simpler than CDP WebSocket) to launch Firefox/Safari, navigate, and
+execute the JS extractor. WebDriver is a W3C standard supported by all
+browsers.
 
 ### Pipeline
 
 ```
-                    +---------------+
-   page URL ------->  Chromium      |
-   viewport size    |  --headless   |<---- CDP over WebSocket
-   color scheme     |  (system dep) |
-                    +-------+-------+
-                            |
-                    DOMSnapshot.captureSnapshot
-                            |
-                    +-------v-------+
-                    | JSON snapshot |
-                    +-------+-------+
-                            |
-                    +-------v-------+
-                    |  Normalize    |  <- strip dynamic content,
-                    |  & filter     |     mask dates, etc.
-                    +-------+-------+
-                            |
-                    +-------v-------+
-                    |  Canonical    |  <- clean typed AST
-                    |  snapshot     |
-                    +-------+-------+
+                    +-------------------+
+   page URL ------->  Browser           |
+   viewport size    |  (any engine)     |<---- CDP / WebDriver / BiDi
+   color scheme     |                   |
+                    +--------+----------+
+                             |
+              JS extractor   |   or CDP DOMSnapshot
+              (any engine)   |   (Chromium optimization)
+                             |
+                    +--------v----------+
+                    | JSON snapshot     |
+                    | (engine-agnostic) |
+                    +--------+----------+
+                             |
+                    +--------v----------+
+                    |  Normalize        |  <- strip dynamic content,
+                    |  & filter         |     mask dates, etc.
+                    +--------+----------+
+                             |
+                    +--------v----------+
+                    |  Canonical        |  <- clean typed AST
+                    |  snapshot         |
+                    +--------+----------+
                             |
              snapshot A ----+    +---- snapshot B
                         +--------+
@@ -196,9 +248,10 @@ needed. This avoids the `httpun` dependency tree but means owning the code.
                        equivalent / diff
 ```
 
-### The CDP conversation
+### The CDP conversation (Chromium fast path)
 
-The full capture sequence is five CDP calls:
+On Chromium, the capture uses CDP's `DOMSnapshot.captureSnapshot` for
+atomic, efficient extraction. The full sequence is five CDP calls:
 
 ```
 ->  Emulation.setDeviceMetricsOverride   { width: 375, height: 667 }
@@ -886,6 +939,17 @@ The property whitelist determines whether f is mono.
 The other direction, G ∘ C ≠ id in general — many HTML sources produce the
 same snapshot. That's the whole point: the equivalence relation collapses
 source differences that don't affect visual output.
+
+Since capture has two paths (JS extractor and CDP fast path), the morphism
+structure has an additional constraint:
+
+```
+C_js ∘ G = id              (JS extractor is faithful — tested on all engines)
+C_cdp ∘ G = C_js ∘ G       (CDP path matches JS reference — tested on Chromium)
+```
+
+The JS extractor is the reference implementation. The CDP path is validated
+against it.
 
 ### The snapshot generator G
 
