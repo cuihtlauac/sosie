@@ -8,4 +8,5 @@ module Cdp_launcher = Cdp_launcher
 module Capture = Capture
 module Snapshot = Snapshot
 module Snapshot_gen = Snapshot_gen
+module Normalize = Normalize
 module Extractor_js_source = Extractor_js_source

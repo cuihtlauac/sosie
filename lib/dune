@@ -1,6 +1,6 @@
 (library
  (name sosie)
- (libraries sosie_shared yojson unix digestif base64))
+ (libraries sosie_shared yojson unix digestif base64 re))
 
 (rule
  (target extractor_js_source.ml)

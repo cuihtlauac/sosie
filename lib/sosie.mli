@@ -31,6 +31,9 @@ module Snapshot = Snapshot
 module Snapshot_gen = Snapshot_gen
 (** Snapshot round-trip generator: snapshot to HTML. *)
 
+module Normalize = Normalize
+(** Snapshot normalization rules. *)
+
 module Extractor_js_source : sig
   val source : string
 end
