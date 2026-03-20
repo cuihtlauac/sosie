@@ -82,9 +82,14 @@ needed is:
 2. Fetch `http://localhost:9222/json` to get the WebSocket URL
 3. Open a WebSocket, send CDP commands as JSON, receive responses
 
-This is doable in OCaml with `cohttp` + a WebSocket library. No Node.js, no
+This is doable in OCaml with `httpun-ws` (actively maintained WebSocket
+library with eio and lwt backends, by Antonio Nuno Monteiro). No Node.js, no
 Playwright, no npm. The system dependency is just Chromium, which CI
 environments already have.
+
+Alternative: a hand-rolled WebSocket client (~300 LOC). CDP only needs text
+frames over localhost (no TLS, no compression), so the full RFC 6455 is not
+needed. This avoids the `httpun` dependency tree but means owning the code.
 
 ### Pipeline
 
@@ -121,16 +126,23 @@ environments already have.
 
 ### The CDP conversation
 
-The full capture sequence is four CDP calls:
+The full capture sequence is five CDP calls:
 
 ```
 ->  Emulation.setDeviceMetricsOverride   { width: 375, height: 667 }
 ->  Emulation.setEmulatedMedia           { features: [{name: "prefers-color-scheme", value: "dark"}] }
 ->  Page.navigate                        { url: "http://localhost:8080/learn" }
 <-  Page.loadEventFired                  (wait for this event)
+->  Runtime.evaluate                     { expression: "document.fonts.ready",
+                                           awaitPromise: true }
+<-  result                               (fonts are loaded)
 ->  DOMSnapshot.captureSnapshot          { computedStyles: [...], includeDOMRects: true }
 <-  { strings: [...], documents: [...] }
 ```
+
+The `document.fonts.ready` wait is essential: web fonts loaded via `@font-face`
+may not be ready at `loadEventFired`, causing incorrect font metrics in the
+snapshot. This is the same mechanism Puppeteer and Playwright use internally.
 
 The response is a single JSON blob with the full DOM, layout, and styles.
 Approximately 50-200ms for a 500-element page.
@@ -173,10 +185,39 @@ Column-oriented storage with a shared string table:
 
 Key design points:
 - **Column-oriented**: parallel arrays, not array of objects
-- **Shared string table**: all strings deduplicated
-- **Sparse data**: rare properties stored as index/value pairs
-- **Layout separate from DOM**: `display:none` elements have no layout entry
-- **Styles are whitelist-filtered**: you choose which properties to capture
+- **Shared string table**: all strings deduplicated; `-1` is the sentinel for
+  "no value"
+- **Sparse data**: rare properties stored as `RareStringData` /
+  `RareBooleanData` (index/value pair arrays, not one entry per node)
+- **Layout separate from DOM**: `display:none` elements have no layout entry;
+  `layout.nodeIndex[j]` maps layout entry `j` back to DOM node index (sorted,
+  binary-searchable)
+- **Styles are whitelist-filtered**: `layout.styles[j]` is a parallel array to
+  the `computedStyles` request parameter, same order, values as string indices
+- **Attributes encoding**: flat alternating `[nameIdx, valueIdx, nameIdx,
+  valueIdx, ...]` per node
+- **Pseudo-elements**: appear as nodes named `"::before"` / `"::after"`,
+  parented to their host element, in document order
+- **Shadow DOM**: flattened into the composed (rendered) tree
+- **Transforms**: `layout.bounds` reports the post-transform axis-aligned
+  bounding box (like `getBoundingClientRect()`); `layout.offsetRects` (when
+  present) gives untransformed layout values
+
+### Tree reconstruction from column format
+
+The `parentIndex` array is in document order (depth-first pre-order). The
+reconstruction algorithm is:
+
+1. Create a node object for each index `i` from 0 to `len(parentIndex) - 1`
+2. `parentIndex[i] = -1` marks root nodes (typically the document node at
+   index 0)
+3. Iterate indices in ascending order; append node `i` to
+   `children[parentIndex[i]]` — the resulting child order is correct because
+   nodes appear in document order
+4. For each node `i`, look up `layout.nodeIndex` (binary search) to find the
+   matching layout entry `j`, if any; attach bounds and styles from `layout`
+5. Pseudo-elements `::before` / `::after` appear as regular children in
+   document order (before first real child / after last real child)
 
 ## Normalization
 
@@ -186,23 +227,40 @@ equivalence.
 
 ```ocaml
 type normalize_rule =
-  | Drop_attributes of string list
-      (* remove class, style, data-* -- these are expected to change *)
-  | Mask_text of { selector: string; replacement: string }
+  | Drop_attributes of attr_pattern list
+      (* remove class, style, data-* -- these are expected to change.
+         Patterns support prefix matching: "data-*" drops all data- attributes *)
+  | Mask_text of { selector: simple_selector; replacement: string }
       (* e.g., mask dates: any <time> element -> "[DATE]" *)
   | Mask_text_matching of { pattern: Re.t; replacement: string }
       (* regex-based: "March 20, 2026" -> "[DATE]" *)
-  | Drop_subtree of string
+  | Drop_subtree of simple_selector
       (* remove entire subtrees by selector, e.g., "#dynamic-feed" *)
   | Round_bounds of float
       (* round all coordinates to nearest N px, e.g., 0.5 *)
   | Canonicalize_colors
       (* "rgb(59, 130, 246)" and "#3b82f6" -> same canonical form *)
   | Canonicalize_fonts
-      (* collapse font-family fallback lists:
-         "Inter, ui-sans-serif, system-ui, sans-serif" -> "Inter, sans-serif" *)
+      (* collapse font-family fallback lists: keep first named font + first
+         generic family. "Inter, ui-sans-serif, system-ui, sans-serif" ->
+         "Inter, sans-serif". Pure-generic stacks like "system-ui,
+         -apple-system, BlinkMacSystemFont" -> "system-ui" *)
   | Sort_attributes
       (* alphabetize attributes so order doesn't matter *)
+
+(* Minimal selector language: tag, #id, .class, * — no combinators.
+   Sufficient for normalization rules. Could be replaced with Cascade's
+   selector parser later if full CSS selectors are needed. *)
+and simple_selector =
+  | Tag of string        (* "time", "div" *)
+  | Id of string         (* "#planet-feed" *)
+  | Class of string      (* ".swiper-wrapper" *)
+  | Universal            (* "*" *)
+
+(* Attribute name pattern: exact match or prefix glob ("data-*") *)
+and attr_pattern =
+  | Exact of string
+  | Prefix of string     (* "data-" when written as "data-*" *)
 
 val normalize : normalize_rule list -> snapshot -> snapshot
 ```
@@ -245,30 +303,39 @@ on both snapshots before comparison. This means:
 ```ocaml
 type rect = { x: float; y: float; w: float; h: float }
 
+(* CSS values are parsed into typed representations at decode time to avoid
+   false diffs from formatting differences ("16px" vs "16.0px", "400" vs
+   "400.0") and to enable numeric tolerance in comparison. *)
+type css_value =
+  | Px of float          (* "16px" -> Px 16.0 *)
+  | Num of float         (* "400" -> Num 400.0, for font-weight, opacity, z-index *)
+  | Color of int         (* "#3b82f6" / "rgb(59,130,246)" -> Color 0x3b82f6 *)
+  | Str of string        (* fallback for anything else *)
+
 type visual_properties = {
-  display: string;
-  visibility: string;
-  opacity: string;
-  color: string;
-  background_color: string;
-  font_family: string;
-  font_size: string;
-  font_weight: string;
-  line_height: string;
-  text_align: string;
-  text_decoration: string;
+  display: css_value;
+  visibility: css_value;
+  opacity: css_value;
+  color: css_value;
+  background_color: css_value;
+  font_family: css_value;
+  font_size: css_value;
+  font_weight: css_value;
+  line_height: css_value;
+  text_align: css_value;
+  text_decoration: css_value;
   border_top: border;
   border_right: border;
   border_bottom: border;
   border_left: border;
-  border_radius: string;
-  box_shadow: string;
-  overflow_x: string;
-  overflow_y: string;
-  z_index: string;
-  cursor: string;
+  border_radius: css_value;
+  box_shadow: css_value;
+  overflow_x: css_value;
+  overflow_y: css_value;
+  z_index: css_value;
+  cursor: css_value;
 }
-and border = { width: string; style: string; color: string }
+and border = { width: css_value; style: css_value; color: css_value }
 
 type node = {
   tag: string;
@@ -281,6 +348,7 @@ type node = {
 }
 
 type snapshot = {
+  version: int;          (* snapshot format version; bump on AST changes *)
   url: string;
   viewport: int * int;
   color_scheme: [ `Light | `Dark ];
@@ -288,36 +356,92 @@ type snapshot = {
 }
 ```
 
-## Equivalence checker
+## Tree matching and equivalence checker
+
+### Why not lockstep comparison
+
+A naive lockstep walk assumes both trees have identical structure. This breaks
+the moment someone wraps an element in a `<div>` — which is the most common
+operation in component extraction. We need a matcher that tolerates structural
+wrapper changes while detecting true content/visual differences.
+
+### GumTree-style three-phase matching
+
+The comparison uses a simplified GumTree algorithm (Falleri et al., ASE 2014),
+adapted for DOM trees. It runs in three phases:
+
+**Phase 1 — Hash matching (O(n)).** Compute a bottom-up structural hash for
+every subtree: `hash(node) = H(tag + hash(child_1) + ... + hash(child_k))`.
+Build a map from hash to node(s) for both trees. Match identical subtrees
+greedily, largest first. This handles 80-95% of nodes in a typical refactoring.
+When you wrap `A B C` in a new `<div>`, the subtrees for A, B, C hash
+identically and match instantly.
+
+**Phase 2 — Container matching (O(n²) worst, fast in practice).** For each
+unmatched node in tree A, compute the fraction of its descendants that are
+already matched to descendants of some unmatched node in tree B (dice
+coefficient). If the overlap exceeds a threshold (e.g., 0.5), match the two
+nodes. This catches wrapper insertion/removal: the new `<div class="wrapper">`
+gets matched to the old parent because their descendant sets overlap.
+
+**Phase 3 — Children alignment (O(n·b)).** For matched nodes whose children
+aren't fully aligned, use LCS (longest common subsequence) on the children
+lists to detect insertions, deletions, and reorderings. The `patience_diff`
+library (Jane Street, production-quality) provides a generic LCS implementation.
+
+Performance: 5-50ms at 500 nodes, 50-500ms at 5000 nodes. Orders of magnitude
+faster than exact tree edit distance (Zhang-Shasha is O(n⁴) worst case; RTED
+is O(n³) — both too slow above ~1000 nodes).
+
+### Why not exact tree edit distance
+
+Zhang-Shasha (1989) and RTED (Pawlik & Augsten, 2011) compute the optimal
+edit script but are prohibitively expensive for DOM-sized trees. At 5000 nodes,
+RTED takes 30-120s vs. <500ms for the GumTree approach. The optimality
+guarantee doesn't add value here — we need a *correct and informative* diff,
+not the *minimal* one.
+
+### Diff types
 
 ```ocaml
 type path = string  (* e.g., "/html/body/div[2]/section[1]/h2" *)
 
 type diff =
   | Bounds_diff of { path: path; property: string; a: float; b: float }
-  | Style_diff of { path: path; property: string; a: string; b: string }
+  | Style_diff of { path: path; property: string; a: css_value; b: css_value }
   | Text_diff of { path: path; a: string; b: string }
-  | Children_count of { path: path; a: int; b: int }
+  | Paint_order_diff of { path: path; a: int; b: int }
   | Tag_mismatch of { path: path; a: string; b: string }
-  | Extra_node of { path: path; side: [`Left | `Right]; node: node }
+  | Extra_node of { path: path; side: [`Left | `Right]; tag: string }
+  | Moved_node of { old_path: path; new_path: path }
+  | Wrapper_inserted of { path: path; wrapper_tag: string }
+  | Wrapper_removed of { path: path; wrapper_tag: string }
 
 type config = {
   check_bounds: bool;
   check_visual: bool;
   check_text: bool;
+  check_paint_order: bool;
   bounds_tolerance: float;
+  value_tolerance: float;   (* numeric tolerance for Px/Num css_values *)
 }
 
 val compare : config -> snapshot -> snapshot -> diff list
 ```
 
-The comparison walks both trees in lockstep. Since this is for refactoring (same
-HTML structure, different CSS), the trees should match 1:1 in most cases. When
-they don't -- because you decomposed a `<div>` into a component that wraps it
-differently -- the checker reports structural diffs.
-
 The output is a list of diffs, not a boolean. This is important: you can inspect
-*what* changed and decide if it's acceptable.
+*what* changed and decide if it's acceptable. `Wrapper_inserted` /
+`Wrapper_removed` diffs are informational — they describe structural changes
+that may or may not affect visual output.
+
+### Hash collision disambiguation
+
+Small common subtrees (`<div></div>`, `<span>text</span>`) produce identical
+hashes, creating ambiguous matches. Disambiguation strategy:
+1. Prefer the candidate whose parent is already matched.
+2. Among remaining candidates, prefer the one at the closest position
+   (sibling index).
+3. If still ambiguous, defer to Phase 2 container matching.
 
 ## CLI
 
@@ -352,8 +476,29 @@ sosie compare \
 
 `capture` launches Chromium headless, connects via CDP, captures, normalizes,
 writes JSON. `compare` reads two sets of normalized snapshots and produces
-diffs. They are separate commands -- you can capture on different machines or at
+diffs. They are separate commands — you can capture on different machines or at
 different times.
+
+### Error handling
+
+- **Chromium crash**: detect WebSocket close, report with the URL that was being
+  captured and any partial state.
+- **Page errors (404, 500)**: check the HTTP status in the `Page.navigate`
+  response before attempting capture; report the status and skip the page.
+- **Malformed CDP JSON**: use `Yojson` with proper error paths; report the raw
+  response on decode failure.
+- **Missing routes**: when one snapshot set has a route the other doesn't,
+  report it as "route only in baseline" or "route only in modified" rather than
+  failing.
+- **Snapshot version mismatch**: refuse to compare snapshots with different
+  `version` fields; print both versions and advise re-capture.
+
+### Parallelism in `capture-all`
+
+Sequential by default: reuse a single browser tab, navigate between pages.
+At 200ms capture + 500ms settle per page, 300 captures ≈ 3.5 minutes —
+acceptable for CI. If needed, open N tabs in the same Chromium instance and
+capture in parallel (Chromium handles this natively via CDP targets).
 
 ## Workflow for ocaml.org refactoring
 
@@ -424,31 +569,56 @@ sees:
 Everything else is either already captured in the bounding box geometry or
 invisible.
 
-## Open questions
+## Resolved questions
 
 1. **Pseudo-elements** (`::before`, `::after`). `captureSnapshot` includes them
-   in the layout tree. They need to be matched by position within their parent,
-   not by tag name.
+   as nodes named `"::before"` / `"::after"`, parented to their host element in
+   document order. They participate in tree matching like any other node.
 
-2. **Hover/focus states.** The default capture is at rest. States could be
+2. **Font loading.** Resolved by awaiting `document.fonts.ready` via
+   `Runtime.evaluate` before capturing (see CDP conversation above).
+
+3. **CSS transforms.** `layout.bounds` reports the post-transform axis-aligned
+   bounding box. No special handling needed — transforms are already reflected
+   in the captured bounds.
+
+## Open questions
+
+1. **Hover/focus states.** The default capture is at rest. States could be
    injected via `CSS.forcePseudoState` before capturing — but this multiplies
    the snapshot count. Probably a phase 2 feature.
 
-3. **Scroll-dependent layout.** `position: sticky` elements change with scroll
+2. **Scroll-dependent layout.** `position: sticky` elements change with scroll
    offset. Capturing at scroll-top is the default; capturing at specific scroll
    positions could be an option.
 
-4. **Iframes.** `captureSnapshot` doesn't cross cross-origin iframe boundaries.
-   Same-origin iframes are included. Not a concern for ocaml.org.
+3. **Iframes.** `captureSnapshot` doesn't cross cross-origin iframe boundaries.
+   Same-origin iframes are included via `contentDocumentIndex`. Not a concern
+   for ocaml.org.
 
-5. **Canvas/SVG.** SVG elements are in the DOM and captured. Canvas content is
+4. **Canvas/SVG.** SVG elements are in the DOM and captured. Canvas content is
    a bitmap and not captured. ocaml.org uses inline SVG for icons, so they're
    covered.
 
-6. **CSS transitions/animations.** A snapshot captures a single frame. Elements
+5. **CSS transitions/animations.** A snapshot captures a single frame. Elements
    with `transition` or `animation` should be captured after animations
-   complete — a configurable settle delay after `Page.loadEventFired` handles
-   this.
+   complete — a configurable settle delay after font loading handles this.
+
+6. **Responsive images and `srcset`.** Different viewport sizes may load
+   different images, affecting layout. Not currently handled.
+
+7. **`clip-path`.** Affects visual appearance but is not reflected in bounding
+   boxes and is not in the property whitelist. Add if needed for the target
+   project.
+
+8. **Snapshot size.** A 500-element page with 20 properties each is ~10K
+   values. For 300 captures (50 routes × 3 viewports × 2 schemes), snapshots
+   are manageable. Complex pages (5000+ elements) could produce multi-MB
+   snapshots — worth monitoring.
+
+9. **HTML report format.** `--report report.html` is advertised in the CLI but
+   unspecified. Needs design (inline screenshots? side-by-side element
+   highlighting?).
 
 ## Why OCaml
 
