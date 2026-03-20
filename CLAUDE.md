@@ -81,12 +81,56 @@ This project tracks design discussions as git history. The convention:
   the relevant commit, not from HEAD. This preserves the original line of
   reasoning while exploring the alternative.
 
-### Why
+### Compaction resilience
 
 Context compaction in Claude Code is all-or-nothing: when the context window
-fills, older messages are summarized non-selectively. Committing validated
-reasoning to files means it survives compaction. The git history becomes the
-durable record of the design process, not the conversation transcript.
+fills, older messages are summarized non-selectively. **The conversation is
+ephemeral. Git is the durable record.**
+
+Rules:
+- **Nothing important lives only in the conversation.** If it matters
+  (benchmarks, measurements, decisions, error messages, surprising results),
+  commit it to a file before moving on. If compaction happens and the
+  information is lost, that's a bug in the workflow, not in the tool.
+- **Benchmarks and measurements** go into a file (e.g., `benchmarks.md`,
+  a comment in the test, or a commit message). Never rely on "I said earlier
+  that it was 3.2 seconds" — write it down.
+- **Error messages and surprising behavior** from tools, browsers, or tests
+  get quoted in commit messages or filed as comments in the code/tests.
+- **When in doubt, commit.** A small commit with a note is better than
+  trusting the conversation to survive.
+
+### Plans in git
+
+Claude Code plan mode produces plans for implementation steps. These plans
+must be recoverable from git history:
+
+- **Commit plans before executing them.** Write the plan to a file (e.g.,
+  `plans/step-3-tree-reconstruction.md`), commit it, then start work.
+- **Plans may be deleted** (`git rm`) once the work is complete and the
+  code speaks for itself. But the plan remains in git history and can be
+  recovered with `git log --diff-filter=D -- plans/` and `git show`.
+- **Plans directory**: `plans/` — committed plans, deletable after execution.
+
+### Learning from mistakes
+
+When implementing a roadmap step, the roadmap may turn out to be wrong or
+incomplete. When this happens:
+
+- **Do not silently edit the roadmap to hide the mistake.** The original
+  reasoning has value — it documents what was believed and why.
+- **Add an addendum** to the roadmap (or the relevant design section)
+  explaining what was wrong, what was learned, and what the corrected
+  approach is. Use a clear heading like `### Step N addendum (date)`.
+- **If the change is fundamental** (not just a detail correction), both
+  add the addendum AND update the original text. The addendum explains
+  the *why* of the change; the updated text reflects the current truth.
+- **Commit the addendum and the fix together** so the git history shows
+  the correction as a single logical unit.
+
+This creates a trail of "what we thought → what we learned → what we
+changed." Future conversations (or future humans) can read the addenda
+to understand why the design evolved.
 
 ### Branch naming
 
