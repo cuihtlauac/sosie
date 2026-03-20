@@ -161,10 +161,14 @@ implementation of "what sosie captures." It runs in any browser:
 
 ```javascript
 function sosieCapture(properties) {
-  // Walk the DOM via TreeWalker
-  // For each element: getBoundingClientRect(), getComputedStyle()
-  // For pseudo-elements: getComputedStyle(el, '::before'), etc.
-  // Return structured JSON matching sosie's snapshot schema
+  // 1. Freeze the page: inject stylesheet disabling transitions/animations
+  //    * { transition: none !important; animation: none !important; }
+  //    This prevents layout shifts during the DOM walk, achieving
+  //    near-atomic capture without CDP's native snapshot.
+  // 2. Walk the DOM via TreeWalker (SHOW_ELEMENT | SHOW_TEXT)
+  // 3. For each element: getBoundingClientRect(), getComputedStyle()
+  // 4. For pseudo-elements: getComputedStyle(el, '::before'), etc.
+  // 5. Return structured JSON matching sosie's snapshot schema
 }
 ```
 
@@ -201,6 +205,14 @@ renders `line-height: normal` differently from Safari) are expected and not
 sosie's concern. That is a different problem (cross-browser consistency
 testing) that could reuse sosie's infrastructure but has different
 normalization needs.
+
+**Cross-engine lemma.** If a refactoring is proved UI-conservative on N
+independent rendering engines, the probability of a missed visual regression
+drops with each engine added. Each engine has different layout edge cases
+(Blink's flexbox vs. Gecko's flexbox vs. WebKit's flexbox). A refactoring
+that happens to be invisible to Chromium's specific behavior but breaks on
+Safari's is caught by the multi-engine run. Single-engine testing is a
+necessary condition; multi-engine testing approaches a sufficient one.
 
 ### Chromium-first, multi-engine by design
 
