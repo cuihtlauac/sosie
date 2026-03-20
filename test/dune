@@ -1,3 +1,7 @@
 (test
  (name test_sosie)
  (libraries sosie alcotest))
+
+(test
+ (name test_snapshot_types)
+ (libraries sosie_shared alcotest))
