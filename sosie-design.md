@@ -975,6 +975,72 @@ Implementation: a tree enumerator using the Catalan number recurrence, with
 k labels per node. ~100 lines of OCaml. The property checks are the same
 metamorphic relations listed above, applied to every pair.
 
+### Stratified random testing at scale
+
+Bounded exhaustive testing covers all trees up to size ~5. For larger trees
+(100-5000 nodes, representative of real DOM trees), random testing is needed.
+But **naive uniform random generation is biased**: a uniform random ordered
+tree of size n has depth O(√n) and geometric degree distribution (Flajolet &
+Sedgewick, *Analytic Combinatorics*, 2009). Trees that stress the matcher —
+deep caterpillars, stars, balanced trees, trees with many identical subtrees —
+have exponentially small probability under uniform sampling.
+
+Analytic combinatorics tells us what uniform sampling misses:
+
+| Property | Uniform random tree (size n) | Matcher stress cases |
+|----------|------------------------------|---------------------|
+| Depth | O(√n) ≈ 22 for n=500 | O(n): paths, caterpillars |
+| Max branching | geometric(½), rarely > 10 | O(n): star trees |
+| Balance | random, moderately unbalanced | perfect: complete k-ary |
+| Subtree repetition | rare | many identical subtrees |
+
+The solution is **stratified generation**: sample from structurally diverse
+shape classes, not from the uniform distribution. Each shape class targets a
+different matcher behavior:
+
+| Shape class | Generator | What it stresses |
+|-------------|-----------|-----------------|
+| Path (depth = n) | Direct construction | Deep recursion, LCS on singleton children |
+| Star (depth = 1) | Direct construction | Wide children lists, many hash collisions |
+| Caterpillar | Spine + random leaves | Mixed deep/wide, hash collision at leaves |
+| Complete k-ary | Deterministic | Perfect symmetry, hash collision everywhere |
+| Lopsided | One heavy child + leaf siblings | Dice coefficient edge cases |
+| Uniform random | Boltzmann sampling | "Typical" trees |
+| Random recursive | Sequential insertion | Logarithmic depth, different from uniform |
+
+For each shape class, generate trees of size 100, 500, 1000, 5000. Test the
+same structural properties as bounded exhaustive (injectivity, symmetry,
+transitivity, ancestor preservation) plus performance: the matcher should
+complete within the expected O(n log n) bound.
+
+**Boltzmann sampling** (Duchon, Flajolet, Louchard, Schaeffer, 2004) is
+the standard method for uniform generation of combinatorial structures from
+a specification. For ordered labeled trees, the specification is
+`T = Z × Seq(T)`, and the sampler produces trees of approximate target size
+in O(n) expected time. The OCaml tool **Arbogen** (Bodini, Genitrini, Ponty)
+implements this. However, Boltzmann sampling gives the uniform distribution
+— it must be combined with the targeted generators above, not used alone.
+
+**Pair generation** for matcher testing requires generating *(A, B)* where B
+is derived from A by known transformations (wrap subtree, reorder children,
+change labels, delete/insert nodes). This ensures the ground-truth diff is
+known. The transformations are parameterized:
+
+- `wrap(A, i)`: wrap the i-th subtree of A in a new node
+- `reorder(A, i, perm)`: permute children of the i-th node
+- `mutate(A, i, prop, val)`: change a style property of the i-th node
+- `delete(A, i)`: remove the i-th subtree
+- `insert(A, i, subtree)`: add a subtree at position i
+
+Combining stratified base tree generation with parameterized transformations
+gives thorough coverage of the matcher's behavior across structurally diverse
+inputs. QCheck's `Gen.oneof` and `Gen.frequency` combinators support this
+mixture directly.
+
+Implementation: ~200 lines for the shape generators + ~100 lines for the
+transformation operators. The Boltzmann sampler can use Arbogen or a direct
+implementation of the Catalan Boltzmann sampler (~50 lines).
+
 ### CSS mutation testing
 
 Round-trip tests validate the capture pipeline. Bounded exhaustive tests

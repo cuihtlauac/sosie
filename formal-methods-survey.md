@@ -79,6 +79,41 @@ quantitative measure of sosie's sensitivity.
 - Jia, Y. & Harman, M. "An Analysis and Survey of the Development of
   Mutation Testing." IEEE TSE 37(5), 2011.
 
+### 2b. Stratified random tree generation at scale
+
+Bounded exhaustive testing covers all trees up to size ~5. For larger trees
+(100-5000 nodes), random testing is needed. But naive uniform random generation
+is biased: uniform random ordered trees of size n have depth O(sqrt(n)) and
+geometric degree distribution (Flajolet & Sedgewick, 2009). Trees that stress
+the matcher — paths, stars, caterpillars, balanced trees — are exponentially
+rare under uniform sampling.
+
+**Solution: stratified generation by shape class.** Generate from structurally
+diverse families (paths, stars, caterpillars, complete k-ary, lopsided, uniform
+random, random recursive), each targeting different matcher behaviors. Combine
+with parameterized transformations (wrap, reorder, mutate, delete, insert) to
+generate tree pairs with known ground-truth diffs.
+
+**Boltzmann sampling** (Duchon et al., 2004) generates uniform random
+combinatorial structures from specifications in O(n) expected time. For
+ordered trees: T = Z * Seq(T). The OCaml tool Arbogen (Bodini, Genitrini,
+Ponty) implements this. Must be combined with targeted generators, not used
+alone.
+
+**Key references:**
+- Duchon, Flajolet, Louchard, Schaeffer. "Boltzmann Samplers for the Random
+  Generation of Combinatorial Structures." CPC 13(4-5), 2004.
+- Flajolet, Sedgewick. *Analytic Combinatorics.* Cambridge, 2009.
+- Flajolet, Zimmermann, Van Cutsem. "A Calculus for the Random Generation of
+  Labelled Combinatorial Structures." TCS 132(1-2), 1994.
+- Remy, J.-L. "Un procede iteratif de denombrement d'arbres binaires." RAIRO
+  19(2), 1985.
+- Bodini, Genitrini, Ponty. Arbogen (OCaml Boltzmann sampler).
+- Claessen, Duregard, Palka. "Generating Constrained Random Data with Uniform
+  Distribution." JFP, 2015.
+- Palka, Claessen, Mycroft, Hughes. "Testing an Optimising Compiler by
+  Generating Random Lambda Terms." AST Workshop, 2011.
+
 ### 3. Normalization as a provably confluent, terminating rewrite system
 
 Sosie's normalization rules are term rewrite rules on a tree algebra.
