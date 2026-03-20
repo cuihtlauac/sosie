@@ -10,6 +10,20 @@ using standard Web APIs; CDP is a Chromium optimization.
 Design: `sosie-design.md`. Roadmap: `sosie-roadmap.md`.
 Formal methods survey: `formal-methods-survey.md`.
 
+## Build environment
+
+This project uses a local opam switch (`_opam/`, gitignored). To run dune
+commands from the Bash tool, use `opam exec --`:
+
+```
+opam exec -- dune build
+opam exec -- dune runtest
+opam exec -- dune exec sosie -- --version
+```
+
+Do **not** use `eval $(opam env ...)` — it does not persist across Bash
+tool invocations. `opam exec --` is the correct way.
+
 ## Code standards
 
 ### Documentation
