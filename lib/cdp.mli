@@ -31,6 +31,12 @@ val send : connection -> string -> Yojson.Safe.t -> Yojson.Safe.t
 val close : connection -> unit
 (** Close the WebSocket connection. *)
 
+val wait_event : connection -> string -> ?timeout:float -> unit -> Yojson.Safe.t
+(** [wait_event conn method_ ()] blocks until a CDP event with the given
+    method name arrives. Returns the event's params.
+    @param timeout Maximum wait time in seconds (default: 30.0).
+    @raise Failure on timeout. *)
+
 val evaluate_js : connection -> string -> Yojson.Safe.t
 (** [evaluate_js conn expr] evaluates a JavaScript expression via
     [Runtime.evaluate] and returns the result value.

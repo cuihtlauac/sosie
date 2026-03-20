@@ -61,50 +61,101 @@ let read_debug_port stderr_r =
   in
   find_line ()
 
-(** Fetch the WebSocket debugger URL from Chromium's /json/version HTTP
-    endpoint using a raw HTTP/1.1 request over Eio. *)
-let fetch_ws_url ~sw ~net port =
-  let addr =
-    `Tcp (Eio.Net.Ipaddr.V4.loopback, port)
-  in
-  let socket = Eio.Net.connect ~sw net addr in
-  let request =
-    Printf.sprintf
-      "GET /json/version HTTP/1.1\r\nHost: 127.0.0.1:%d\r\nConnection: \
-       close\r\n\r\n"
-      port
-  in
-  Eio.Flow.copy_string request socket;
-  Eio.Flow.shutdown socket `Send;
-  let buf = Eio.Buf_read.of_flow ~max_size:(64 * 1024) socket in
-  let response = Eio.Buf_read.take_all buf in
-  (* Find the JSON body after the HTTP headers (separated by \r\n\r\n). *)
-  let body =
-    match String.split_on_char '\n' response with
-    | _ ->
-        let sep = "\r\n\r\n" in
-        let sep_len = String.length sep in
-        let rec find_body pos =
-          if pos + sep_len > String.length response then
-            failwith "no HTTP body in /json/version response"
-          else if String.sub response pos sep_len = sep then
-            String.sub response (pos + sep_len)
-              (String.length response - pos - sep_len)
-          else find_body (pos + 1)
-        in
-        find_body 0
-  in
-  let json = Yojson.Safe.from_string body in
-  match json with
-  | `Assoc fields -> (
-      match List.assoc_opt "webSocketDebuggerUrl" fields with
-      | Some (`String url) -> url
-      | _ ->
-          failwith
-            "webSocketDebuggerUrl not found in /json/version response")
-  | _ -> failwith "/json/version did not return a JSON object"
+(** Send a simple HTTP GET to localhost and return the JSON body.
 
-let launch ~sw ~proc_mgr ~net ?(port = 0) ?(headless = true) () =
+    Chrome's CDP HTTP server has two quirks that affect parsing:
+
+    {b No space after colon in headers.} Chrome sends
+    [Content-Length:413] rather than [Content-Length: 413]. The header
+    parser must match on ["content-length:"] (15 chars) and trim the
+    value, not assume a space.
+
+    {b Connection not closed promptly.} Despite [Connection: close] in
+    the request, Chrome does not close the TCP connection immediately
+    after sending the response body. Using [Eio.Flow.read_all] or
+    [Eio.Buf_read.take_all] would block waiting for EOF that never
+    comes (or comes very late). We must parse Content-Length from the
+    headers and read exactly that many bytes. *)
+let http_get_json ~net ~port path =
+  let host = "127.0.0.1" in
+  let service = string_of_int port in
+  Eio.Net.with_tcp_connect ~host ~service net (fun socket ->
+      let request =
+        Printf.sprintf
+          "GET %s HTTP/1.1\r\nHost: %s:%d\r\nConnection: close\r\n\r\n"
+          path host port
+      in
+      Eio.Flow.copy_string request socket;
+      let buf = Eio.Buf_read.of_flow ~max_size:(64 * 1024) socket in
+      let _status_line = Eio.Buf_read.line buf in
+      let content_length = ref 0 in
+      let rec read_headers () =
+        let line = Eio.Buf_read.line buf in
+        if line = "" then ()
+        else begin
+          let lower = String.lowercase_ascii line in
+          (* Match "content-length:" without assuming a space after the colon. *)
+          if String.starts_with ~prefix:"content-length:" lower then begin
+            let v = String.sub lower 15 (String.length lower - 15) in
+            content_length := int_of_string (String.trim v)
+          end;
+          read_headers ()
+        end
+      in
+      read_headers ();
+      if !content_length = 0 then failwith "no Content-Length in response"
+      else
+        let body = Eio.Buf_read.take !content_length buf in
+        Yojson.Safe.from_string body)
+
+(** Fetch the WebSocket debugger URL for the first page target, retrying
+    until Chromium's HTTP endpoint becomes available.
+
+    {b Browser vs. page targets.} Chrome exposes two kinds of WebSocket
+    endpoints. The [/json/version] endpoint returns a browser-level URL
+    ([/devtools/browser/UUID]) that only supports browser-wide commands
+    like [Browser.getVersion]. Page-level commands ([Runtime.evaluate],
+    [Emulation.*], [Page.*]) require connecting to a page target. The
+    [/json/list] endpoint returns all targets; we pick the first one
+    with ["type": "page"]. *)
+let fetch_page_ws_url ~net ~clock port =
+  let max_attempts = 20 in
+  let rec loop attempt =
+    if attempt > max_attempts then
+      failwith
+        (Printf.sprintf
+           "could not connect to Chromium on port %d after %d attempts"
+           port max_attempts)
+    else
+      let result =
+        try
+          let json = http_get_json ~net ~port "/json/list" in
+          match json with
+          | `List targets ->
+              List.find_map
+                (fun target ->
+                  match target with
+                  | `Assoc fields -> (
+                      match
+                        ( List.assoc_opt "type" fields,
+                          List.assoc_opt "webSocketDebuggerUrl" fields )
+                      with
+                      | Some (`String "page"), Some (`String url) -> Some url
+                      | _ -> None)
+                  | _ -> None)
+                targets
+          | _ -> None
+        with _ -> None
+      in
+      match result with
+      | Some url -> url
+      | None ->
+          Eio.Time.sleep clock 0.2;
+          loop (attempt + 1)
+  in
+  loop 1
+
+let launch ~sw ~proc_mgr ~net ~clock ?(port = 0) ?(headless = true) () =
   let chromium = find_chromium () in
   let stderr_r, stderr_w = Eio.Process.pipe ~sw proc_mgr in
   let args =
@@ -125,4 +176,4 @@ let launch ~sw ~proc_mgr ~net ?(port = 0) ?(headless = true) () =
   in
   Eio.Flow.close stderr_w;
   let actual_port = read_debug_port stderr_r in
-  fetch_ws_url ~sw ~net actual_port
+  fetch_page_ws_url ~net ~clock actual_port

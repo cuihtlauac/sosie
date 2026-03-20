@@ -4,3 +4,5 @@ module Snapshot_types = Sosie_shared.Snapshot_types
 module Property_whitelist = Sosie_shared.Property_whitelist
 module Cdp = Cdp
 module Cdp_launcher = Cdp_launcher
+module Capture = Capture
+module Extractor_js_source = Extractor_js_source

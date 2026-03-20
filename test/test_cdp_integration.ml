@@ -12,7 +12,8 @@ let browser_get_version () =
   Eio.Switch.run @@ fun sw ->
   let net = Eio.Stdenv.net env in
   let proc_mgr = Eio.Stdenv.process_mgr env in
-  let ws_url = Cdp_launcher.launch ~sw ~proc_mgr ~net () in
+  let clock = Eio.Stdenv.clock env in
+  let ws_url = Cdp_launcher.launch ~sw ~proc_mgr ~net ~clock () in
   let conn = Cdp.connect ~sw ~net ws_url in
   let result = Cdp.send conn "Browser.getVersion" (`Assoc []) in
   (match result with
@@ -35,7 +36,8 @@ let evaluate_simple_expression () =
   Eio.Switch.run @@ fun sw ->
   let net = Eio.Stdenv.net env in
   let proc_mgr = Eio.Stdenv.process_mgr env in
-  let ws_url = Cdp_launcher.launch ~sw ~proc_mgr ~net () in
+  let clock = Eio.Stdenv.clock env in
+  let ws_url = Cdp_launcher.launch ~sw ~proc_mgr ~net ~clock () in
   let conn = Cdp.connect ~sw ~net ws_url in
   let result = Cdp.evaluate_js conn "1 + 1" in
   Alcotest.(check string) "1 + 1 = 2" "2"

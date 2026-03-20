@@ -15,16 +15,19 @@ val launch :
   sw:Eio.Switch.t ->
   proc_mgr:_ Eio.Process.mgr ->
   net:Eio_unix.Net.t ->
+  clock:_ Eio.Time.clock ->
   ?port:int ->
   ?headless:bool ->
   unit ->
   string
-(** [launch ~sw ~proc_mgr ~net ()] starts a headless Chromium instance
-    and returns the WebSocket debugger URL from the
+(** [launch ~sw ~proc_mgr ~net ~clock ()] starts a headless Chromium
+    instance and returns the WebSocket debugger URL from the
     [/json/version] endpoint.
 
     The Chromium process is killed when [sw] is released.
 
+    @param clock Eio clock for retry sleeps while waiting for Chromium's
+      HTTP endpoint to become available.
     @param port CDP remote debugging port (default: 0, meaning Chromium
       picks a free port).
     @param headless Run in headless mode (default: [true]).

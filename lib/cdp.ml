@@ -181,6 +181,50 @@ let send conn method_ params =
 
 let close conn = Httpun_ws.Wsd.close conn.wsd
 
+let event_method json =
+  match json with
+  | `Assoc fields -> (
+      match List.assoc_opt "method" fields with
+      | Some (`String m) -> Some m
+      | _ -> None)
+  | _ -> None
+
+let event_params json =
+  match json with
+  | `Assoc fields -> (
+      match List.assoc_opt "params" fields with
+      | Some p -> p
+      | None -> `Assoc [])
+  | _ -> `Assoc []
+
+let wait_event conn method_ ?(timeout = 30.0) () =
+  let deadline = Unix.gettimeofday () +. timeout in
+  let rec poll () =
+    (* Check events already in the queue. *)
+    let found = ref None in
+    let keep = Queue.create () in
+    Eio.Mutex.use_rw ~protect:true conn.mutex (fun () ->
+        while not (Queue.is_empty conn.events) do
+          let ev = Queue.pop conn.events in
+          match event_method ev with
+          | Some m when m = method_ && Option.is_none !found ->
+              found := Some ev
+          | _ -> Queue.push ev keep
+        done;
+        Queue.transfer keep conn.events);
+    match !found with
+    | Some ev -> event_params ev
+    | None ->
+        if Unix.gettimeofday () >= deadline then
+          failwith (Printf.sprintf "timeout waiting for CDP event: %s" method_)
+        else begin
+          (* Yield briefly to allow the WebSocket reader fiber to run. *)
+          Eio.Fiber.yield ();
+          poll ()
+        end
+  in
+  poll ()
+
 let evaluate_js conn expr =
   let params =
     `Assoc

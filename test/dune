@@ -16,6 +16,12 @@
  (name test_cdp_integration)
  (libraries sosie alcotest eio_main))
 
+(executable
+ (name test_capture_integration)
+ (libraries sosie alcotest eio_main))
+
 (rule
  (alias integration)
- (action (run ./test_cdp_integration.exe)))
+ (action (progn
+  (run ./test_cdp_integration.exe)
+  (run ./test_capture_integration.exe))))

@@ -1,3 +1,12 @@
 (library
  (name sosie)
  (libraries sosie_shared yojson eio eio.unix httpun-ws httpun-ws-eio httpun bigstringaf base64))
+
+(rule
+ (target extractor_js_source.ml)
+ (deps ../js_extractor/extractor.bc.js)
+ (action (with-stdout-to %{target}
+  (progn
+   (echo "let source = {js|")
+   (cat ../js_extractor/extractor.bc.js)
+   (echo "|js}")))))
