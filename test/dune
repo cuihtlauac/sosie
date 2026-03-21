@@ -108,10 +108,30 @@
  (modules test_mutate)
  (libraries sosie re alcotest))
 
+(test
+ (name test_audit_whitelist)
+ (modules test_audit_whitelist)
+ (libraries sosie re alcotest))
+
+(test
+ (name test_diff_report)
+ (modules test_diff_report)
+ (libraries sosie re base64 alcotest))
+
+(test
+ (name test_show_config)
+ (modules test_show_config)
+ (libraries sosie re alcotest))
+
 (executable
  (name test_mutation_integration)
  (modules test_mutation_integration)
  (libraries sosie alcotest unix))
+
+(executable
+ (name test_audit_integration)
+ (modules test_audit_integration)
+ (libraries sosie alcotest))
 
 (rule
  (alias integration)
@@ -119,4 +139,5 @@
   (run ./test_cdp_integration.exe)
   (run ./test_capture_integration.exe)
   (run ./test_round_trip.exe)
-  (run ./test_mutation_integration.exe))))
+  (run ./test_mutation_integration.exe)
+  (run ./test_audit_integration.exe))))

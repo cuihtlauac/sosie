@@ -52,6 +52,15 @@ module Diff_fmt = Diff_fmt
 module Mutate = Mutate
 (** Mutation testing for snapshot sensitivity measurement. *)
 
+module Audit_whitelist = Audit_whitelist
+(** Whitelist blind-spot detection via CSS property complement reset. *)
+
+module Diff_report = Diff_report
+(** Self-contained HTML diff report with side-by-side screenshots. *)
+
+module Show_config = Show_config
+(** Visual normalization config overlay in a headed browser. *)
+
 module Extractor_js_source : sig
   val source : string
 end

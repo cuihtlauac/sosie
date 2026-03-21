@@ -85,7 +85,12 @@ let capture_cmd =
 
 (* --- compare command --- *)
 
-let run_compare baseline modified config_path =
+let write_file path data =
+  let oc = open_out_bin path in
+  output_string oc data;
+  close_out oc
+
+let run_compare baseline modified config_path report url_a url_b =
   match load_config config_path with
   | Error msg ->
     Printf.eprintf "Error: %s\n" msg;
@@ -96,6 +101,34 @@ let run_compare baseline modified config_path =
     let norm_a = Sosie.Normalize.apply config.normalize snap_a in
     let norm_b = Sosie.Normalize.apply config.normalize snap_b in
     let diffs = Sosie.Compare.compare_matched config.compare norm_a norm_b in
+    (* Generate HTML report if --report is set. *)
+    (match report with
+    | Some report_path ->
+        let src_a = match url_a with Some u -> u | None -> snap_a.url in
+        let src_b = match url_b with Some u -> u | None -> snap_b.url in
+        Sosie.Cdp_launcher.with_chromium (fun ws_url ->
+          let conn = Sosie.Cdp.connect ws_url in
+          let extractor_js = Sosie.Extractor_js_source.source in
+          (* Screenshot A *)
+          let _snap_a =
+            Sosie.Capture.capture conn ~extractor_js ~url:src_a
+              ~viewport:snap_a.viewport ~color_scheme:snap_a.color_scheme ()
+          in
+          let png_a = Sosie.Capture.screenshot conn in
+          (* Screenshot B *)
+          let _snap_b =
+            Sosie.Capture.capture conn ~extractor_js ~url:src_b
+              ~viewport:snap_b.viewport ~color_scheme:snap_b.color_scheme ()
+          in
+          let png_b = Sosie.Capture.screenshot conn in
+          Sosie.Cdp.close conn;
+          let html =
+            Sosie.Diff_report.generate ~root_a:norm_a.root ~root_b:norm_b.root
+              ~diffs ~screenshot_a:png_a ~screenshot_b:png_b
+          in
+          write_file report_path html;
+          Printf.printf "Report written to %s\n" report_path)
+    | None -> ());
     if diffs = [] then (
       print_endline (Sosie.Diff_fmt.summary diffs);
       exit 0)
@@ -120,7 +153,20 @@ let compare_cmd =
     Arg.(value & opt (some string) None & info [ "config" ] ~docv:"FILE"
            ~doc:"Config file (sosie.json). Optional.")
   in
-  Cmd.v info Term.(const run_compare $ baseline_arg $ modified_arg $ config_arg)
+  let report_arg =
+    Arg.(value & opt (some string) None & info [ "report" ] ~docv:"FILE"
+           ~doc:"Generate HTML diff report at FILE.")
+  in
+  let url_a_arg =
+    Arg.(value & opt (some string) None & info [ "url-a" ] ~docv:"URL"
+           ~doc:"Override baseline URL for screenshots in report.")
+  in
+  let url_b_arg =
+    Arg.(value & opt (some string) None & info [ "url-b" ] ~docv:"URL"
+           ~doc:"Override modified URL for screenshots in report.")
+  in
+  Cmd.v info Term.(const run_compare $ baseline_arg $ modified_arg $ config_arg
+                   $ report_arg $ url_a_arg $ url_b_arg)
 
 (* --- capture-all command --- *)
 
@@ -184,6 +230,75 @@ let capture_all_cmd =
   Cmd.v info Term.(const run_capture_all $ base_url_arg $ routes_arg
                    $ viewports_arg $ schemes_arg $ output_arg)
 
+(* --- audit-whitelist command --- *)
+
+let run_audit_whitelist url viewport color_scheme output =
+  Sosie.Cdp_launcher.with_chromium (fun ws_url ->
+    let conn = Sosie.Cdp.connect ws_url in
+    let extractor_js = Sosie.Extractor_js_source.source in
+    Sosie.Audit_whitelist.audit conn ~extractor_js ~url ~viewport
+      ~color_scheme ~output;
+    Sosie.Cdp.close conn)
+
+let audit_whitelist_cmd =
+  let doc = "Detect blind spots in the CSS property whitelist." in
+  let info = Cmd.info "audit-whitelist" ~doc in
+  let url_arg =
+    Arg.(required & opt (some string) None & info [ "url" ] ~docv:"URL"
+           ~doc:"Page URL to audit.")
+  in
+  let viewport_arg =
+    Arg.(value & opt viewport_conv (1920, 1080) & info [ "viewport" ]
+           ~docv:"WxH" ~doc:"Viewport dimensions (default: 1920x1080).")
+  in
+  let scheme_arg =
+    Arg.(value & opt scheme_enum `Light & info [ "scheme" ] ~docv:"SCHEME"
+           ~doc:"Color scheme: light or dark (default: light).")
+  in
+  let output_arg =
+    Arg.(required & opt (some string) None & info [ "output"; "o" ] ~docv:"FILE"
+           ~doc:"Output diff PNG path.")
+  in
+  Cmd.v info Term.(const run_audit_whitelist $ url_arg $ viewport_arg
+                   $ scheme_arg $ output_arg)
+
+(* --- show-config command --- *)
+
+let run_show_config url viewport color_scheme config_path =
+  match Sosie.Config.load config_path with
+  | Error msg ->
+    Printf.eprintf "Error: %s\n" msg;
+    exit 2
+  | Ok config ->
+    Sosie.Cdp_launcher.with_chromium ~headless:false (fun ws_url ->
+      let conn = Sosie.Cdp.connect ws_url in
+      let extractor_js = Sosie.Extractor_js_source.source in
+      Sosie.Show_config.show conn ~extractor_js ~url ~viewport
+        ~color_scheme ~config;
+      Sosie.Cdp.close conn)
+
+let show_config_cmd =
+  let doc = "Visualize normalization config overlays on a page." in
+  let info = Cmd.info "show-config" ~doc in
+  let url_arg =
+    Arg.(required & opt (some string) None & info [ "url" ] ~docv:"URL"
+           ~doc:"Page URL to visualize.")
+  in
+  let viewport_arg =
+    Arg.(value & opt viewport_conv (1920, 1080) & info [ "viewport" ]
+           ~docv:"WxH" ~doc:"Viewport dimensions (default: 1920x1080).")
+  in
+  let scheme_arg =
+    Arg.(value & opt scheme_enum `Light & info [ "scheme" ] ~docv:"SCHEME"
+           ~doc:"Color scheme: light or dark (default: light).")
+  in
+  let config_arg =
+    Arg.(required & opt (some string) None & info [ "config" ] ~docv:"FILE"
+           ~doc:"Config file (sosie.json).")
+  in
+  Cmd.v info Term.(const run_show_config $ url_arg $ viewport_arg
+                   $ scheme_arg $ config_arg)
+
 (* Main command *)
 
 let main_cmd =
@@ -191,6 +306,7 @@ let main_cmd =
     "DOM equivalence checker for UI-conservative HTML/CSS refactoring"
   in
   let info = Cmd.info "sosie" ~version ~doc in
-  Cmd.group info [ capture_cmd; compare_cmd; capture_all_cmd ]
+  Cmd.group info [ capture_cmd; compare_cmd; capture_all_cmd;
+                   audit_whitelist_cmd; show_config_cmd ]
 
 let () = exit (Cmd.eval main_cmd)

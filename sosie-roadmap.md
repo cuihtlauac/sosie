@@ -413,7 +413,7 @@ and all stratified random tests.
 
 ---
 
-## Step 9: Mutation testing and sensitivity measurement
+## Step 9: Mutation testing and sensitivity measurement [done]
 
 Build the CSS mutation harness. For a set of ocaml.org pages:
 1. Capture baseline.
@@ -457,7 +457,7 @@ equivalent. This is expected and not a gap.
 
 ---
 
-## Step 10: Visual tooling
+## Step 10: Visual tooling [done]
 
 Build the visual tools in order of value:
 
@@ -476,6 +476,60 @@ Build the visual tools in order of value:
 **On ocaml.org:** Use `audit-whitelist` on the homepage, /learn, /install,
 /packages. If the blind-spot pixel diff is empty, the whitelist is complete
 for ocaml.org. If not, add the missing properties.
+
+### Step 10 addendum (2026-03-21)
+
+Three new library modules, three new test suites, three new CLI subcommands.
+
+**New modules:**
+- `Audit_whitelist` (`lib/audit_whitelist.ml`): queries
+  `CSS.getSupportedCSSProperties` for the authoritative browser property list,
+  computes the complement against `Property_whitelist.css_names`, generates a
+  reset stylesheet (`* { prop: initial !important; }`), injects it via
+  `Runtime.evaluate` (not `CSS.addStyleSheet` — that CDP method doesn't
+  exist), and compares screenshots. ImageMagick `compare` produces the diff
+  image; graceful fallback saves both PNGs if unavailable.
+- `Diff_report` (`lib/diff_report.ml`): self-contained HTML report with
+  base64-encoded screenshots as data URIs, SVG overlay layers for colored
+  outlines (red=style, orange=bounds, blue=structural, purple=moved),
+  inline JS (~170 lines) for overlay positioning, click-to-inspect tooltips,
+  and diff-type filter checkboxes. Diffs serialized to JSON and embedded in
+  a `<script type="application/json">` element.
+- `Show_config` (`lib/show_config.ml`): generates JavaScript that injects
+  visual overlays for each normalization rule — yellow highlights for
+  `Mask_text`, red semi-transparent for `Drop_subtree`, blue dashed borders
+  for `Drop_attributes`, green grid lines for `Round_bounds`. Opens headed
+  (non-headless) Chromium via `Cdp_launcher.with_chromium ~headless:false`,
+  blocks until Enter.
+
+**CLI changes:**
+- `sosie audit-whitelist --url URL --output FILE [--viewport WxH] [--scheme light|dark]`
+- `sosie show-config --url URL --config FILE [--viewport WxH] [--scheme light|dark]`
+- `sosie compare` gains `--report FILE`, `--url-a URL`, `--url-b URL`.
+  When `--report` is set, launches Chromium, re-navigates to snapshot URLs
+  (or overrides), takes screenshots, and writes the HTML report.
+
+**Tests:**
+- `test_audit_whitelist.ml` (6 unit tests): reset complement correctness,
+  empty/full whitelist edge cases, CSS format, vendor-prefixed names,
+  whitelist count.
+- `test_diff_report.ml` (5 unit tests): valid HTML output, diff JSON
+  serialization, base64 encoding, all diff type coverage, HTML escaping.
+- `test_show_config.ml` (10 unit tests): `selector_to_css` for all 4
+  selector variants (including uppercase lowering), `overlay_js` for
+  `Drop_subtree`, `Mask_text`, `Round_bounds`, `Drop_attributes`, legend.
+- `test_audit_integration.ml` (1 integration test): verifies
+  `all_css_properties` returns a non-empty list containing `color`,
+  `display`, `font-size`. Wired into `dune build @integration`.
+
+**Design note:** The plan specified `CSS.addStyleSheet` for injecting the
+reset stylesheet. This CDP method does not exist. CSS injection uses
+`Runtime.evaluate` to create a `<style>` element via DOM APIs and force
+a reflow with `document.body.offsetHeight`. This is simpler and avoids
+requiring `CSS.enable`.
+
+**No new dependencies.** ImageMagick is an optional runtime tool.
+All OCaml code uses existing deps (yojson, base64, re).
 
 ---
 
@@ -663,8 +717,8 @@ testing would have missed.
 | [x] | 6 | First comparison works | 3, 5 | Diff detection on real pages |
 | [x] | 7 | First real refactoring validated | 6 | **Tool is useful** |
 | [x] | 8 | GumTree matcher works | 6 | Structural changes tolerated |
-| [ ] | 9 | Mutation score measured | 7 | **Tool is trustworthy** |
-| [ ] | 10 | Visual tooling | 7 | Human review is visual |
+| [x] | 9 | Mutation score measured | 7 | **Tool is trustworthy** |
+| [x] | 10 | Visual tooling | 7 | Human review is visual |
 | [ ] | 11 | CI integration for ocaml.org | 7 | **Tool is deployed** |
 | [ ] | 12 | Hardening | 11 | Production readiness |
 | [ ] | 13 | npm distribution + GitHub Action | 12 | **Mass adoption** |
