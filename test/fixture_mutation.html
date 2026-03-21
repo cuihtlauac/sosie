@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>*{margin:0;padding:0;box-sizing:border-box;}</style>
+</head>
+<body style="position:relative;width:800px;height:600px;background-color:rgb(255,255,255);">
+
+<!-- Header -->
+<div style="position:absolute;left:0px;top:0px;width:800px;height:60px;
+  background-color:rgb(33,37,41);color:rgb(255,255,255);font-size:24px;
+  font-weight:700;font-family:sans-serif;line-height:60px;text-align:center;
+  display:block;visibility:visible;opacity:1;
+  border-bottom-width:2px;border-bottom-style:solid;border-bottom-color:rgb(0,123,255);
+  border-top-width:0px;border-top-style:none;border-top-color:rgb(0,0,0);
+  border-left-width:0px;border-left-style:none;border-left-color:rgb(0,0,0);
+  border-right-width:0px;border-right-style:none;border-right-color:rgb(0,0,0);
+  border-radius:0px;box-shadow:none;overflow-x:visible;overflow-y:visible;
+  z-index:auto;cursor:auto;text-decoration:none;">Header
+</div>
+
+<!-- Navigation bar -->
+<div style="position:absolute;left:0px;top:60px;width:800px;height:40px;
+  background-color:rgb(248,249,250);color:rgb(73,80,87);font-size:14px;
+  font-weight:400;font-family:sans-serif;line-height:40px;text-align:start;
+  display:block;visibility:visible;opacity:1;
+  border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:rgb(222,226,230);
+  border-top-width:0px;border-top-style:none;border-top-color:rgb(0,0,0);
+  border-left-width:0px;border-left-style:none;border-left-color:rgb(0,0,0);
+  border-right-width:0px;border-right-style:none;border-right-color:rgb(0,0,0);
+  border-radius:0px;box-shadow:none;overflow-x:visible;overflow-y:visible;
+  z-index:auto;cursor:auto;text-decoration:none;">
+
+  <div style="position:absolute;left:20px;top:0px;width:60px;height:40px;
+    background-color:rgba(0,0,0,0);color:rgb(0,123,255);font-size:14px;
+    font-weight:400;font-family:sans-serif;line-height:40px;text-align:center;
+    display:block;visibility:visible;opacity:1;
+    border-top-width:0px;border-top-style:none;border-top-color:rgb(0,0,0);
+    border-right-width:0px;border-right-style:none;border-right-color:rgb(0,0,0);
+    border-bottom-width:0px;border-bottom-style:none;border-bottom-color:rgb(0,0,0);
+    border-left-width:0px;border-left-style:none;border-left-color:rgb(0,0,0);
+    border-radius:0px;box-shadow:none;overflow-x:visible;overflow-y:visible;
+    z-index:auto;cursor:pointer;text-decoration:none;">Home
+  </div>
+
+  <div style="position:absolute;left:100px;top:0px;width:60px;height:40px;
+    background-color:rgba(0,0,0,0);color:rgb(0,123,255);font-size:14px;
+    font-weight:400;font-family:sans-serif;line-height:40px;text-align:center;
+    display:block;visibility:visible;opacity:1;
+    border-top-width:0px;border-top-style:none;border-top-color:rgb(0,0,0);
+    border-right-width:0px;border-right-style:none;border-right-color:rgb(0,0,0);
+    border-bottom-width:0px;border-bottom-style:none;border-bottom-color:rgb(0,0,0);
+    border-left-width:0px;border-left-style:none;border-left-color:rgb(0,0,0);
+    border-radius:0px;box-shadow:none;overflow-x:visible;overflow-y:visible;
+    z-index:auto;cursor:pointer;text-decoration:none;">About
+  </div>
+</div>
+
+<!-- Sidebar -->
+<div style="position:absolute;left:0px;top:100px;width:200px;height:500px;
+  background-color:rgb(248,249,250);color:rgb(33,37,41);font-size:14px;
+  font-weight:400;font-family:sans-serif;line-height:20px;text-align:start;
+  display:block;visibility:visible;opacity:1;
+  border-right-width:1px;border-right-style:solid;border-right-color:rgb(222,226,230);
+  border-top-width:0px;border-top-style:none;border-top-color:rgb(0,0,0);
+  border-bottom-width:0px;border-bottom-style:none;border-bottom-color:rgb(0,0,0);
+  border-left-width:0px;border-left-style:none;border-left-color:rgb(0,0,0);
+  border-radius:0px;box-shadow:none;overflow-x:visible;overflow-y:auto;
+  z-index:auto;cursor:auto;text-decoration:none;">
+
+  <div style="position:absolute;left:10px;top:10px;width:180px;height:30px;
+    background-color:rgba(0,0,0,0);color:rgb(33,37,41);font-size:16px;
+    font-weight:700;font-family:sans-serif;line-height:30px;text-align:start;
+    display:block;visibility:visible;opacity:1;
+    border-top-width:0px;border-top-style:none;border-top-color:rgb(0,0,0);
+    border-right-width:0px;border-right-style:none;border-right-color:rgb(0,0,0);
+    border-bottom-width:0px;border-bottom-style:none;border-bottom-color:rgb(0,0,0);
+    border-left-width:0px;border-left-style:none;border-left-color:rgb(0,0,0);
+    border-radius:0px;box-shadow:none;overflow-x:visible;overflow-y:visible;
+    z-index:auto;cursor:auto;text-decoration:none;">Section
+  </div>
+
+  <div style="position:absolute;left:10px;top:50px;width:180px;height:24px;
+    background-color:rgb(0,123,255);color:rgb(255,255,255);font-size:13px;
+    font-weight:400;font-family:sans-serif;line-height:24px;text-align:start;
+    display:block;visibility:visible;opacity:1;
+    border-top-width:0px;border-top-style:none;border-top-color:rgb(0,0,0);
+    border-right-width:0px;border-right-style:none;border-right-color:rgb(0,0,0);
+    border-bottom-width:0px;border-bottom-style:none;border-bottom-color:rgb(0,0,0);
+    border-left-width:0px;border-left-style:none;border-left-color:rgb(0,0,0);
+    border-radius:4px;box-shadow:none;overflow-x:visible;overflow-y:visible;
+    z-index:auto;cursor:pointer;text-decoration:none;">Item 1
+  </div>
+
+  <div style="position:absolute;left:10px;top:84px;width:180px;height:24px;
+    background-color:rgba(0,0,0,0);color:rgb(73,80,87);font-size:13px;
+    font-weight:400;font-family:sans-serif;line-height:24px;text-align:start;
+    display:block;visibility:visible;opacity:1;
+    border-top-width:0px;border-top-style:none;border-top-color:rgb(0,0,0);
+    border-right-width:0px;border-right-style:none;border-right-color:rgb(0,0,0);
+    border-bottom-width:0px;border-bottom-style:none;border-bottom-color:rgb(0,0,0);
+    border-left-width:0px;border-left-style:none;border-left-color:rgb(0,0,0);
+    border-radius:4px;box-shadow:none;overflow-x:visible;overflow-y:visible;
+    z-index:auto;cursor:pointer;text-decoration:none;">Item 2
+  </div>
+
+  <div style="position:absolute;left:10px;top:118px;width:180px;height:24px;
+    background-color:rgba(0,0,0,0);color:rgb(73,80,87);font-size:13px;
+    font-weight:400;font-family:sans-serif;line-height:24px;text-align:start;
+    display:block;visibility:visible;opacity:1;
+    border-top-width:0px;border-top-style:none;border-top-color:rgb(0,0,0);
+    border-right-width:0px;border-right-style:none;border-right-color:rgb(0,0,0);
+    border-bottom-width:0px;border-bottom-style:none;border-bottom-color:rgb(0,0,0);
+    border-left-width:0px;border-left-style:none;border-left-color:rgb(0,0,0);
+    border-radius:4px;box-shadow:none;overflow-x:visible;overflow-y:visible;
+    z-index:auto;cursor:pointer;text-decoration:none;">Item 3
+  </div>
+</div>
+
+<!-- Main content area -->
+<div style="position:absolute;left:200px;top:100px;width:600px;height:500px;
+  background-color:rgb(255,255,255);color:rgb(33,37,41);font-size:16px;
+  font-weight:400;font-family:sans-serif;line-height:24px;text-align:start;
+  display:block;visibility:visible;opacity:1;
+  border-top-width:0px;border-top-style:none;border-top-color:rgb(0,0,0);
+  border-right-width:0px;border-right-style:none;border-right-color:rgb(0,0,0);
+  border-bottom-width:0px;border-bottom-style:none;border-bottom-color:rgb(0,0,0);
+  border-left-width:0px;border-left-style:none;border-left-color:rgb(0,0,0);
+  border-radius:0px;box-shadow:none;overflow-x:visible;overflow-y:auto;
+  z-index:auto;cursor:auto;text-decoration:none;">
+
+  <!-- Heading -->
+  <div style="position:absolute;left:20px;top:20px;width:560px;height:36px;
+    background-color:rgba(0,0,0,0);color:rgb(33,37,41);font-size:28px;
+    font-weight:700;font-family:sans-serif;line-height:36px;text-align:start;
+    display:block;visibility:visible;opacity:1;
+    border-top-width:0px;border-top-style:none;border-top-color:rgb(0,0,0);
+    border-right-width:0px;border-right-style:none;border-right-color:rgb(0,0,0);
+    border-bottom-width:0px;border-bottom-style:none;border-bottom-color:rgb(0,0,0);
+    border-left-width:0px;border-left-style:none;border-left-color:rgb(0,0,0);
+    border-radius:0px;box-shadow:none;overflow-x:visible;overflow-y:visible;
+    z-index:auto;cursor:auto;text-decoration:none;">Dashboard
+  </div>
+
+  <!-- Subheading -->
+  <div style="position:absolute;left:20px;top:66px;width:560px;height:24px;
+    background-color:rgba(0,0,0,0);color:rgb(108,117,125);font-size:18px;
+    font-weight:400;font-family:sans-serif;line-height:24px;text-align:start;
+    display:block;visibility:visible;opacity:1;
+    border-top-width:0px;border-top-style:none;border-top-color:rgb(0,0,0);
+    border-right-width:0px;border-right-style:none;border-right-color:rgb(0,0,0);
+    border-bottom-width:0px;border-bottom-style:none;border-bottom-color:rgb(0,0,0);
+    border-left-width:0px;border-left-style:none;border-left-color:rgb(0,0,0);
+    border-radius:0px;box-shadow:none;overflow-x:visible;overflow-y:visible;
+    z-index:auto;cursor:auto;text-decoration:none;">Overview of recent activity
+  </div>
+
+  <!-- Card row -->
+  <div style="position:absolute;left:20px;top:110px;width:560px;height:150px;
+    background-color:rgba(0,0,0,0);color:rgb(33,37,41);font-size:16px;
+    font-weight:400;font-family:sans-serif;line-height:24px;text-align:start;
+    display:block;visibility:visible;opacity:1;
+    border-top-width:0px;border-top-style:none;border-top-color:rgb(0,0,0);
+    border-right-width:0px;border-right-style:none;border-right-color:rgb(0,0,0);
+    border-bottom-width:0px;border-bottom-style:none;border-bottom-color:rgb(0,0,0);
+    border-left-width:0px;border-left-style:none;border-left-color:rgb(0,0,0);
+    border-radius:0px;box-shadow:none;overflow-x:visible;overflow-y:visible;
+    z-index:auto;cursor:auto;text-decoration:none;">
+
+    <!-- Card 1 -->
+    <div style="position:absolute;left:0px;top:0px;width:170px;height:140px;
+      background-color:rgb(255,255,255);color:rgb(33,37,41);font-size:14px;
+      font-weight:400;font-family:sans-serif;line-height:20px;text-align:start;
+      display:block;visibility:visible;opacity:1;
+      border-top-width:1px;border-top-style:solid;border-top-color:rgb(222,226,230);
+      border-right-width:1px;border-right-style:solid;border-right-color:rgb(222,226,230);
+      border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:rgb(222,226,230);
+      border-left-width:1px;border-left-style:solid;border-left-color:rgb(222,226,230);
+      border-radius:8px;box-shadow:none;overflow-x:hidden;overflow-y:hidden;
+      z-index:auto;cursor:pointer;text-decoration:none;">
+
+      <div style="position:absolute;left:10px;top:10px;width:150px;height:20px;
+        background-color:rgba(0,0,0,0);color:rgb(33,37,41);font-size:16px;
+        font-weight:700;font-family:sans-serif;line-height:20px;text-align:start;
+        display:block;visibility:visible;opacity:1;
+        border-top-width:0px;border-top-style:none;border-top-color:rgb(0,0,0);
+        border-right-width:0px;border-right-style:none;border-right-color:rgb(0,0,0);
+        border-bottom-width:0px;border-bottom-style:none;border-bottom-color:rgb(0,0,0);
+        border-left-width:0px;border-left-style:none;border-left-color:rgb(0,0,0);
+        border-radius:0px;box-shadow:none;overflow-x:visible;overflow-y:visible;
+        z-index:auto;cursor:auto;text-decoration:none;">Card 1
+      </div>
+
+      <div style="position:absolute;left:10px;top:40px;width:150px;height:80px;
+        background-color:rgba(0,0,0,0);color:rgb(108,117,125);font-size:13px;
+        font-weight:400;font-family:sans-serif;line-height:18px;text-align:start;
+        display:block;visibility:visible;opacity:1;
+        border-top-width:0px;border-top-style:none;border-top-color:rgb(0,0,0);
+        border-right-width:0px;border-right-style:none;border-right-color:rgb(0,0,0);
+        border-bottom-width:0px;border-bottom-style:none;border-bottom-color:rgb(0,0,0);
+        border-left-width:0px;border-left-style:none;border-left-color:rgb(0,0,0);
+        border-radius:0px;box-shadow:none;overflow-x:visible;overflow-y:visible;
+        z-index:auto;cursor:auto;text-decoration:none;">Description of the first card with details.
+      </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div style="position:absolute;left:190px;top:0px;width:170px;height:140px;
+      background-color:rgb(255,255,255);color:rgb(33,37,41);font-size:14px;
+      font-weight:400;font-family:sans-serif;line-height:20px;text-align:start;
+      display:block;visibility:visible;opacity:1;
+      border-top-width:1px;border-top-style:solid;border-top-color:rgb(222,226,230);
+      border-right-width:1px;border-right-style:solid;border-right-color:rgb(222,226,230);
+      border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:rgb(222,226,230);
+      border-left-width:1px;border-left-style:solid;border-left-color:rgb(222,226,230);
+      border-radius:8px;box-shadow:none;overflow-x:hidden;overflow-y:hidden;
+      z-index:auto;cursor:pointer;text-decoration:none;">
+
+      <div style="position:absolute;left:10px;top:10px;width:150px;height:20px;
+        background-color:rgba(0,0,0,0);color:rgb(33,37,41);font-size:16px;
+        font-weight:700;font-family:sans-serif;line-height:20px;text-align:start;
+        display:block;visibility:visible;opacity:1;
+        border-top-width:0px;border-top-style:none;border-top-color:rgb(0,0,0);
+        border-right-width:0px;border-right-style:none;border-right-color:rgb(0,0,0);
+        border-bottom-width:0px;border-bottom-style:none;border-bottom-color:rgb(0,0,0);
+        border-left-width:0px;border-left-style:none;border-left-color:rgb(0,0,0);
+        border-radius:0px;box-shadow:none;overflow-x:visible;overflow-y:visible;
+        z-index:auto;cursor:auto;text-decoration:none;">Card 2
+      </div>
+
+      <div style="position:absolute;left:10px;top:40px;width:150px;height:80px;
+        background-color:rgba(0,0,0,0);color:rgb(108,117,125);font-size:13px;
+        font-weight:400;font-family:sans-serif;line-height:18px;text-align:start;
+        display:block;visibility:visible;opacity:1;
+        border-top-width:0px;border-top-style:none;border-top-color:rgb(0,0,0);
+        border-right-width:0px;border-right-style:none;border-right-color:rgb(0,0,0);
+        border-bottom-width:0px;border-bottom-style:none;border-bottom-color:rgb(0,0,0);
+        border-left-width:0px;border-left-style:none;border-left-color:rgb(0,0,0);
+        border-radius:0px;box-shadow:none;overflow-x:visible;overflow-y:visible;
+        z-index:auto;cursor:auto;text-decoration:none;">Description of the second card content.
+      </div>
+    </div>
+
+    <!-- Card 3 -->
+    <div style="position:absolute;left:380px;top:0px;width:170px;height:140px;
+      background-color:rgb(255,255,255);color:rgb(33,37,41);font-size:14px;
+      font-weight:400;font-family:sans-serif;line-height:20px;text-align:center;
+      display:block;visibility:visible;opacity:0.8;
+      border-top-width:2px;border-top-style:dashed;border-top-color:rgb(0,123,255);
+      border-right-width:2px;border-right-style:dashed;border-right-color:rgb(0,123,255);
+      border-bottom-width:2px;border-bottom-style:dashed;border-bottom-color:rgb(0,123,255);
+      border-left-width:2px;border-left-style:dashed;border-left-color:rgb(0,123,255);
+      border-radius:12px;box-shadow:none;overflow-x:hidden;overflow-y:hidden;
+      z-index:auto;cursor:pointer;text-decoration:none;">
+
+      <div style="position:absolute;left:10px;top:10px;width:150px;height:20px;
+        background-color:rgba(0,0,0,0);color:rgb(0,123,255);font-size:16px;
+        font-weight:700;font-family:sans-serif;line-height:20px;text-align:center;
+        display:block;visibility:visible;opacity:1;
+        border-top-width:0px;border-top-style:none;border-top-color:rgb(0,0,0);
+        border-right-width:0px;border-right-style:none;border-right-color:rgb(0,0,0);
+        border-bottom-width:0px;border-bottom-style:none;border-bottom-color:rgb(0,0,0);
+        border-left-width:0px;border-left-style:none;border-left-color:rgb(0,0,0);
+        border-radius:0px;box-shadow:none;overflow-x:visible;overflow-y:visible;
+        z-index:auto;cursor:auto;text-decoration:none;">Card 3
+      </div>
+    </div>
+  </div>
+
+  <!-- Paragraph section -->
+  <div style="position:absolute;left:20px;top:280px;width:560px;height:80px;
+    background-color:rgba(0,0,0,0);color:rgb(73,80,87);font-size:15px;
+    font-weight:400;font-family:serif;line-height:22px;text-align:justify;
+    display:block;visibility:visible;opacity:1;
+    border-top-width:0px;border-top-style:none;border-top-color:rgb(0,0,0);
+    border-right-width:0px;border-right-style:none;border-right-color:rgb(0,0,0);
+    border-bottom-width:0px;border-bottom-style:none;border-bottom-color:rgb(0,0,0);
+    border-left-width:0px;border-left-style:none;border-left-color:rgb(0,0,0);
+    border-radius:0px;box-shadow:none;overflow-x:visible;overflow-y:visible;
+    z-index:auto;cursor:auto;text-decoration:none;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+  </div>
+
+  <!-- Button row -->
+  <div style="position:absolute;left:20px;top:380px;width:560px;height:40px;
+    background-color:rgba(0,0,0,0);color:rgb(33,37,41);font-size:14px;
+    font-weight:400;font-family:sans-serif;line-height:40px;text-align:start;
+    display:block;visibility:visible;opacity:1;
+    border-top-width:0px;border-top-style:none;border-top-color:rgb(0,0,0);
+    border-right-width:0px;border-right-style:none;border-right-color:rgb(0,0,0);
+    border-bottom-width:0px;border-bottom-style:none;border-bottom-color:rgb(0,0,0);
+    border-left-width:0px;border-left-style:none;border-left-color:rgb(0,0,0);
+    border-radius:0px;box-shadow:none;overflow-x:visible;overflow-y:visible;
+    z-index:auto;cursor:auto;text-decoration:none;">
+
+    <!-- Primary button -->
+    <div style="position:absolute;left:0px;top:0px;width:120px;height:36px;
+      background-color:rgb(0,123,255);color:rgb(255,255,255);font-size:14px;
+      font-weight:400;font-family:sans-serif;line-height:36px;text-align:center;
+      display:block;visibility:visible;opacity:1;
+      border-top-width:1px;border-top-style:solid;border-top-color:rgb(0,123,255);
+      border-right-width:1px;border-right-style:solid;border-right-color:rgb(0,123,255);
+      border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:rgb(0,123,255);
+      border-left-width:1px;border-left-style:solid;border-left-color:rgb(0,123,255);
+      border-radius:4px;box-shadow:none;overflow-x:visible;overflow-y:visible;
+      z-index:auto;cursor:pointer;text-decoration:none;">Primary
+    </div>
+
+    <!-- Secondary button -->
+    <div style="position:absolute;left:140px;top:0px;width:120px;height:36px;
+      background-color:rgb(108,117,125);color:rgb(255,255,255);font-size:14px;
+      font-weight:400;font-family:sans-serif;line-height:36px;text-align:center;
+      display:block;visibility:visible;opacity:1;
+      border-top-width:1px;border-top-style:solid;border-top-color:rgb(108,117,125);
+      border-right-width:1px;border-right-style:solid;border-right-color:rgb(108,117,125);
+      border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:rgb(108,117,125);
+      border-left-width:1px;border-left-style:solid;border-left-color:rgb(108,117,125);
+      border-radius:4px;box-shadow:none;overflow-x:visible;overflow-y:visible;
+      z-index:auto;cursor:pointer;text-decoration:none;">Secondary
+    </div>
+
+    <!-- Outline button -->
+    <div style="position:absolute;left:280px;top:0px;width:120px;height:36px;
+      background-color:rgba(0,0,0,0);color:rgb(0,123,255);font-size:14px;
+      font-weight:400;font-family:sans-serif;line-height:36px;text-align:center;
+      display:block;visibility:visible;opacity:1;
+      border-top-width:1px;border-top-style:solid;border-top-color:rgb(0,123,255);
+      border-right-width:1px;border-right-style:solid;border-right-color:rgb(0,123,255);
+      border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:rgb(0,123,255);
+      border-left-width:1px;border-left-style:solid;border-left-color:rgb(0,123,255);
+      border-radius:4px;box-shadow:none;overflow-x:visible;overflow-y:visible;
+      z-index:auto;cursor:pointer;text-decoration:none;">Outline
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div style="position:absolute;left:20px;top:440px;width:560px;height:40px;
+    background-color:rgba(0,0,0,0);color:rgb(173,181,189);font-size:12px;
+    font-weight:400;font-family:sans-serif;line-height:40px;text-align:center;
+    display:block;visibility:visible;opacity:0.7;
+    border-top-width:1px;border-top-style:solid;border-top-color:rgb(222,226,230);
+    border-right-width:0px;border-right-style:none;border-right-color:rgb(0,0,0);
+    border-bottom-width:0px;border-bottom-style:none;border-bottom-color:rgb(0,0,0);
+    border-left-width:0px;border-left-style:none;border-left-color:rgb(0,0,0);
+    border-radius:0px;box-shadow:none;overflow-x:visible;overflow-y:visible;
+    z-index:auto;cursor:auto;text-decoration:none;">Footer
+  </div>
+
+  <!-- Overlapping z-index pair -->
+  <div style="position:absolute;left:420px;top:380px;width:140px;height:80px;
+    background-color:rgb(255,0,0);color:rgb(255,255,255);font-size:14px;
+    font-weight:400;font-family:sans-serif;line-height:80px;text-align:center;
+    display:block;visibility:visible;opacity:1;
+    border-top-width:0px;border-top-style:none;border-top-color:rgb(0,0,0);
+    border-right-width:0px;border-right-style:none;border-right-color:rgb(0,0,0);
+    border-bottom-width:0px;border-bottom-style:none;border-bottom-color:rgb(0,0,0);
+    border-left-width:0px;border-left-style:none;border-left-color:rgb(0,0,0);
+    border-radius:0px;box-shadow:none;overflow-x:visible;overflow-y:visible;
+    z-index:1;cursor:auto;text-decoration:none;">Back
+  </div>
+
+  <div style="position:absolute;left:470px;top:400px;width:140px;height:80px;
+    background-color:rgb(0,0,255);color:rgb(255,255,255);font-size:14px;
+    font-weight:400;font-family:sans-serif;line-height:80px;text-align:center;
+    display:block;visibility:visible;opacity:1;
+    border-top-width:0px;border-top-style:none;border-top-color:rgb(0,0,0);
+    border-right-width:0px;border-right-style:none;border-right-color:rgb(0,0,0);
+    border-bottom-width:0px;border-bottom-style:none;border-bottom-color:rgb(0,0,0);
+    border-left-width:0px;border-left-style:none;border-left-color:rgb(0,0,0);
+    border-radius:0px;box-shadow:none;overflow-x:visible;overflow-y:visible;
+    z-index:2;cursor:auto;text-decoration:none;">Front
+  </div>
+</div>
+
+</body>
+</html>

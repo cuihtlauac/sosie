@@ -49,6 +49,9 @@ module Config = Config
 module Diff_fmt = Diff_fmt
 (** Human-readable diff formatting. *)
 
+module Mutate = Mutate
+(** Mutation testing for snapshot sensitivity measurement. *)
+
 module Extractor_js_source : sig
   val source : string
 end

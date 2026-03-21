@@ -158,6 +158,24 @@ let text_nodes_skipped () =
   Alcotest.(check bool) "no text node div"
     false (contains_substring html "hello")
 
+let text_content_emitted () =
+  let child =
+    make_node ~text:(Some "Hello world") ()
+  in
+  let root = make_node ~children:[ child ] () in
+  let html = Snapshot_gen.to_html (make_snapshot ~root ()) in
+  Alcotest.(check bool) "text content present"
+    true (contains_substring html "Hello world")
+
+let text_content_escaped () =
+  let child =
+    make_node ~text:(Some "a<b&c") ()
+  in
+  let root = make_node ~children:[ child ] () in
+  let html = Snapshot_gen.to_html (make_snapshot ~root ()) in
+  Alcotest.(check bool) "text content escaped"
+    true (contains_substring html "a&lt;b&amp;c")
+
 let attributes_emitted () =
   let child =
     make_node ~attributes:[ ("class", "foo"); ("id", "bar") ] ()
@@ -243,6 +261,8 @@ let () =
           Alcotest.test_case "nested positioning" `Quick nested_positioning;
           Alcotest.test_case "multiple siblings" `Quick multiple_siblings;
           Alcotest.test_case "text nodes skipped" `Quick text_nodes_skipped;
+          Alcotest.test_case "text content emitted" `Quick text_content_emitted;
+          Alcotest.test_case "text content escaped" `Quick text_content_escaped;
         ] );
       ( "style-output",
         [

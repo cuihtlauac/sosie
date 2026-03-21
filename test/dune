@@ -103,9 +103,20 @@
  (modules test_round_trip)
  (libraries sosie alcotest base64 qcheck-core qcheck-alcotest))
 
+(test
+ (name test_mutate)
+ (modules test_mutate)
+ (libraries sosie re alcotest))
+
+(executable
+ (name test_mutation_integration)
+ (modules test_mutation_integration)
+ (libraries sosie alcotest unix))
+
 (rule
  (alias integration)
  (action (progn
   (run ./test_cdp_integration.exe)
   (run ./test_capture_integration.exe)
-  (run ./test_round_trip.exe))))
+  (run ./test_round_trip.exe)
+  (run ./test_mutation_integration.exe))))

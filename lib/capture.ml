@@ -2,6 +2,45 @@
 
     See {!Capture} (the .mli) for the public interface documentation. *)
 
+let extract conn ~extractor_js =
+  (* Inject the JSOO extractor source. *)
+  let _inject =
+    Cdp.send conn "Runtime.evaluate"
+      (`Assoc
+        [
+          ("expression", `String extractor_js);
+          ("returnByValue", `Bool false);
+        ])
+  in
+  (* Execute the capture function. *)
+  let result =
+    Cdp.send conn "Runtime.evaluate"
+      (`Assoc
+        [
+          ("expression", `String "sosieCapture()");
+          ("returnByValue", `Bool true);
+          ("awaitPromise", `Bool false);
+        ])
+  in
+  (* Extract the value from the Runtime.evaluate result envelope. *)
+  match result with
+  | `Assoc fields -> (
+      match List.assoc_opt "exceptionDetails" fields with
+      | Some details ->
+          failwith
+            (Printf.sprintf "extractor exception: %s"
+               (Yojson.Safe.to_string details))
+      | None -> (
+          match List.assoc_opt "result" fields with
+          | Some (`Assoc result_fields) -> (
+              match List.assoc_opt "value" result_fields with
+              | Some value -> value
+              | None ->
+                  failwith "extractor returned no value (returnByValue may have failed)")
+          | Some other -> other
+          | None -> failwith "extractor returned no result"))
+  | other -> other
+
 let capture conn ~extractor_js ~url ?(viewport = (1920, 1080))
     ?(color_scheme = `Light) () =
   let vw, vh = viewport in
@@ -45,40 +84,16 @@ let capture conn ~extractor_js ~url ?(viewport = (1920, 1080))
           ("returnByValue", `Bool false);
         ])
   in
-  (* 7. Inject the JSOO extractor source. *)
-  let _inject =
-    Cdp.send conn "Runtime.evaluate"
-      (`Assoc
-        [
-          ("expression", `String extractor_js);
-          ("returnByValue", `Bool false);
-        ])
-  in
-  (* 8. Execute the capture function. *)
+  extract conn ~extractor_js
+
+let screenshot conn =
   let result =
-    Cdp.send conn "Runtime.evaluate"
-      (`Assoc
-        [
-          ("expression", `String "sosieCapture()");
-          ("returnByValue", `Bool true);
-          ("awaitPromise", `Bool false);
-        ])
+    Cdp.send conn "Page.captureScreenshot"
+      (`Assoc [ ("format", `String "png") ])
   in
-  (* Extract the value from the Runtime.evaluate result envelope. *)
   match result with
   | `Assoc fields -> (
-      match List.assoc_opt "exceptionDetails" fields with
-      | Some details ->
-          failwith
-            (Printf.sprintf "extractor exception: %s"
-               (Yojson.Safe.to_string details))
-      | None -> (
-          match List.assoc_opt "result" fields with
-          | Some (`Assoc result_fields) -> (
-              match List.assoc_opt "value" result_fields with
-              | Some value -> value
-              | None ->
-                  failwith "extractor returned no value (returnByValue may have failed)")
-          | Some other -> other
-          | None -> failwith "extractor returned no result"))
-  | other -> other
+      match List.assoc_opt "data" fields with
+      | Some (`String b64) -> Base64.decode_exn b64
+      | _ -> failwith "Page.captureScreenshot: missing data field")
+  | _ -> failwith "Page.captureScreenshot: unexpected response"

@@ -14,4 +14,5 @@ module Lcs = Lcs
 module Gumtree = Gumtree
 module Config = Config
 module Diff_fmt = Diff_fmt
+module Mutate = Mutate
 module Extractor_js_source = Extractor_js_source

@@ -24,3 +24,16 @@ val capture :
     @param color_scheme Emulated color scheme (default: [`Light]).
     @raise Failure if navigation fails, the page doesn't load within
       30 seconds, or the extractor returns an error. *)
+
+val extract : Cdp.connection -> extractor_js:string -> Yojson.Safe.t
+(** [extract conn ~extractor_js] injects the extractor into the
+    already-loaded page and runs it. Does NOT navigate — the caller
+    must ensure the page is loaded.
+
+    @param extractor_js The full source of the JSOO extractor.
+    @raise Failure if the extractor throws or returns no value. *)
+
+val screenshot : Cdp.connection -> string
+(** Take a PNG screenshot of the current page. Returns raw PNG bytes
+    (decoded from the base64 response).
+    @raise Failure if the CDP call fails or the response is malformed. *)

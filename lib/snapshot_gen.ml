@@ -82,6 +82,9 @@ let rec render_node buf ~parent_x ~parent_y (n : node) =
         "" n.attributes
     in
     Printf.bprintf buf "<div%s style=\"%s\">" attrs_str (escape_html style);
+    (match n.text with
+     | Some t -> Buffer.add_string buf (escape_html t)
+     | None -> ());
     List.iter
       (render_node buf ~parent_x:n.bounds.x ~parent_y:n.bounds.y)
       n.children;

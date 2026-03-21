@@ -431,6 +431,30 @@ matcher losing the element?).
 
 This is the step where the tool earns quantitative trust.
 
+### Step 9 addendum (2026-03-21)
+
+**Unit_change operator omitted by design.** The design doc (line 1103) lists
+"Unit change: `width: 100px` → `100%` (where they differ)" as a mutation
+operator. This operator is inapplicable at the snapshot level because sosie
+operates on `getComputedStyle` output, which always resolves values to their
+final computed form (`px` for lengths, absolute colors, etc.). Both `100px`
+and the `100%` that resolves to `100px` appear identically as `"100px"` in
+the snapshot. A unit-change mutation would always produce an equivalent
+mutant — the browser has already erased the distinction.
+
+The design doc's operator was written for a source-level mutation model
+(mutating the CSS source before the browser resolves it). Sosie's
+snapshot-level approach is fundamentally different: it mutates the resolved
+computed values, which is the correct level for testing the comparison
+pipeline. Source-level CSS mutations would test the browser's CSS resolver,
+not sosie's comparison logic.
+
+**Cursor mutations are inherently equivalent.** The `cursor` CSS property
+affects the mouse cursor image, which is not part of the page render — the
+browser composites it separately from page content. Screenshot-based
+equivalent-mutant filtering correctly identifies all `cursor` mutations as
+equivalent. This is expected and not a gap.
+
 ---
 
 ## Step 10: Visual tooling
