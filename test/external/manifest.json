@@ -1,0 +1,56 @@
+{
+  "wpt": {
+    "commit": "55d076dca564300616a75eec5ec696e805c7bc3b",
+    "repo": "https://github.com/web-platform-tests/wpt.git",
+    "paths": [
+      "css/css-backgrounds/background-334.html",
+      "css/css-backgrounds/background-attachment-350.html",
+      "css/css-backgrounds/background-attachment-353.html",
+      "css/css-backgrounds/background-attachment-fixed-block-002.html",
+      "css/css-box/margin-trim/block-container-block-001.html",
+      "css/css-box/margin-trim/block-container-block-002.html",
+      "css/css-box/margin-trim/block-container-block-end-001.html",
+      "css/css-box/margin-trim/block-container-block-end-002.html",
+      "css/css-color/a98rgb-001.html",
+      "css/css-color/a98rgb-002.html",
+      "css/css-color/a98rgb-003.html",
+      "css/css-color/a98rgb-004.html",
+      "css/css-display/display-contents-alignment-001.html",
+      "css/css-display/display-contents-alignment-002.html",
+      "css/css-display/display-contents-before-after-001.html",
+      "css/css-display/display-contents-before-after-002.html",
+      "css/css-fonts/alternates-order.html",
+      "css/css-fonts/ascent-descent-override.html",
+      "css/css-fonts/downloadable-font-scoped-to-document.html",
+      "css/css-fonts/first-available-font-001.html",
+      "css/css-overflow/clip-001.html",
+      "css/css-overflow/clip-002.html",
+      "css/css-overflow/clip-003.html",
+      "css/css-position/position-relative-001.html",
+      "css/css-position/block-axis-constraint-changes-for-out-of-flow-box.html",
+      "css/css-text/text-align/text-align-006.html",
+      "css/css-text/text-align/text-align-007.html",
+      "css/css-text/text-align/text-align-center-last-default.html",
+      "css/css-text/text-align/text-align-default-last-default.html",
+      "css/css-text/text-align/text-align-last-center.html",
+      "css/css-text/text-align/text-align-last-end.html"
+    ],
+    "support_paths": [
+      "css/support/",
+      "css/reference/",
+      "css/css-backgrounds/reference/",
+      "common/",
+      "fonts/"
+    ]
+  },
+  "zen_garden": {
+    "base_url": "http://www.csszengarden.com",
+    "designs": [1, 2, 3, 5, 8]
+  },
+  "acid3": {
+    "url": "http://acid3.acidtests.org/"
+  },
+  "aria_apg": {
+    "_comment": "ARIA tests use a self-contained HTML fixture, no download needed."
+  }
+}

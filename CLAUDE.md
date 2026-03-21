@@ -24,6 +24,20 @@ opam exec -- dune exec sosie -- --version
 Do **not** use `eval $(opam env ...)` — it does not persist across Bash
 tool invocations. `opam exec --` is the correct way.
 
+### External test suites
+
+External CSS test suites (WPT reftests, CSS Zen Garden, Acid3, ARIA APG)
+live in `test/external/`. Resources must be downloaded before running:
+
+```
+test/external/fetch.sh
+opam exec -- dune build @external
+```
+
+The `@external` alias is separate from `@integration` because it requires
+downloaded resources and is much slower (~200+ browser captures). Intended
+for nightly CI or pre-release validation, not every commit.
+
 ## Code standards
 
 ### Documentation

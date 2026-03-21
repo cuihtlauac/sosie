@@ -169,6 +169,7 @@ let with_chromium ?(port = 0) ?(headless = true) f =
         "--disable-gpu";
         "--disable-extensions";
         "--disable-background-networking";
+        "--disable-component-extensions-with-background-pages";
         "about:blank";
       ]
   in

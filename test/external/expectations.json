@@ -1,0 +1,120 @@
+{
+  "_comment": "Maps test paths to expected outcomes. Absent = pass.",
+  "wpt": {
+    "css/css-backgrounds/background-334.html": {
+      "status": "xfail",
+      "reason": "background-image with background-size — different DOM structure between test/ref"
+    },
+    "css/css-backgrounds/background-attachment-350.html": {
+      "status": "xfail",
+      "reason": "background-attachment test — different element structure between test/ref"
+    },
+    "css/css-backgrounds/background-attachment-353.html": {
+      "status": "xfail",
+      "reason": "background-attachment — border-color differs between test and ref CSS"
+    },
+    "css/css-backgrounds/background-attachment-fixed-block-002.html": {
+      "status": "xfail",
+      "reason": "reftest-wait setup script; background-attachment:fixed needs scroll context"
+    },
+    "css/css-box/margin-trim/block-container-block-001.html": {
+      "status": "xfail",
+      "reason": "margin-trim not in sosie whitelist — bounds differ"
+    },
+    "css/css-box/margin-trim/block-container-block-002.html": {
+      "status": "xfail",
+      "reason": "margin-trim not in sosie whitelist — bounds differ"
+    },
+    "css/css-box/margin-trim/block-container-block-end-001.html": {
+      "status": "xfail",
+      "reason": "margin-trim not in sosie whitelist — bounds differ"
+    },
+    "css/css-box/margin-trim/block-container-block-end-002.html": {
+      "status": "xfail",
+      "reason": "margin-trim not in sosie whitelist — bounds differ"
+    },
+    "css/css-color/a98rgb-001.html": {
+      "status": "xfail",
+      "reason": "a98-rgb color space — computed style string differs from rgb() equivalent"
+    },
+    "css/css-color/a98rgb-002.html": {
+      "status": "xfail",
+      "reason": "a98-rgb color space — computed style string differs from rgb() equivalent"
+    },
+    "css/css-color/a98rgb-003.html": {
+      "status": "xfail",
+      "reason": "a98-rgb color space — structural diff in ref (multiple DIVs)"
+    },
+    "css/css-color/a98rgb-004.html": {
+      "status": "xfail",
+      "reason": "a98-rgb color space — structural diff in ref (multiple DIVs)"
+    },
+    "css/css-display/display-contents-alignment-001.html": {
+      "status": "xfail",
+      "reason": "display:contents — different border-color between test and ref"
+    },
+    "css/css-display/display-contents-alignment-002.html": {
+      "status": "xfail",
+      "reason": "display:contents — different border-color between test and ref"
+    },
+    "css/css-display/display-contents-before-after-001.html": {
+      "status": "xfail",
+      "reason": "display:contents with ::before/::after — structural diff"
+    },
+    "css/css-display/display-contents-before-after-002.html": {
+      "status": "xfail",
+      "reason": "display:contents with ::before/::after — text content differs"
+    },
+    "css/css-fonts/alternates-order.html": {
+      "status": "xfail",
+      "reason": "font-variant-alternates — font-family computed value differs"
+    },
+    "css/css-fonts/ascent-descent-override.html": {
+      "status": "xfail",
+      "reason": "ascent/descent override — border-color and bounds differ"
+    },
+    "css/css-fonts/downloadable-font-scoped-to-document.html": {
+      "status": "xfail",
+      "reason": "downloadable font scoping — structural diff in test DOM"
+    },
+    "css/css-fonts/first-available-font-001.html": {
+      "status": "xfail",
+      "reason": "first-available-font — bounds differ due to font metrics"
+    },
+    "css/css-overflow/clip-001.html": {
+      "status": "xfail",
+      "reason": "overflow:clip — computed style 'clip' vs 'hidden'"
+    },
+    "css/css-overflow/clip-002.html": {
+      "status": "xfail",
+      "reason": "overflow:clip — bounds differ between test/ref"
+    },
+    "css/css-overflow/clip-003.html": {
+      "status": "xfail",
+      "reason": "overflow:clip — computed style 'clip' vs 'visible'"
+    },
+    "css/css-position/position-relative-001.html": {
+      "status": "xfail",
+      "reason": "position:relative — background-color differs (green vs transparent)"
+    },
+    "css/css-position/block-axis-constraint-changes-for-out-of-flow-box.html": {
+      "status": "xfail",
+      "reason": "abspos block-axis constraint — structural diff"
+    },
+    "css/css-text/text-align/text-align-007.html": {
+      "status": "xfail",
+      "reason": "text-align:end — logical value 'end' vs physical 'start'"
+    },
+    "css/css-text/text-align/text-align-last-center.html": {
+      "status": "xfail",
+      "reason": "text-align-last — computed 'start' vs 'center'"
+    },
+    "css/css-text/text-align/text-align-last-end.html": {
+      "status": "xfail",
+      "reason": "text-align-last — computed 'start' vs 'end'"
+    }
+  },
+  "zen_garden": {},
+  "acid3": {},
+  "aria_apg": {}
+}

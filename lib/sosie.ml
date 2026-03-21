@@ -18,4 +18,5 @@ module Mutate = Mutate
 module Audit_whitelist = Audit_whitelist
 module Diff_report = Diff_report
 module Show_config = Show_config
+module File_server = File_server
 module Extractor_js_source = Extractor_js_source

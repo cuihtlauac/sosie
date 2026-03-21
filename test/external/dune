@@ -1,0 +1,33 @@
+(library
+ (name ext_test_lib)
+ (modules ext_test_lib)
+ (libraries sosie re yojson alcotest))
+
+(executable
+ (name test_wpt_reftests)
+ (modules test_wpt_reftests)
+ (libraries sosie ext_test_lib alcotest))
+
+(executable
+ (name test_acid3)
+ (modules test_acid3)
+ (libraries sosie ext_test_lib alcotest))
+
+(executable
+ (name test_zen_garden)
+ (modules test_zen_garden)
+ (libraries sosie ext_test_lib alcotest))
+
+(executable
+ (name test_aria_apg)
+ (modules test_aria_apg)
+ (libraries sosie ext_test_lib alcotest))
+
+; Acid3 and Zen Garden use live URLs and are unreliable in CI.
+; Run them manually: dune exec test/external/test_acid3.exe
+;                     dune exec test/external/test_zen_garden.exe
+(rule
+ (alias external)
+ (action (progn
+  (run ./test_wpt_reftests.exe)
+  (run ./test_aria_apg.exe))))

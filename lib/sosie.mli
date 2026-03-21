@@ -61,6 +61,9 @@ module Diff_report = Diff_report
 module Show_config = Show_config
 (** Visual normalization config overlay in a headed browser. *)
 
+module File_server = File_server
+(** Minimal fork-based static file server for serving test resources. *)
+
 module Extractor_js_source : sig
   val source : string
 end
