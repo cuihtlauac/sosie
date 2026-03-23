@@ -58,10 +58,17 @@ fetch_wpt() {
   local repo
   repo="$(json_str .wpt.repo)"
   local marker="$dest/.commit"
+  local results_dir="$SCRIPT_DIR/wpt-results"
 
   if [ -f "$marker" ] && [ "$(cat "$marker")" = "$commit" ]; then
     echo "wpt: already at $commit, skipping"
     return
+  fi
+
+  # New commit — invalidate cached results
+  if [ -d "$results_dir" ]; then
+    echo "wpt: clearing stale result cache"
+    rm -rf "$results_dir"
   fi
 
   echo "wpt: fetching commit $commit ..."
@@ -73,15 +80,16 @@ fetch_wpt() {
   git remote add origin "$repo"
   git config core.sparseCheckout true
 
-  # Write sparse-checkout patterns: test files + support dirs
+  # Write sparse-checkout patterns from groups + support paths.
+  # Each group gets its directory (includes all files recursively).
   local sparse_file="$dest/.git/info/sparse-checkout"
-  json_arr .wpt.paths > "$sparse_file"
-  json_arr .wpt.support_paths >> "$sparse_file"
+  : > "$sparse_file"
 
-  # Also include ref files adjacent to test files (same directory)
-  json_arr .wpt.paths | while read -r path; do
-    dirname "$path"
-  done | sort -u >> "$sparse_file"
+  json_arr .wpt.groups | while read -r group; do
+    echo "$group/" >> "$sparse_file"
+  done
+
+  json_arr .wpt.support_paths >> "$sparse_file"
 
   git fetch --depth 1 origin "$commit" -q
   git checkout FETCH_HEAD -q

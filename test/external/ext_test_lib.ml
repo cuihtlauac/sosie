@@ -118,6 +118,202 @@ let nondeterministic_re =
 
 let is_deterministic_test html = not (Re.execp nondeterministic_re html)
 
+(* ── File I/O helpers ────────────────────────────────────────────── *)
+
+let read_file path =
+  let ic = open_in path in
+  Fun.protect
+    ~finally:(fun () -> close_in_noerr ic)
+    (fun () ->
+      let len = in_channel_length ic in
+      let buf = Bytes.create len in
+      really_input ic buf 0 len;
+      Bytes.to_string buf)
+
+(* ── Reftest discovery ───────────────────────────────────────────── *)
+
+type reftest = {
+  rel_path : string;
+  ref_href : string;
+}
+
+let rec walk_dir root prefix acc =
+  let dir = Filename.concat root prefix in
+  if not (Sys.file_exists dir && Sys.is_directory dir) then acc
+  else
+    let entries = Sys.readdir dir in
+    Array.fold_left
+      (fun acc entry ->
+        let rel = if prefix = "" then entry else Filename.concat prefix entry in
+        let full = Filename.concat root rel in
+        if Sys.is_directory full then walk_dir root rel acc
+        else acc_if_reftest root rel full acc)
+      acc entries
+
+and acc_if_reftest wpt_dir rel_path full_path acc =
+  let is_html =
+    Filename.check_suffix rel_path ".html"
+    || Filename.check_suffix rel_path ".xhtml"
+    || Filename.check_suffix rel_path ".xht"
+  in
+  if not is_html then acc
+  else
+    (* Skip files in reference/ or support/ subdirectories *)
+    let parts = String.split_on_char '/' rel_path in
+    let in_support =
+      List.exists (fun p -> p = "reference" || p = "support") parts
+    in
+    if in_support then acc
+    else
+      match parse_reftest_link_from_file full_path with
+      | None -> acc
+      | Some ref_href ->
+          let ref_file =
+            if String.length ref_href > 0 && ref_href.[0] = '/' then
+              Filename.concat wpt_dir (String.sub ref_href 1 (String.length ref_href - 1))
+            else
+              Filename.concat (Filename.dirname full_path) ref_href
+          in
+          if not (Sys.file_exists ref_file) then acc
+          else { rel_path; ref_href } :: acc
+
+and parse_reftest_link_from_file path =
+  try
+    let html = read_file path in
+    if not (is_deterministic_test html) then None
+    else parse_reftest_link html
+  with _ -> None
+
+let discover_reftests ~wpt_dir ~group =
+  let tests = walk_dir wpt_dir group [] in
+  List.sort (fun a b -> String.compare a.rel_path b.rel_path) tests
+
+let discover_all_reftests ~wpt_dir ~groups =
+  List.concat_map (fun group -> discover_reftests ~wpt_dir ~group) groups
+
+(* ── Manifest groups loading ─────────────────────────────────────── *)
+
+let load_manifest_groups () =
+  let manifest = Filename.concat (Lazy.force external_dir) "manifest.json" in
+  let json = Yojson.Safe.from_file manifest in
+  match json with
+  | `Assoc top -> (
+      match List.assoc_opt "wpt" top with
+      | Some (`Assoc fields) -> (
+          match List.assoc_opt "groups" fields with
+          | Some (`List items) ->
+              List.filter_map (function `String s -> Some s | _ -> None) items
+          | _ -> [])
+      | _ -> [])
+  | _ -> []
+
+(* ── Result cache ────────────────────────────────────────────────── *)
+
+type cached_result = {
+  status : string;
+  diffs : string list;
+  elapsed_s : float;
+  timestamp : string;
+}
+
+let results_dir () =
+  Filename.concat (Lazy.force external_dir) "wpt-results"
+
+let result_path rel_path =
+  Filename.concat (results_dir ()) (rel_path ^ ".json")
+
+let mkdir_p path =
+  let rec ensure dir =
+    if Sys.file_exists dir then ()
+    else begin
+      ensure (Filename.dirname dir);
+      (try Unix.mkdir dir 0o755 with Unix.Unix_error (Unix.EEXIST, _, _) -> ())
+    end
+  in
+  ensure path
+
+let read_cached_result rel_path =
+  let path = result_path rel_path in
+  if not (Sys.file_exists path) then None
+  else
+    try
+      let json = Yojson.Safe.from_file path in
+      match json with
+      | `Assoc fields ->
+          let status =
+            match List.assoc_opt "status" fields with
+            | Some (`String s) -> s
+            | _ -> "error"
+          in
+          let diffs =
+            match List.assoc_opt "diffs" fields with
+            | Some (`List items) ->
+                List.filter_map
+                  (function `String s -> Some s | _ -> None)
+                  items
+            | _ -> []
+          in
+          let elapsed_s =
+            match List.assoc_opt "elapsed_s" fields with
+            | Some (`Float f) -> f
+            | Some (`Int i) -> Float.of_int i
+            | _ -> 0.0
+          in
+          let timestamp =
+            match List.assoc_opt "timestamp" fields with
+            | Some (`String s) -> s
+            | _ -> ""
+          in
+          Some { status; diffs; elapsed_s; timestamp }
+      | _ -> None
+    with _ -> None
+
+let iso8601_now () =
+  let t = Unix.gettimeofday () in
+  let tm = Unix.gmtime t in
+  Printf.sprintf "%04d-%02d-%02dT%02d:%02d:%02dZ" (1900 + tm.Unix.tm_year)
+    (tm.Unix.tm_mon + 1) tm.Unix.tm_mday tm.Unix.tm_hour tm.Unix.tm_min
+    tm.Unix.tm_sec
+
+let write_cached_result rel_path result =
+  let path = result_path rel_path in
+  mkdir_p (Filename.dirname path);
+  let diffs_json =
+    `List (List.map (fun s -> `String s) result.diffs)
+  in
+  let json =
+    `Assoc
+      [
+        ("status", `String result.status);
+        ("diffs", diffs_json);
+        ("elapsed_s", `Float result.elapsed_s);
+        ("timestamp", `String result.timestamp);
+      ]
+  in
+  let oc = open_out path in
+  Fun.protect
+    ~finally:(fun () -> close_out_noerr oc)
+    (fun () -> output_string oc (Yojson.Safe.pretty_to_string json ^ "\n"))
+
+let clear_cached_result rel_path =
+  let path = result_path rel_path in
+  if Sys.file_exists path then Sys.remove path
+
+let clear_cached_group group =
+  let dir = Filename.concat (results_dir ()) group in
+  if Sys.file_exists dir then begin
+    let rec rm_rf path =
+      if Sys.is_directory path then begin
+        Array.iter
+          (fun entry -> rm_rf (Filename.concat path entry))
+          (Sys.readdir path);
+        Unix.rmdir path
+      end
+      else Sys.remove path
+    in
+    rm_rf dir
+  end
+
 (* ── Capture helpers ─────────────────────────────────────────────── *)
 
 let wait_reftest_ready conn =

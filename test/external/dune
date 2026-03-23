@@ -6,7 +6,7 @@
 (executable
  (name test_wpt_reftests)
  (modules test_wpt_reftests)
- (libraries sosie ext_test_lib alcotest))
+ (libraries sosie ext_test_lib))
 
 (executable
  (name test_acid3)

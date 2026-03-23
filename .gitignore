@@ -2,3 +2,4 @@ _build/
 *.install
 _opam/
 test/external/wpt/
+test/external/wpt-results/
