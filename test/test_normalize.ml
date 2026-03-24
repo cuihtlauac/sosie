@@ -451,6 +451,54 @@ let drop_attr_subset_property =
       count_attrs s_more.root <= count_attrs s_fewer.root)
 
 (* ========================================================================= *)
+(* Drop_invisible                                                            *)
+(* ========================================================================= *)
+
+let drop_invisible_display_none () =
+  let hidden = make_node ~tag:"SPAN"
+    ~styles:{ default_styles with display = Str "none" } () in
+  let visible = make_node ~tag:"P" () in
+  let root = make_node ~children:[hidden; visible] () in
+  let s = make_snapshot root in
+  let s' = Normalize.apply [Drop_invisible] s in
+  Alcotest.(check int) "display:none child removed" 1 (List.length s'.root.children);
+  Alcotest.(check string) "visible child kept" "P" (List.hd s'.root.children).tag
+
+let drop_invisible_hidden_zero_size () =
+  let hidden = make_node ~tag:"SPAN"
+    ~bounds:{ x = 0.0; y = 0.0; w = 0.0; h = 0.0 }
+    ~styles:{ default_styles with visibility = Str "hidden" } () in
+  let visible = make_node ~tag:"P" () in
+  let root = make_node ~children:[hidden; visible] () in
+  let s = make_snapshot root in
+  let s' = Normalize.apply [Drop_invisible] s in
+  Alcotest.(check int) "zero-size hidden child removed" 1 (List.length s'.root.children)
+
+let drop_invisible_hidden_nonzero_kept () =
+  let hidden = make_node ~tag:"SPAN"
+    ~bounds:{ x = 0.0; y = 0.0; w = 10.0; h = 5.0 }
+    ~styles:{ default_styles with visibility = Str "hidden" } () in
+  let root = make_node ~children:[hidden] () in
+  let s = make_snapshot root in
+  let s' = Normalize.apply [Drop_invisible] s in
+  Alcotest.(check int) "hidden but sized child kept" 1 (List.length s'.root.children)
+
+let drop_invisible_visible_zero_size_kept () =
+  let child = make_node ~tag:"SPAN"
+    ~bounds:{ x = 0.0; y = 0.0; w = 0.0; h = 0.0 } () in
+  let root = make_node ~children:[child] () in
+  let s = make_snapshot root in
+  let s' = Normalize.apply [Drop_invisible] s in
+  Alcotest.(check int) "visible zero-size child kept" 1 (List.length s'.root.children)
+
+let idempotent_drop_invisible =
+  QCheck.Test.make ~name:"drop_invisible_idempotent" ~count:100 arb_snapshot
+    (fun s ->
+      let once = Normalize.apply [Normalize.Drop_invisible] s in
+      let twice = Normalize.apply [Normalize.Drop_invisible] once in
+      once = twice)
+
+(* ========================================================================= *)
 (* Test runner                                                               *)
 (* ========================================================================= *)
 
@@ -511,6 +559,13 @@ let () =
           Alcotest.test_case "single font" `Quick canon_font_single;
           Alcotest.test_case "already canonical" `Quick canon_font_already_canonical;
         ] );
+      ( "drop_invisible",
+        [
+          Alcotest.test_case "display none removed" `Quick drop_invisible_display_none;
+          Alcotest.test_case "hidden zero-size removed" `Quick drop_invisible_hidden_zero_size;
+          Alcotest.test_case "hidden nonzero kept" `Quick drop_invisible_hidden_nonzero_kept;
+          Alcotest.test_case "visible zero-size kept" `Quick drop_invisible_visible_zero_size_kept;
+        ] );
       ( "edge_cases",
         [
           Alcotest.test_case "empty snapshot identity" `Quick empty_snapshot_identity;
@@ -530,5 +585,6 @@ let () =
             idempotent_drop_subtree;
             idempotent_combined;
             drop_attr_subset_property;
+            idempotent_drop_invisible;
           ] );
     ]

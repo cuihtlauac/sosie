@@ -533,6 +533,101 @@ All OCaml code uses existing deps (yojson, base64, re).
 
 ---
 
+## Step 10b: External CSS test suites [done]
+
+Validate sosie against large, independently authored test corpora. These
+suites exercise real-world CSS patterns at a scale no hand-crafted test
+suite can match, and they surface false-positive modes that only appear in
+diverse content.
+
+### Infrastructure (`test/external/`)
+
+- `ext_test_lib.ml`: shared library for external test runners — discovery,
+  caching, result reporting, expectation management (pass/xfail/skip).
+- `fetch.sh`: idempotent resource fetcher. Git sparse checkout for WPT
+  (pinned commit in `manifest.json`). Invalidates result cache on commit
+  change.
+- `dune build @external`: runs WPT reftests + ARIA APG. Acid3 and Zen
+  Garden depend on live URLs and run manually.
+
+### WPT reftests (~12,900 tests)
+
+The largest suite. Each W3C reftest has a test page and a reference page
+that should render identically via different CSS — precisely the
+equivalence problem sosie solves. The runner (`test_wpt_reftests.ml`)
+discovers tests by walking the sparse checkout, uses a filesystem result
+cache for resumability (safe to Ctrl-C and restart), and supports
+per-group and per-test re-runs.
+
+WPT-specific configuration addresses the cross-page nature of reftests:
+- `Drop_subtree` for `head`, `script`, `style`, `noscript` (non-visual
+  elements whose content differs between test/ref).
+- `Drop_invisible` for nodes with `display:none` or zero-size +
+  `visibility:hidden`.
+- `check_text = false` (test and reference pages achieve the same visual
+  via different text/structure).
+- `check_paint_order = false` (different DOM structures).
+- `bounds_tolerance = 1.0` + `Round_bounds 1.0` for sub-pixel layout
+  differences.
+- `Canonicalize_colors`, `Canonicalize_fonts`, `Sort_attributes`.
+
+Expectation management: `expectations.json` classifies tests as pass,
+xfail (with reason), or skip. Tests that now pass despite an xfail
+expectation are reported as unexpected passes (stale xfails).
+
+### CSS Zen Garden (5 designs)
+
+Same HTML, different CSS — the GumTree matcher must achieve perfect
+structural matching (zero `Tag_mismatch` / `Extra_node`), with only
+`Style_diff` and `Bounds_diff` differences. Uses live URL
+(`csszengarden.com`), run manually.
+
+### Acid3 (2 tests)
+
+High-node-count DOM with pseudo-elements and complex CSS. Two test cases:
+node count verification (>50 nodes) and deterministic capture (same page
+captured twice must be equivalent after normalization). Uses live URL
+(`acid3.acidtests.org`), run manually.
+
+### ARIA APG (4 fixtures)
+
+Self-contained HTML fixtures exercising ARIA button, checkbox, tabs, and
+navigation patterns. Each fixture is captured, ARIA attributes are injected
+via JS (`aria-expanded`, `aria-label`), recaptured, and compared with
+`Drop_attributes [Prefix "aria-"; Exact "role"]`. Validates that
+semantic-only DOM changes are correctly absorbed by normalization.
+
+### Step 10b addendum (2026-03-23): WPT false-positive reduction
+
+Initial WPT run: 12,909 tests discovered, 1,160 pass (9.0%). Triage of the
+11,749 xfails identified clear root causes. Five targeted fixes were applied:
+
+1. **Drop SCRIPT/STYLE/NOSCRIPT subtrees.** Non-visual elements whose
+   content differs between test and reference pages. Added `Drop_subtree`
+   rules for `script`, `style`, `noscript` to the WPT normalization.
+
+2. **SVG className crash.** SVG elements have `className` as
+   `SVGAnimatedString`, not a plain string. The extractor now uses
+   `getAttribute("class")` instead of `.className`. The snapshot parser
+   now skips malformed attribute pairs instead of raising.
+
+3. **Disable text comparison.** WPT test and reference pages achieve the
+   same visual via different text. Set `check_text = false` in WPT config.
+
+4. **Increase bounds tolerance.** Sub-pixel layout differences from
+   different CSS achieving the same visual. Set `bounds_tolerance = 1.0`.
+
+5. **Drop invisible nodes.** New `Drop_invisible` normalization rule
+   removes children with `display: none`, or zero-size bounds with
+   `visibility: hidden`. These nodes don't affect visual output but cause
+   structural diff noise.
+
+**New normalization rule:** `Normalize.Drop_invisible` added to
+`lib/normalize.ml` / `lib/normalize.mli`. 4 unit tests + 1 QCheck
+idempotency property test.
+
+---
+
 ## Step 11: CI integration for ocaml.org
 
 Write a CI job (GitHub Actions) that:
@@ -719,6 +814,7 @@ testing would have missed.
 | [x] | 8 | GumTree matcher works | 6 | Structural changes tolerated |
 | [x] | 9 | Mutation score measured | 7 | **Tool is trustworthy** |
 | [x] | 10 | Visual tooling | 7 | Human review is visual |
+| [x] | 10b | External CSS test suites | 10 | **Cross-corpus robustness** |
 | [ ] | 11 | CI integration for ocaml.org | 7 | **Tool is deployed** |
 | [ ] | 12 | Hardening | 11 | Production readiness |
 | [ ] | 13 | npm distribution + GitHub Action | 12 | **Mass adoption** |
@@ -744,5 +840,6 @@ Key moments:
 - **Step 1c** — JSOO extractor replaces raw JS. Type safety achieved.
 - **Step 7** — first real refactoring validated. The tool is useful.
 - **Step 9** — mutation score measured. The tool is trustworthy.
+- **Step 10b** — external test suites. Cross-corpus robustness validated.
 - **Step 11** — CI integration. The tool is deployed on ocaml.org.
 - **Step 14** — multi-engine. Refactorings validated on all target browsers.

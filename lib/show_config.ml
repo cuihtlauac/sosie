@@ -164,6 +164,10 @@ let overlay_js rules =
       | Mask_text_matching _ ->
           Buffer.add_string buf
             {|  items.push('● Mask_text_matching (regex, no overlay)');
+|}
+      | Drop_invisible ->
+          Buffer.add_string buf
+            {|  items.push('● Drop_invisible (no overlay)');
 |})
     rules;
   Buffer.add_string buf

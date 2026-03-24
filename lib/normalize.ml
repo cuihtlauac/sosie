@@ -17,6 +17,7 @@ type rule =
   | Canonicalize_colors
   | Canonicalize_fonts
   | Sort_attributes
+  | Drop_invisible
 
 (* --- Selector matching --- *)
 
@@ -227,6 +228,20 @@ let canonicalize_fonts_node (node : node) : node =
   let s = node.styles in
   { node with styles = { s with font_family = canonicalize_font_value s.font_family } }
 
+(* --- Drop_invisible --- *)
+
+(** A node is invisible if it has [display: none], or if it has zero-size
+    bounds and [visibility: hidden]. Such nodes do not affect visual output. *)
+let is_invisible (node : node) : bool =
+  match node.styles.display with
+  | Str "none" -> true
+  | _ ->
+    node.bounds.w = 0.0 && node.bounds.h = 0.0
+    && (match node.styles.visibility with Str "hidden" -> true | _ -> false)
+
+let drop_invisible (node : node) : node =
+  { node with children = List.filter (fun c -> not (is_invisible c)) node.children }
+
 (* --- apply --- *)
 
 let apply_rule (rule : rule) (snap : snapshot) : snapshot =
@@ -241,6 +256,7 @@ let apply_rule (rule : rule) (snap : snapshot) : snapshot =
   | Drop_subtree sel -> apply_to_root (drop_subtree sel) snap
   | Canonicalize_colors -> apply_to_root canonicalize_colors_node snap
   | Canonicalize_fonts -> apply_to_root canonicalize_fonts_node snap
+  | Drop_invisible -> apply_to_root drop_invisible snap
 
 let apply rules snap =
   List.fold_left (fun s r -> apply_rule r s) snap rules

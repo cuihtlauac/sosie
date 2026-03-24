@@ -23,11 +23,20 @@ let expectations_file () = Filename.concat (ext_dir ()) "expectations.json"
     (different <link>/<style>/<title>) and different DOM sizes, so:
     - Drop HEAD subtree (metadata, not visual).
     - Disable paint_order check (node count differs). *)
-let wpt_config = { Compare.default_config with check_paint_order = false }
+let wpt_config =
+  { Compare.default_config with
+    check_paint_order = false;
+    check_text = false;
+    bounds_tolerance = 1.0;
+  }
 
 let wpt_normalize =
   [
     Normalize.Drop_subtree (Tag "head");
+    Normalize.Drop_subtree (Tag "script");
+    Normalize.Drop_subtree (Tag "style");
+    Normalize.Drop_subtree (Tag "noscript");
+    Normalize.Drop_invisible;
     Normalize.Round_bounds 1.0;
     Normalize.Canonicalize_colors;
     Normalize.Canonicalize_fonts;

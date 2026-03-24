@@ -77,10 +77,10 @@ let styles_of_json j : visual_properties =
 
 let attributes_of_json = function
   | `List pairs ->
-      List.map
+      List.filter_map
         (function
-          | `List [ `String k; `String v ] -> (k, v)
-          | _ -> failwith "malformed attribute pair")
+          | `List [ `String k; `String v ] -> Some (k, v)
+          | _ -> None)
         pairs
   | _ -> failwith "attributes must be an array"
 

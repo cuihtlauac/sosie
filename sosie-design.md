@@ -1222,6 +1222,52 @@ Same styles on all elements. Assert: `Wrapper_inserted` diff reported, but no
 snapshots where a bug was found (false positive or false negative). Add them as
 permanent regression tests.
 
+### External test suites (Layer 4)
+
+External CSS test suites validate sosie against large, independently authored
+test corpora. These suites exercise real-world CSS patterns at scale — far more
+diverse than hand-crafted fixtures.
+
+All external tests live in `test/external/` and run via `dune build @external`.
+Resources are fetched by `test/external/fetch.sh` (idempotent, git sparse
+checkout for WPT). Acid3 and Zen Garden use live URLs and are run manually.
+
+| Suite | Tests | What it validates | Source |
+|-------|-------|-------------------|--------|
+| WPT reftests | ~12,900 | Cross-page equivalence: test and ref pages render identically via different CSS. Exercises normalization, comparison, and the extractor on real W3C test content. | Sparse checkout of `web-platform-tests/wpt`, CSS groups from `manifest.json` |
+| CSS Zen Garden | 5 designs | Same HTML, different CSS. GumTree matcher must achieve perfect structural match (zero `Tag_mismatch`/`Extra_node`), with only `Style_diff`/`Bounds_diff`. | Live URL: `csszengarden.com` |
+| Acid3 | 2 | High-node-count DOM with pseudo-elements and complex CSS. Validates extractor robustness (node count) and capture determinism (same page twice → equivalent). | Live URL: `acid3.acidtests.org` |
+| ARIA APG | 4 fixtures | Semantic DOM changes (ARIA attributes, roles) that don't affect visual layout. Validates `Drop_attributes` normalization: after dropping `aria-*` and `role`, before/after must be equivalent. | Self-contained HTML fixtures |
+
+**WPT reftests** are the largest and most valuable suite. Each reftest has a
+test page and a reference page that should look identical despite different
+HTML/CSS. This is exactly the equivalence problem sosie solves. The test runner
+(`test/external/test_wpt_reftests.ml`) uses a filesystem result cache for
+resumability, per-test timeout (30s), and expectation management
+(`expectations.json` for xfails/skips).
+
+WPT-specific normalization rules handle the cross-page nature of reftests:
+- `Drop_subtree` for `head`, `script`, `style`, `noscript` (non-visual)
+- `Drop_invisible` for `display:none` and zero-size hidden nodes
+- `Round_bounds 1.0` and `bounds_tolerance = 1.0` for sub-pixel differences
+- `Canonicalize_colors`, `Canonicalize_fonts`, `Sort_attributes`
+- `check_text = false` (test/ref pages achieve same visuals via different text)
+- `check_paint_order = false` (different DOM structures)
+
+**Zen Garden** tests validate the matcher's structural matching on real CSS
+designs. Since all designs share the same HTML source, structural diffs
+indicate matcher failures, not CSS differences. Each design is compared against
+the base page.
+
+**Acid3** tests validate extractor robustness on a complex DOM with many nodes
+and pseudo-elements, plus capture determinism (two captures of the same page
+must produce equivalent snapshots after normalization).
+
+**ARIA APG** tests validate that semantic-only DOM changes (adding/modifying
+ARIA attributes) are correctly absorbed by normalization. Each fixture is
+captured, ARIA attributes are injected via JS, recaptured, and compared with
+`Drop_attributes [Prefix "aria-"; Exact "role"]`.
+
 ### CI integration
 
 | Suite | Requires | Speed |
@@ -1233,6 +1279,12 @@ permanent regression tests.
 | Capture integration fixtures | Chromium | ~5-10s |
 | Mutation testing | Chromium | ~1-5 min |
 | End-to-end | Chromium | ~10-30s |
+| External: WPT reftests | Chromium, git (sparse checkout) | ~2-4 hours |
+| External: ARIA APG | Chromium | ~30s |
+| External: Acid3, Zen Garden | Chromium, network | ~30s each (manual) |
+
+The `@external` alias runs WPT + ARIA APG. Acid3 and Zen Garden depend on
+live URLs and are excluded from automated CI to avoid flaky network failures.
 
 Chromium is available in standard CI images (GitHub Actions `ubuntu-latest`,
 Debian/Ubuntu `apt install chromium`). No Playwright, no npm.
@@ -1258,8 +1310,14 @@ Sosie's correctness reduces to four independently verifiable claims:
    one-time per project) and **human audit** (focused review of ~20 properties
    against the CSS spec).
 
+5. **Cross-corpus robustness**: sosie handles diverse real-world CSS
+   patterns without crashing or producing spurious errors. **Verified by
+   external test suites** — 12,900+ WPT reftests, CSS Zen Garden designs,
+   Acid3, and ARIA APG fixtures.
+
 Claims 1-3 are fully automated. Claim 4 requires one-time human review,
-aided by the visual `audit-whitelist` tool. No other faith is required.
+aided by the visual `audit-whitelist` tool. Claim 5 is automated via
+`dune build @external`. No other faith is required.
 
 ### Trust budget
 

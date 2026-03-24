@@ -41,6 +41,9 @@ type rule =
   | Canonicalize_fonts
       (** Keep first named font + first generic family from [font-family]. *)
   | Sort_attributes  (** Sort [node.attributes] lexicographically. *)
+  | Drop_invisible
+      (** Remove children with [display: none], or with zero-size bounds
+          and [visibility: hidden]. *)
 (** A normalization rule. Rules are applied in order by {!apply}. *)
 
 val apply : rule list -> Sosie_shared.Snapshot_types.snapshot ->

@@ -128,8 +128,11 @@ let rec capture_element (el : Dom_html.element Js.t) (paint_order : int ref)
   (* Capture significant attributes for identification. *)
   let attributes =
     let acc = ref [] in
-    let cls = Js.to_string el##.className in
-    if cls <> "" then acc := ("class", cls) :: !acc;
+    (* Use getAttribute instead of .className to avoid SVGAnimatedString
+       on SVG elements — getAttribute always returns a plain string. *)
+    Js.Opt.iter (el##getAttribute (Js.string "class")) (fun cls_js ->
+        let cls = Js.to_string cls_js in
+        if cls <> "" then acc := ("class", cls) :: !acc);
     let id = Js.to_string el##.id in
     if id <> "" then acc := ("id", id) :: !acc;
     List.rev !acc
