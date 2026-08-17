@@ -38,6 +38,19 @@ mathml (234), svg (168). NOT html/canvas (bitmap assertions invisible
 to property comparison). Watch for cross-tree ref/support needs; add
 support_paths as the missing-ref check dictates.
 
+## Whitelist extension guided by sensitivity measurement
+
+Session B measured 99 false negatives on mismatch reftests; 80 are
+recoverable by adding properties to the capture whitelist
+(text-align-last, font-palette, writing-mode, direction, appearance,
+outline*, accent-color, text-decoration-skip-ink,
+text-underline-offset, text-shadow, text-combine-upright,
+text-emphasis, -webkit-text-stroke, image-rendering). Add them,
+re-run the negative controls (expect ≈254/274 = 92.7% sensitivity),
+prune the recovered xfails, and re-triage match-test xfails the new
+properties may cause (whitelist growth can add spurious diffs —
+measure both directions). See TRIAGE.md sensitivity section.
+
 ## Deferred (not scheduled)
 
 - `.svg` reftest support in discovery (132 in-scope tests; snapshot
