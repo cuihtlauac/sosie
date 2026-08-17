@@ -27,6 +27,14 @@ group added 6,287 reftests; 19,657 discovered, 3,189 pass, 16,468
 xfail, 0 fail. See the session C section below for the category
 breakdown and the extractor crash it uncovered.
 
+**2026-08-17 update (session D, remaining css/* + top-level modules):**
+18 groups added (css-break, filter-effects, css-counter-styles,
+selectors, css-conditional, motion, css-highlight-api, mediaqueries,
+compositing, css-scrollbars, css-scroll-snap, css-rhythm, css-nesting,
+css-color-adjust, css-style-attr, quirks, compat,
+density-size-correction); 22,044 discovered (+2,387), 3,578 pass,
+18,466 xfail, 0 fail. See the session D section below.
+
 ## Classification
 
 | Category | Count | % total | Description |
@@ -226,6 +234,71 @@ back to `documentElement` when `head` is null — queued in the backlog.
 The fourth error is a `reftest-wait` timeout
 (`stacking-context/composite-change-after-scroll-preserves-stacking-order.html`,
 needs compositing activity that never settles headless).
+
+## Session D: remaining css/* + top-level modules (2026-08-17)
+
+18 groups ingested in one capture run (+2,387 discovered, 389 pass =
+16.3%, 1,998 xfail): the css/* layout and style modules left after
+sessions A–C, plus three top-level trees (`quirks`, `compat`,
+`density-size-correction`). The session A tooling absorbed the
+expansion unchanged.
+
+Per-module pass rate spans the full range, tracking how closely each
+module's tests follow the reftest style guide:
+
+| Module | Pass/Total | % |
+|--------|-----------:|--:|
+| css/css-break | 19/1004 | 1.9% |
+| css/filter-effects | 35/266 | 13.2% |
+| css/css-counter-styles | 13/235 | 5.5% |
+| css/selectors | 94/226 | 41.6% |
+| css/css-conditional | 107/160 | 66.9% |
+| css/css-highlight-api | 10/94 | 10.6% |
+| css/motion | 49/93 | 52.7% |
+| css/compositing | 1/59 | 1.7% |
+| css/mediaqueries | 7/58 | 12.1% |
+| css/css-scrollbars | 23/31 | 74.2% |
+| quirks | 0/28 | 0.0% |
+| compat | 4/23 | 17.4% |
+| css/css-scroll-snap | 0/23 | 0.0% |
+| density-size-correction | 10/20 | 50.0% |
+| css/css-rhythm | 0/18 | 0.0% |
+| css/css-nesting | 6/17 | 35.3% |
+| css/css-color-adjust | 5/17 | 29.4% |
+| css/css-style-attr | 6/15 | 40.0% |
+
+`css/css-break` dominates the module (1,004 tests, 42% of the session)
+and pulls the aggregate rate down: it is a fragmentation suite (page
+and multicolumn breaks) where test and reference build the same visual
+from structurally different box trees, so 987 of the session's 987
+`requires tag-agnostic matching` xfails and most of its layout diffs
+originate here. The three 0%-pass modules (css-scroll-snap, css-rhythm,
+quirks) are small and similarly cross-page by construction.
+
+Xfail reasons (`wpt_classify.py bulk-xfail`):
+
+| Reason | Count | % of session |
+|--------|------:|-------------:|
+| requires tag-agnostic matching | 987 | 41.4% |
+| layout: bounds differ between test/ref | 414 | 17.3% |
+| content: text differs | 209 | 8.8% |
+| unclassified failure | 117 | 4.9% |
+| style: property differs (background-color 82, display 67, color 48, text-decoration 24, opacity 15, overflow-y 11, other ~14) | 261 | 10.9% |
+| sensitivity: mismatch false negative | 8 | 0.3% |
+| error: reftest-wait timeout | 5 | 0.2% |
+
+The category mix mirrors the corpus: tag-agnostic matching and bounds
+diffs are the structural cross-page limitations described above, not
+extractor defects. Eight `sensitivity:` entries are mismatch reftests
+in these modules whose two pages render equivalent under the
+comparison whitelist — genuine blind spots, folded into the same
+whitelist-extension work queued from session B.
+
+The five errors are all `reftest-wait` timeouts (tests that gate on an
+event that never fires headless: dynamic filter changes, `:has()`
+recomputation on DOM mutation, `@media`/container-query re-evaluation,
+`::cue`). No new extractor crash class appeared — the session C
+null-`document.head` diagnosis stands as the only open extractor bug.
 
 ## Possible improvement phases (by ROI)
 

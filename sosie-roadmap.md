@@ -749,10 +749,31 @@ one). Fix queued in the backlog.
 Result: 13,370 → 19,657 discovered (+6,287); 3,189 pass, 16,468 xfail,
 0 fail. Coverage validation gate: 19,657/19,657 exact.
 
-### Sessions D–E [pending]
+### Session D (2026-08-17): remaining css/* + top-level modules [done]
 
-D: remaining css/* layout modules (+~2,600). E: html/rendering+
-semantics+dom, mathml, svg (+~750).
+18 groups added in one capture run — the css/* layout and style
+modules left after A–C (css-break, filter-effects, css-counter-styles,
+selectors, css-conditional, motion, css-highlight-api, mediaqueries,
+compositing, css-scrollbars, css-scroll-snap, css-rhythm, css-nesting,
+css-color-adjust, css-style-attr) plus three top-level trees (quirks,
+compat, density-size-correction). Same sparse re-sync → capture →
+`bulk-xfail` → classify → coverage cycle; tooling unchanged.
+
+2,387 reftests ingested (planned ~2,600; the shortfall is tests whose
+references are absent from the sparse checkout, skipped by discovery);
+389 pass (16.3%), 1,998 xfail. `css/css-break` is 42% of the session
+(1,004 tests, 1.9% pass) and supplies all 987 `tag-agnostic` xfails —
+a fragmentation suite where equal visuals come from unequal box trees.
+No new extractor crash class; the five errors are `reftest-wait`
+timeouts on events that never fire headless. TRIAGE.md session D
+section has the per-module and category tables.
+
+Result: 19,657 → 22,044 discovered (+2,387); 3,578 pass, 18,466 xfail,
+0 fail. Coverage validation gate: 22,044/22,044 exact.
+
+### Session E [pending]
+
+E: html/rendering+semantics+dom, mathml, svg (+~750).
 
 ---
 
