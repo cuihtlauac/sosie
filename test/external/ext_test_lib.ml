@@ -132,23 +132,26 @@ let rel_has_token tag token =
       |> String.split_on_char ' '
       |> List.mem token
 
-let parse_reftest_links html =
+let parse_links_with_rel token html =
   let hrefs =
     Re.all link_tag_re html
     |> List.filter_map (fun g ->
            let tag = Re.Group.get g 0 in
-           if rel_has_token tag "match" then
+           if rel_has_token tag token then
              match get_attr href_attr_re tag with
              | Some href when href <> "" -> Some href
              | _ -> None
            else None)
   in
-  (* Dedupe, preserving document order (WPT: pass if ANY reference matches;
-     duplicates would just be compared twice). *)
+  (* Dedupe, preserving document order (duplicates would just be compared
+     twice). *)
   List.fold_left
     (fun acc href -> if List.mem href acc then acc else href :: acc)
     [] hrefs
   |> List.rev
+
+let parse_reftest_links = parse_links_with_rel "match"
+let parse_mismatch_links = parse_links_with_rel "mismatch"
 
 (* ── Determinism filter ──────────────────────────────────────────── *)
 
@@ -172,8 +175,11 @@ let read_file path =
 
 (* ── Reftest discovery ───────────────────────────────────────────── *)
 
+type reftest_kind = Match | Mismatch
+
 type reftest = {
   rel_path : string;
+  kind : reftest_kind;
   ref_hrefs : string list;
 }
 
@@ -215,18 +221,30 @@ and acc_if_reftest wpt_dir rel_path full_path acc =
         Sys.file_exists ref_file
       in
       (* Keep every reference that exists on disk; the runner tries them in
-         order (WPT semantics: pass if any matches). A test whose references
-         are all absent cannot be run and is skipped. *)
-      match List.filter ref_exists (parse_reftest_links_from_file full_path) with
-      | [] -> acc
-      | ref_hrefs -> { rel_path; ref_hrefs } :: acc
+         order. A test whose references are all absent cannot be run and is
+         skipped. *)
+      match reftest_links_from_file full_path with
+      | None -> acc
+      | Some (kind, hrefs) -> (
+          match List.filter ref_exists hrefs with
+          | [] -> acc
+          | ref_hrefs -> { rel_path; kind; ref_hrefs } :: acc)
 
-and parse_reftest_links_from_file path =
+(* A file with any rel=match link is a Match test — its mismatch links, if
+   any, are ignored (mixed tests stay match-only for now). Only files whose
+   sole reftest links are rel=mismatch become Mismatch tests. *)
+and reftest_links_from_file path =
   try
     let html = read_file path in
-    if not (is_deterministic_test html) then []
-    else parse_reftest_links html
-  with _ -> []
+    if not (is_deterministic_test html) then None
+    else
+      match parse_reftest_links html with
+      | _ :: _ as hrefs -> Some (Match, hrefs)
+      | [] -> (
+          match parse_mismatch_links html with
+          | [] -> None
+          | hrefs -> Some (Mismatch, hrefs))
+  with _ -> None
 
 let discover_reftests ~wpt_dir ~group =
   let tests = walk_dir wpt_dir group [] in
@@ -259,6 +277,34 @@ type cached_result = {
   elapsed_s : float;
   timestamp : string;
 }
+
+(* The verdict inversion for mismatch tests lives here, in outcome space:
+   a Mismatch test passes when sosie reports a Diff (it sees the difference
+   WPT asserts) and fails when it reports Equivalent — a false negative.
+   The cached status is already in verdict space, so report mode needs no
+   kind awareness. The "sensitivity:" prefix is recognized by
+   wpt_classify.py bulk-xfail when deriving xfail reasons. *)
+let cache_status ~kind ~expectation outcome =
+  let verdict =
+    match (kind, outcome) with
+    | _, Error msg -> `Error msg
+    | Match, Equivalent -> `Pass []
+    | Match, Diff descs -> `Fail descs
+    | Mismatch, Diff descs -> `Pass descs
+    | Mismatch, Equivalent ->
+        `Fail
+          [
+            "sensitivity: mismatch pair rendered equivalent under the \
+             comparison whitelist (false negative)";
+          ]
+  in
+  match (expectation, verdict) with
+  | (Pass | Skip _), `Pass diffs -> ("pass", diffs)
+  | (Pass | Skip _), `Fail diffs -> ("fail", diffs)
+  | (Pass | Skip _), `Error msg -> ("error", [ msg ])
+  | Xfail _, `Fail diffs -> ("xfail", diffs)
+  | Xfail _, `Error msg -> ("xfail", [ msg ])
+  | Xfail _, `Pass diffs -> ("pass", diffs) (* unexpected pass — stale xfail *)
 
 let results_dir () =
   Filename.concat (Lazy.force external_dir) "wpt-results"

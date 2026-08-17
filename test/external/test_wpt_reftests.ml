@@ -128,9 +128,12 @@ let run_one_test conn ~port ~viewport ~all_expectations
             Ext_test_lib.compare_pair ~normalize:wpt_normalize ~matched:true
               wpt_config test_snap ref_snap
       in
-      (* WPT semantics: pass if the test matches ANY of its references.
-         On failure, report the first reference's outcome — it is the
-         canonical one and keeps diffs stable across runs. *)
+      (* Try references in order, stopping at the first Equivalent; else
+         return the first reference's outcome (canonical, keeps diffs stable
+         across runs). This one loop serves both kinds: a Match test passes
+         on ANY Equivalent, a Mismatch test fails on ANY Equivalent and
+         passes only if every reference yields Diff — the interpretation is
+         applied afterwards by Ext_test_lib.cache_status. *)
       let rec try_refs first = function
         | [] -> (
             match first with
@@ -151,15 +154,7 @@ let run_one_test conn ~port ~viewport ~all_expectations
       let elapsed_s = Unix.gettimeofday () -. t0 in
       let timestamp = Ext_test_lib.iso8601_now () in
       let status, diffs =
-        match (expectation, outcome) with
-        | Ext_test_lib.Pass, Ext_test_lib.Equivalent -> ("pass", [])
-        | Ext_test_lib.Xfail _, Ext_test_lib.Diff descs -> ("xfail", descs)
-        | Ext_test_lib.Xfail _, Ext_test_lib.Error msg -> ("xfail", [ msg ])
-        | Ext_test_lib.Xfail _, Ext_test_lib.Equivalent ->
-            ("pass", [])  (* unexpected pass — stale xfail *)
-        | _, Ext_test_lib.Diff descs -> ("fail", descs)
-        | _, Ext_test_lib.Error msg -> ("error", [ msg ])
-        | _, Ext_test_lib.Equivalent -> ("pass", [])
+        Ext_test_lib.cache_status ~kind:test.kind ~expectation outcome
       in
       let result : Ext_test_lib.cached_result =
         { status; diffs; elapsed_s; timestamp }

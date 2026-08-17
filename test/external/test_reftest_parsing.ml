@@ -1,4 +1,5 @@
-(* Unit tests for reftest link parsing and the determinism filter.
+(* Unit tests for reftest link parsing, the determinism filter, and the
+   kind-aware cache-status mapping (mismatch verdict inversion).
 
    Pure: no filesystem, no network, no browser. Exercises the parsing
    semantics that discovery relies on: quoted/unquoted attribute values,
@@ -9,6 +10,9 @@ let links = Alcotest.(list string)
 
 let check_links name expected html =
   Alcotest.check links name expected (Ext_test_lib.parse_reftest_links html)
+
+let check_mismatch_links name expected html =
+  Alcotest.check links name expected (Ext_test_lib.parse_mismatch_links html)
 
 (* ── Edge cases ──────────────────────────────────────────────────── *)
 
@@ -105,6 +109,116 @@ let unquoted_href_with_slashes_is_complete () =
   check_links "bare absolute" [ "/css/reference/a-ref.html" ]
     {|<link rel=match href=/css/reference/a-ref.html>|}
 
+(* ── Mismatch links ──────────────────────────────────────────────── *)
+
+let mismatch_of_empty_input_is_empty () = check_mismatch_links "empty" [] ""
+
+let match_rel_is_not_a_mismatch_link () =
+  check_mismatch_links "match" [] {|<link rel="match" href="a.html">|}
+
+let mismatch_substring_does_not_match () =
+  (* "mismatch" must be a whole token; note "mismatch" contains "match" as a
+     substring, so token splitting must not confuse the two *)
+  check_mismatch_links "prefixed" [] {|<link rel="x-mismatch-y" href="a.html">|}
+
+let quoted_mismatch_link_parses () =
+  check_mismatch_links "quoted" [ "a-notref.html" ]
+    {|<link rel="mismatch" href="a-notref.html">|}
+
+let unquoted_mismatch_link_parses () =
+  check_mismatch_links "unquoted" [ "a-notref.html" ]
+    {|<link rel=mismatch href=a-notref.html>|}
+
+let mismatch_rel_token_list_parses () =
+  check_mismatch_links "token list" [ "a.html" ]
+    {|<link rel="mismatch stylesheet" href="a.html">|}
+
+let mixed_links_split_by_rel () =
+  let html =
+    {|<link rel="match" href="same.html"><link rel="mismatch" href="other.html">|}
+  in
+  check_links "match side" [ "same.html" ] html;
+  check_mismatch_links "mismatch side" [ "other.html" ] html
+
+let mismatch_links_preserve_order_and_dedupe () =
+  check_mismatch_links "order+dedupe" [ "a.html"; "b.html" ]
+    {|<link rel="mismatch" href="a.html"><link rel="mismatch" href="b.html"><link rel="mismatch" href="a.html">|}
+
+(* ── Cache status: verdict mapping and mismatch inversion ────────── *)
+
+let status = Alcotest.(pair string (list string))
+
+let check_status name expected ~kind ~expectation outcome =
+  Alcotest.check status name expected
+    (Ext_test_lib.cache_status ~kind ~expectation outcome)
+
+let sensitivity_marker (status, diffs) =
+  status = "fail"
+  && List.exists
+       (fun d -> String.length d >= 12 && String.sub d 0 12 = "sensitivity:")
+       diffs
+
+let match_equivalent_is_pass () =
+  check_status "pass" ("pass", []) ~kind:Ext_test_lib.Match
+    ~expectation:Ext_test_lib.Pass Ext_test_lib.Equivalent
+
+let match_diff_is_fail_with_diffs () =
+  check_status "fail" ("fail", [ "d1"; "d2" ]) ~kind:Ext_test_lib.Match
+    ~expectation:Ext_test_lib.Pass (Ext_test_lib.Diff [ "d1"; "d2" ])
+
+let match_error_is_error () =
+  check_status "error" ("error", [ "boom" ]) ~kind:Ext_test_lib.Match
+    ~expectation:Ext_test_lib.Pass (Ext_test_lib.Error "boom")
+
+let mismatch_diff_is_pass_keeping_diffs () =
+  (* The diffs document WHAT sensitivity caught the asserted difference *)
+  check_status "inverted pass" ("pass", [ "d1" ]) ~kind:Ext_test_lib.Mismatch
+    ~expectation:Ext_test_lib.Pass (Ext_test_lib.Diff [ "d1" ])
+
+let mismatch_equivalent_is_fail_with_sensitivity_marker () =
+  (* The fatal case: sosie is blind to a difference WPT asserts *)
+  let result =
+    Ext_test_lib.cache_status ~kind:Ext_test_lib.Mismatch
+      ~expectation:Ext_test_lib.Pass Ext_test_lib.Equivalent
+  in
+  Alcotest.(check bool) "fail with sensitivity: diff" true
+    (sensitivity_marker result)
+
+let mismatch_error_is_error () =
+  check_status "error" ("error", [ "boom" ]) ~kind:Ext_test_lib.Mismatch
+    ~expectation:Ext_test_lib.Pass (Ext_test_lib.Error "boom")
+
+let xfail_downgrades_fail_to_xfail_for_both_kinds () =
+  let xfail = Ext_test_lib.Xfail "known gap" in
+  check_status "match xfail" ("xfail", [ "d" ]) ~kind:Ext_test_lib.Match
+    ~expectation:xfail (Ext_test_lib.Diff [ "d" ]);
+  let st, diffs =
+    Ext_test_lib.cache_status ~kind:Ext_test_lib.Mismatch ~expectation:xfail
+      Ext_test_lib.Equivalent
+  in
+  Alcotest.(check string) "mismatch xfail" "xfail" st;
+  Alcotest.(check bool) "keeps sensitivity marker" true
+    (List.exists
+       (fun d -> String.length d >= 12 && String.sub d 0 12 = "sensitivity:")
+       diffs)
+
+let xfail_downgrades_error_to_xfail () =
+  check_status "match" ("xfail", [ "boom" ]) ~kind:Ext_test_lib.Match
+    ~expectation:(Ext_test_lib.Xfail "r") (Ext_test_lib.Error "boom");
+  check_status "mismatch" ("xfail", [ "boom" ]) ~kind:Ext_test_lib.Mismatch
+    ~expectation:(Ext_test_lib.Xfail "r") (Ext_test_lib.Error "boom")
+
+let stale_xfail_surfaces_as_pass_for_both_kinds () =
+  check_status "match stale" ("pass", []) ~kind:Ext_test_lib.Match
+    ~expectation:(Ext_test_lib.Xfail "stale") Ext_test_lib.Equivalent;
+  check_status "mismatch stale" ("pass", [ "d" ]) ~kind:Ext_test_lib.Mismatch
+    ~expectation:(Ext_test_lib.Xfail "stale") (Ext_test_lib.Diff [ "d" ])
+
+let skip_expectation_maps_like_pass () =
+  (* The runner returns early on Skip; cache_status treats it as Pass *)
+  check_status "skip" ("fail", [ "d" ]) ~kind:Ext_test_lib.Match
+    ~expectation:(Ext_test_lib.Skip "policy") (Ext_test_lib.Diff [ "d" ])
+
 (* ── Determinism filter ──────────────────────────────────────────── *)
 
 let animation_content_is_nondeterministic () =
@@ -178,6 +292,48 @@ let () =
             unclosed_tag_does_not_swallow_next_link;
           Alcotest.test_case "unquoted href with slashes is complete" `Quick
             unquoted_href_with_slashes_is_complete;
+        ] );
+      ( "mismatch links",
+        [
+          Alcotest.test_case "mismatch of empty input is empty" `Quick
+            mismatch_of_empty_input_is_empty;
+          Alcotest.test_case "match rel is not a mismatch link" `Quick
+            match_rel_is_not_a_mismatch_link;
+          Alcotest.test_case "mismatch substring does not match" `Quick
+            mismatch_substring_does_not_match;
+          Alcotest.test_case "quoted mismatch link parses" `Quick
+            quoted_mismatch_link_parses;
+          Alcotest.test_case "unquoted mismatch link parses" `Quick
+            unquoted_mismatch_link_parses;
+          Alcotest.test_case "mismatch rel token list parses" `Quick
+            mismatch_rel_token_list_parses;
+          Alcotest.test_case "mixed links split by rel" `Quick
+            mixed_links_split_by_rel;
+          Alcotest.test_case "mismatch links preserve order and dedupe" `Quick
+            mismatch_links_preserve_order_and_dedupe;
+        ] );
+      ( "cache status",
+        [
+          Alcotest.test_case "match equivalent is pass" `Quick
+            match_equivalent_is_pass;
+          Alcotest.test_case "match diff is fail with diffs" `Quick
+            match_diff_is_fail_with_diffs;
+          Alcotest.test_case "match error is error" `Quick match_error_is_error;
+          Alcotest.test_case "mismatch diff is pass keeping diffs" `Quick
+            mismatch_diff_is_pass_keeping_diffs;
+          Alcotest.test_case
+            "mismatch equivalent is fail with sensitivity marker" `Quick
+            mismatch_equivalent_is_fail_with_sensitivity_marker;
+          Alcotest.test_case "mismatch error is error" `Quick
+            mismatch_error_is_error;
+          Alcotest.test_case "xfail downgrades fail to xfail for both kinds"
+            `Quick xfail_downgrades_fail_to_xfail_for_both_kinds;
+          Alcotest.test_case "xfail downgrades error to xfail" `Quick
+            xfail_downgrades_error_to_xfail;
+          Alcotest.test_case "stale xfail surfaces as pass for both kinds"
+            `Quick stale_xfail_surfaces_as_pass_for_both_kinds;
+          Alcotest.test_case "skip expectation maps like pass" `Quick
+            skip_expectation_maps_like_pass;
         ] );
       ( "determinism filter",
         [

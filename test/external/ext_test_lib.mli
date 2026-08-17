@@ -70,6 +70,12 @@ val parse_reftest_links : string -> string list
     token list (e.g. ["match stylesheet"]). Empty hrefs are dropped.
     @return the hrefs as written in the HTML, [[]] if none. *)
 
+val parse_mismatch_links : string -> string list
+(** [parse_mismatch_links html] extracts the [href] of every
+    [<link rel="mismatch">], with the same lexical tolerance as
+    {!parse_reftest_links}. A mismatch reference asserts the test must
+    render DIFFERENTLY from it. *)
+
 val is_deterministic_test : string -> bool
 (** [is_deterministic_test html] returns [true] if the HTML content does not
     contain [\@keyframes], [animation:], or [transition:] properties that would
@@ -81,20 +87,34 @@ val read_file : string -> string
 
 (** {1 Reftest discovery} *)
 
+type reftest_kind =
+  | Match  (** Test must render the SAME as some reference. *)
+  | Mismatch
+      (** Test must render DIFFERENTLY from every reference. An
+          [Equivalent] verdict on any reference is a false negative —
+          a measured sensitivity gap in the comparison whitelist. *)
+
 type reftest = {
   rel_path : string;
       (** Path relative to wpt_dir, e.g. "css/css-color/a98rgb-001.html" *)
+  kind : reftest_kind;
   ref_hrefs : string list;
-      (** The hrefs from every [<link rel="match">] whose target exists on
-          disk, in document order. Never empty. WPT semantics: the test
-          passes if it matches ANY of these references. *)
+      (** The hrefs from every reftest link of [kind] whose target exists on
+          disk, in document order. Never empty. WPT semantics: a Match test
+          passes if it matches ANY reference; a Mismatch test passes if it
+          differs from EVERY reference. *)
 }
 (** A discovered reftest: a test file paired with its candidate references. *)
 
 val discover_reftests : wpt_dir:string -> group:string -> reftest list
 (** [discover_reftests ~wpt_dir ~group] walks [wpt_dir/group] and returns all
-    valid reftests: files with a [<link rel="match">], deterministic content,
-    and at least one existing reference file. Results are sorted by path. *)
+    valid reftests: files with a reftest link, deterministic content, and at
+    least one existing reference file. Results are sorted by path.
+
+    A file with any [<link rel="match">] is a [Match] test (its mismatch
+    links, if any, are ignored for now — mixed tests are compared against
+    their match references only). A file with only [<link rel="mismatch">]
+    links is a [Mismatch] test. *)
 
 val discover_all_reftests : wpt_dir:string -> groups:string list -> reftest list
 (** [discover_all_reftests ~wpt_dir ~groups] discovers reftests across all
@@ -113,10 +133,25 @@ val load_manifest_groups : unit -> string list
 
 type cached_result = {
   status : string;      (** "pass", "fail", "xfail", "skip", or "error" *)
-  diffs : string list;  (** Diff descriptions, empty for pass/skip *)
+  diffs : string list;  (** Diff descriptions, empty for match-test passes *)
   elapsed_s : float;    (** Wall-clock time for this test *)
   timestamp : string;   (** ISO 8601 UTC timestamp *)
 }
+
+val cache_status :
+  kind:reftest_kind ->
+  expectation:expectation ->
+  outcome ->
+  string * string list
+(** [cache_status ~kind ~expectation outcome] maps a comparison outcome to
+    the cached (status, diffs) pair, inverting the verdict for [Mismatch]
+    tests: [Diff] means sosie sees the difference WPT asserts (pass, diffs
+    kept as documentation of what was detected), [Equivalent] means a false
+    negative (fail, with a ["sensitivity: ..."] marker diff that downstream
+    triage recognizes). [Xfail] turns fail/error into "xfail"; an expected
+    failure that passes yields "pass" (stale xfail, reported as unexpected
+    pass). [Skip] is handled by the runner before comparison and is treated
+    like [Pass] here. *)
 
 val iso8601_now : unit -> string
 (** Current time as an ISO 8601 UTC string (e.g., "2026-03-21T10:00:00Z"). *)
