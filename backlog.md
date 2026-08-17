@@ -3,18 +3,6 @@
 Pending work, current task first. See `plans/wpt-ingestion-campaign.md`
 for the full campaign design and `sosie-roadmap.md` Step 10c for status.
 
-## WPT campaign session B — mismatch reftests as negative controls
-
-Ingest the 281 in-scope `rel="mismatch"` reftests. These assert that two
-pages render DIFFERENTLY, so sosie must report a diff: an Equivalent
-verdict on a mismatch pair is a measured false negative — exactly the
-failure mode the design declares fatal. Work: discovery of mismatch-only
-tests (`reftest.kind = Match | Mismatch`; mixed match+mismatch tests stay
-match-only, flagged), inverted verdict in the runner (Diff → pass,
-Equivalent → FAIL), xfail entries whose reasons enumerate sensitivity
-gaps (e.g. property not in whitelist), a sensitivity section in
-TRIAGE.md, unit tests for the inverted semantics, coverage-scanner sync.
-
 ## WPT campaign session C — css/CSS2 module (+~6,270 tests)
 
 Add `css/CSS2` to manifest.json groups; `fetch.sh` re-syncs from local
