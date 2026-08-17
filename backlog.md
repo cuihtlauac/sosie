@@ -3,26 +3,6 @@
 Pending work, current task first. See `plans/wpt-ingestion-campaign.md`
 for the full campaign design and `sosie-roadmap.md` Step 10c for status.
 
-## Whitelist extension guided by sensitivity measurement
-
-Session B measured 99 false negatives on mismatch reftests; 80 are
-recoverable by adding properties to the capture whitelist
-(text-align-last, font-palette, writing-mode, direction, appearance,
-outline*, accent-color, text-decoration-skip-ink,
-text-underline-offset, text-shadow, text-combine-upright,
-text-emphasis, -webkit-text-stroke, image-rendering). Add them,
-re-run the negative controls (session B expected ≈254/274 = 92.7%
-sensitivity), prune the recovered xfails, and re-triage match-test
-xfails the new properties may cause (whitelist growth can add spurious
-diffs — measure both directions). See TRIAGE.md sensitivity section.
-
-Note (session E): the control population has grown. Session E ingested
-85 more mismatch-kind negative controls (12 html/rendering, 33
-html/semantics, 38 mathml, 2 svg), of which 35 are false negatives
-(TRIAGE.md session E section). Measure sensitivity against the combined
-set (274 + 85 = 359 controls), not session B's 274 alone, and check
-whether the same whitelist additions recover the session-E gaps too.
-
 ## Extractor: null document.head crash on XML documents without <head>
 
 `freeze_page` (`js_extractor/extractor.ml`) appends the
@@ -47,6 +27,19 @@ The svg `.html` cases are surprising — the HTML parser synthesizes a
 `<head>`, so the null insertion point has a different cause than the
 XML case; verify the `documentElement` fallback actually covers them
 and diagnose why `head` is null there. Affected corpus-wide: 15 tests.
+
+## Whitelist extension: SVG presentation properties
+
+The 29 → 49 whitelist extension raised mismatch-control sensitivity to
+82.4% (TRIAGE.md whitelist re-measurement section). Of the 67 residual
+false negatives, 9 are recoverable: the `permission-element`
+`icon-css-property-{fill,stroke,stroke-width,height}` reftests differ
+only in SVG presentation properties not yet captured. Add `fill`,
+`stroke`, `stroke-width` (and confirm `height` behaviour on replaced
+SVG) to the whitelist, then re-measure sensitivity and re-triage
+match-test xfails as before. The rest of the 67 are non-recoverable by
+property capture (pseudo-element internals, glyph-level font selection,
+MathML operator geometry, bitmap/highlight styling).
 
 ## Deferred (not scheduled)
 

@@ -1,3 +1,4 @@
 classification.db
 coverage.db
 __pycache__/
+mismatch-controls.txt

@@ -2,6 +2,41 @@
 
 Completed work, most recent first.
 
+## 2026-08-17 — Whitelist extension guided by sensitivity measurement
+
+Extended the capture whitelist 29 → 49 properties to recover the false
+negatives measured in session B: `text-align-last`, `font-palette`,
+`writing-mode`, `direction`, `appearance`, `accent-color`,
+`image-rendering`, `text-decoration-skip-ink`, `text-underline-offset`,
+`text-shadow`, `text-combine-upright`, and the `outline` /
+`text-emphasis` / `-webkit-text-stroke` shorthands expanded to
+longhands (getComputedStyle does not reliably serialize a shorthand;
+an empty computed value would be a silent false negative). Threaded
+through every construction site (shared record + Property_whitelist,
+JSOO + raw JS extractor, native parse/serialize, generator, mutator,
+comparator, color canonicalizer) with tests and QCheck generators;
+whitelist-count assertions 29 → 49. Commit `ffd9e99`.
+
+Re-measured the 384 discovered Mismatch controls in both directions.
+Exploited monotonicity (widening only adds diffs) to recapture just the
+4,022 passes + 142 false-negatives; the other 19,087 are provably
+verdict-stable. Added a `--kinds` runner mode for the authoritative
+Mismatch denominator. **Sensitivity 239/381 (62.7%) → 314/381
+(82.4%)** — 75 of 142 false negatives recovered, led by the
+`appearance`/`writing-mode`/`direction` form-control suites (~40),
+`text-align-last` (16), `font-palette` (9). Cost: 675 previously
+passing Match reftests now report a (tolerable) spurious diff, 588 of
+them `appearance` on interchangeable form controls; bulk-xfailed by
+dominant type. 2 `css-anchor-position` tests flipped on bounds (capture
+non-determinism, not the whitelist). 67 residual false negatives are
+non-recoverable (pseudo-element internals, glyph-level font selection,
+MathML operator geometry, bitmap/highlight) except 9
+`permission-element` icon tests recoverable by adding SVG `fill`/
+`stroke`/`stroke-width`/`height` — queued in the backlog. TRIAGE.md
+whitelist re-measurement section.
+Suite: 23,251 tests, 4,022 → 3,422 pass, 19,229 → 19,829 xfail, 0 fail;
+coverage gate 23,251/23,251 unchanged (no tests added).
+
 ## 2026-08-17 — WPT campaign session E: non-CSS trees
 
 Five non-CSS trees added to the manifest in one cycle: `html/rendering`,

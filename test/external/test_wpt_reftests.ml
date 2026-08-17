@@ -49,6 +49,7 @@ type mode =
   | Run_all
   | Run_group of string
   | Report
+  | Kinds
   | Rerun of string
   | Rerun_group of string
 
@@ -59,6 +60,7 @@ let parse_args () =
   else
     match argv.(1) with
     | "--report" -> Report
+    | "--kinds" -> Kinds
     | "--group" when n > 2 -> Run_group argv.(2)
     | "--rerun" when n > 2 -> Rerun argv.(2)
     | "--rerun-group" when n > 2 -> Rerun_group argv.(2)
@@ -69,6 +71,7 @@ let parse_args () =
           \  test_wpt_reftests.exe                      Run all uncached tests\n\
           \  test_wpt_reftests.exe --group GROUP         Run uncached tests in group\n\
           \  test_wpt_reftests.exe --report              Report cached results\n\
+          \  test_wpt_reftests.exe --kinds               Report Match/Mismatch kind counts\n\
           \  test_wpt_reftests.exe --rerun PATH          Re-run a specific test\n\
           \  test_wpt_reftests.exe --rerun-group GROUP   Re-run all tests in group\n"
           arg;
@@ -242,6 +245,32 @@ let () =
   (* Report mode: just summarize cached results *)
   if mode = Report then begin
     report_results all_tests all_expectations;
+    exit 0
+  end;
+
+  (* Kinds mode: report Match/Mismatch counts from the SAME discovery used
+     for running, and dump the Mismatch rel_paths (the negative controls) to
+     mismatch-controls.txt so downstream sensitivity measurement uses the
+     authoritative denominator. *)
+  if mode = Kinds then begin
+    let matches =
+      List.filter (fun (t : Ext_test_lib.reftest) -> t.kind = Ext_test_lib.Match)
+        all_tests
+    in
+    let mismatches =
+      List.filter (fun (t : Ext_test_lib.reftest) -> t.kind = Ext_test_lib.Mismatch)
+        all_tests
+    in
+    Printf.printf "Match: %d | Mismatch: %d | Total: %d\n"
+      (List.length matches) (List.length mismatches) (List.length all_tests);
+    let out = Filename.concat (ext_dir ()) "mismatch-controls.txt" in
+    let oc = open_out out in
+    List.iter
+      (fun (t : Ext_test_lib.reftest) -> Printf.fprintf oc "%s\n" t.rel_path)
+      mismatches;
+    close_out oc;
+    Printf.printf "Wrote %d mismatch control paths to %s\n"
+      (List.length mismatches) out;
     exit 0
   end;
 

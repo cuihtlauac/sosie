@@ -370,6 +370,94 @@ Cannot read properties of null (reading 'appendChild')` in
 These 7 do not change the fix already queued in the backlog; they
 expand its affected-test list and its test evidence.
 
+## Whitelist extension: sensitivity re-measurement (2026-08-17)
+
+The property whitelist grew from 29 to 49 (commit extending the
+capture with `text-align-last`, `font-palette`, `writing-mode`,
+`direction`, `appearance`, `accent-color`, `image-rendering`,
+`text-decoration-skip-ink`, `text-underline-offset`, `text-shadow`,
+`text-combine-upright`, and the `outline`/`text-emphasis`/
+`-webkit-text-stroke` shorthands expanded to longhands). This section
+measures the effect on the negative controls in both directions.
+
+**Re-run scope.** Widening the whitelist is *monotonic*: comparing more
+properties can only add diffs, never remove them. So the only possible
+verdict flips are a passing Match test → spurious fail, or a
+false-negative Mismatch control → recovered pass; every Match xfail and
+error is provably verdict-stable. Only the 4,022 passes and the 142
+false-negative controls were recaptured (4,164 tests); the other 19,087
+cached results are unaffected by construction.
+
+**Sensitivity (384 discovered Mismatch controls, 3 errored).**
+
+| | detected | false-neg | sensitivity |
+|--|--------:|----------:|------------:|
+| before | 239 | 142 | 239/381 = 62.7% |
+| after  | 314 |  67 | 314/381 = **82.4%** |
+
+75 of the 142 false negatives are now detected. The recovered controls
+are exactly the whitelist additions earning their place: the
+`appearance`/`writing-mode`/`direction` form-control suites
+(`css-writing-modes/forms/*`, `the-meter-element/*`, ~40),
+`text-align-last` (`css-text/text-align/*-last-*`, 16), `font-palette`
+(9), `text-decoration-skip-ink` (7), plus `accent-color`, `outline`,
+`image-rendering`, `text-underline-offset`, `text-shadow`,
+`text-combine-upright`, `-webkit-text-stroke` (1–2 each).
+
+**Cost — spurious Match diffs (the other direction).** 675 previously
+passing Match reftests now report a diff. WPT asserts these render
+identically, so every one is a false positive (tolerable by design;
+false negatives are the fatal class). They are bulk-xfailed by dominant
+diff type:
+
+| Reason | Count |
+|--------|------:|
+| style: appearance differs | 588 |
+| style: writing-mode differs | 23 |
+| style: direction differs | 17 |
+| style: text-align-last differs | 8 |
+| style: outline-width differs | 8 |
+| style: font-palette differs | 8 |
+| style: text-shadow differs | 5 |
+| style: text-underline-offset differs | 4 |
+| style: display / accent-color / other | ~12 |
+| layout: bounds differ | 2 |
+
+`appearance` dominates because match reftests freely interchange
+`appearance` values on form controls that render the same. The 2
+`layout: bounds` flips are `css-anchor-position` tests
+(`anchor-center-002`, `position-area-overflow-icb-001`) with large
+(tens-of-px) bounds differences between runs — capture
+non-determinism in anchor positioning, unrelated to the whitelist;
+xfailed as `layout: bounds`. The 3,347 stable passes confirm capture
+determinism holds everywhere else.
+
+Suite: 4,022 → 3,422 pass, 19,229 → 19,829 xfail, 0 fail (net −600 =
+−675 spurious xfails + 75 recovered passes).
+
+**67 residual false negatives** — the non-recoverable classes, plus one
+new opportunity:
+
+- Form-control pseudo-element internals (`::slider-*`, `::placeholder`,
+  `::file-selector-button`, ~15 in `css-pseudo`, `html/rendering
+  widgets`): the extractor walks DOM elements, not pseudo-elements.
+- Glyph-level font selection/synthesis (`css-fonts` `lang-attribute`,
+  `system-ui-*`, `font-variant-emoji`, `test-synthetic-italic`) and
+  `@font-palette-values` add/remove/delete that do not surface in the
+  computed value (~12): computed properties identical, glyphs differ.
+- MathML operator geometry (`presentation-markup/operators/
+  embellished-op-*`, `op-dict`, `stretchy-*`, `frac-linethickness`,
+  16): operator spacing/stretch is glyph/geometry, not a whitelisted
+  property.
+- Pixel/bitmap (`mix-blend-mode` image/video, gradient interpolation,
+  `highlight-api`/`selection-image` highlight styling, ~10):
+  `background-image` and raster content are not compared.
+- **New opportunity (recoverable):** the `permission-element`
+  `icon-css-property-{fill,stroke,stroke-width,height}` reftests (9)
+  differ only in SVG presentation properties (`fill`, `stroke`,
+  `stroke-width`, `height`) not yet whitelisted. A future SVG-property
+  extension would recover these; queued in the backlog.
+
 ## Possible improvement phases (by ROI)
 
 **Phase B — Body/HTML container normalization (~1,200 tests):**
