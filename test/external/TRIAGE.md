@@ -138,3 +138,41 @@ equivalence, but they don't affect sosie's primary use case. The WPT suite
 serves as a stress test for the extractor, parser, and normalization — the
 20.3% that pass validate robustness across 2,623 diverse real-world CSS
 patterns.
+
+## Classification database
+
+The multi-dimensional classification lives in two artifacts:
+
+- **`classification.json`** (committed) — durable export, source of truth
+  for tags and notes. One object per test, all dimensions.
+- **`classification.db`** (gitignored) — SQLite working database for
+  queries and annotation.
+
+Use `wpt_classify.py` to manage the database:
+
+```bash
+# Build DB from test HTML + cached results + expectations
+python3 test/external/wpt_classify.py bootstrap
+
+# Print summary table
+python3 test/external/wpt_classify.py summary
+
+# Run arbitrary SQL
+python3 test/external/wpt_classify.py query "SELECT css_spec, COUNT(*) FROM tests GROUP BY css_spec ORDER BY 2 DESC LIMIT 10"
+
+# Tag / annotate a test
+python3 test/external/wpt_classify.py tag css/css-flexbox/some-test.html my-tag
+python3 test/external/wpt_classify.py note css/css-flexbox/some-test.html "Investigated: layout is correct"
+
+# Export DB to JSON (commit this)
+python3 test/external/wpt_classify.py export
+
+# Import JSON into DB (fresh clone)
+python3 test/external/wpt_classify.py import
+
+# Sync reason strings back to expectations.json
+python3 test/external/wpt_classify.py sync-expectations
+```
+
+Dimensions per test: status, WPT metadata (title, assertion, spec section),
+diff analysis (types, counts, bounds delta), tags (many-to-many), and notes.
