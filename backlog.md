@@ -11,10 +11,17 @@ recoverable by adding properties to the capture whitelist
 outline*, accent-color, text-decoration-skip-ink,
 text-underline-offset, text-shadow, text-combine-upright,
 text-emphasis, -webkit-text-stroke, image-rendering). Add them,
-re-run the negative controls (expect ≈254/274 = 92.7% sensitivity),
-prune the recovered xfails, and re-triage match-test xfails the new
-properties may cause (whitelist growth can add spurious diffs —
-measure both directions). See TRIAGE.md sensitivity section.
+re-run the negative controls (session B expected ≈254/274 = 92.7%
+sensitivity), prune the recovered xfails, and re-triage match-test
+xfails the new properties may cause (whitelist growth can add spurious
+diffs — measure both directions). See TRIAGE.md sensitivity section.
+
+Note (session E): the control population has grown. Session E ingested
+85 more mismatch-kind negative controls (12 html/rendering, 33
+html/semantics, 38 mathml, 2 svg), of which 35 are false negatives
+(TRIAGE.md session E section). Measure sensitivity against the combined
+set (274 + 85 = 359 controls), not session B's 274 alone, and check
+whether the same whitelist additions recover the session-E gaps too.
 
 ## Extractor: null document.head crash on XML documents without <head>
 
