@@ -1,6 +1,6 @@
 {
   "wpt_commit": "55d076dca564300616a75eec5ec696e805c7bc3b",
-  "scan_timestamp": "2026-08-17T08:53:15+00:00",
+  "scan_timestamp": "2026-08-17T09:19:35+00:00",
   "tree_file_total": 102822,
   "candidate_total": 79222,
   "in_scope_total": 26583,
@@ -10,46 +10,40 @@
     "excluded-mismatch-only": 281,
     "excluded-nondeterministic": 179,
     "excluded-support-reference-path": 2411,
-    "included": 12909,
-    "missed-ref-missing-in-sparse": 4,
+    "included": 13096,
     "missed-ref-truly-absent": 21,
-    "missed-unquoted-rel": 181,
-    "not-a-reftest": 10465,
+    "not-a-reftest": 10463,
     "not-scanned-svg-extension": 132
   },
   "out_of_scope_modules": [
     {
       "module": "css/CSS2",
       "candidates": 11393,
-      "would_included": 6271,
-      "unquoted": 4,
+      "would_included": 6275,
       "mismatch": 12,
       "nondet": 1,
       "fuzzy": 6
     },
     {
-      "module": "css/css-break",
-      "candidates": 1331,
-      "would_included": 1003,
-      "unquoted": 0,
-      "mismatch": 1,
-      "nondet": 0,
-      "fuzzy": 5
-    },
-    {
       "module": "html",
       "candidates": 10355,
-      "would_included": 981,
-      "unquoted": 217,
+      "would_included": 1200,
       "mismatch": 59,
       "nondet": 7,
       "fuzzy": 126
     },
     {
+      "module": "css/css-break",
+      "candidates": 1331,
+      "would_included": 1003,
+      "mismatch": 1,
+      "nondet": 0,
+      "fuzzy": 5
+    },
+    {
       "module": "css/WOFF2",
       "candidates": 603,
       "would_included": 298,
-      "unquoted": 0,
       "mismatch": 0,
       "nondet": 0,
       "fuzzy": 0
@@ -58,7 +52,6 @@
       "module": "css/filter-effects",
       "candidates": 534,
       "would_included": 263,
-      "unquoted": 0,
       "mismatch": 3,
       "nondet": 24,
       "fuzzy": 50
@@ -67,7 +60,6 @@
       "module": "webvtt",
       "candidates": 579,
       "would_included": 240,
-      "unquoted": 0,
       "mismatch": 0,
       "nondet": 10,
       "fuzzy": 0
@@ -76,7 +68,6 @@
       "module": "css/css-counter-styles",
       "candidates": 481,
       "would_included": 234,
-      "unquoted": 0,
       "mismatch": 1,
       "nondet": 0,
       "fuzzy": 1
@@ -85,7 +76,6 @@
       "module": "mathml",
       "candidates": 807,
       "would_included": 234,
-      "unquoted": 0,
       "mismatch": 38,
       "nondet": 0,
       "fuzzy": 3
@@ -93,8 +83,7 @@
     {
       "module": "css/selectors",
       "candidates": 656,
-      "would_included": 218,
-      "unquoted": 6,
+      "would_included": 224,
       "mismatch": 2,
       "nondet": 0,
       "fuzzy": 3
@@ -103,7 +92,6 @@
       "module": "css/css-page",
       "candidates": 471,
       "would_included": 216,
-      "unquoted": 0,
       "mismatch": 4,
       "nondet": 0,
       "fuzzy": 0
@@ -111,8 +99,7 @@
     {
       "module": "svg",
       "candidates": 1895,
-      "would_included": 168,
-      "unquoted": 2,
+      "would_included": 170,
       "mismatch": 3,
       "nondet": 9,
       "fuzzy": 4
@@ -121,7 +108,6 @@
       "module": "css/css-conditional",
       "candidates": 457,
       "would_included": 160,
-      "unquoted": 0,
       "mismatch": 0,
       "nondet": 2,
       "fuzzy": 0
@@ -130,7 +116,6 @@
       "module": "css/css-layout-api",
       "candidates": 178,
       "would_included": 135,
-      "unquoted": 0,
       "mismatch": 0,
       "nondet": 0,
       "fuzzy": 0
@@ -139,7 +124,6 @@
       "module": "css/css-paint-api",
       "candidates": 174,
       "would_included": 107,
-      "unquoted": 0,
       "mismatch": 0,
       "nondet": 7,
       "fuzzy": 2
@@ -148,7 +132,6 @@
       "module": "css/motion",
       "candidates": 204,
       "would_included": 93,
-      "unquoted": 0,
       "mismatch": 0,
       "nondet": 4,
       "fuzzy": 27
@@ -157,7 +140,6 @@
       "module": "css/css-highlight-api",
       "candidates": 176,
       "would_included": 92,
-      "unquoted": 0,
       "mismatch": 2,
       "nondet": 0,
       "fuzzy": 26
@@ -166,7 +148,6 @@
       "module": "css/mediaqueries",
       "candidates": 107,
       "would_included": 58,
-      "unquoted": 0,
       "mismatch": 0,
       "nondet": 0,
       "fuzzy": 0
@@ -175,16 +156,30 @@
       "module": "css/compositing",
       "candidates": 153,
       "would_included": 56,
-      "unquoted": 0,
       "mismatch": 3,
       "nondet": 1,
       "fuzzy": 31
     },
     {
+      "module": "forced-colors-mode",
+      "candidates": 111,
+      "would_included": 49,
+      "mismatch": 0,
+      "nondet": 0,
+      "fuzzy": 1
+    },
+    {
+      "module": "infrastructure",
+      "candidates": 176,
+      "would_included": 46,
+      "mismatch": 13,
+      "nondet": 0,
+      "fuzzy": 6
+    },
+    {
       "module": "png",
       "candidates": 57,
       "would_included": 32,
-      "unquoted": 0,
       "mismatch": 0,
       "nondet": 0,
       "fuzzy": 0
@@ -193,25 +188,30 @@
       "module": "css/css-scrollbars",
       "candidates": 109,
       "would_included": 31,
-      "unquoted": 0,
       "mismatch": 0,
       "nondet": 0,
       "fuzzy": 1
     },
     {
+      "module": "quirks",
+      "candidates": 67,
+      "would_included": 28,
+      "mismatch": 0,
+      "nondet": 0,
+      "fuzzy": 0
+    },
+    {
       "module": "jpegxl",
       "candidates": 66,
       "would_included": 25,
-      "unquoted": 0,
       "mismatch": 0,
       "nondet": 0,
       "fuzzy": 7
     },
     {
-      "module": "quirks",
-      "candidates": 67,
-      "would_included": 25,
-      "unquoted": 3,
+      "module": "shadow-dom",
+      "candidates": 298,
+      "would_included": 24,
       "mismatch": 0,
       "nondet": 0,
       "fuzzy": 0
@@ -220,7 +220,6 @@
       "module": "compat",
       "candidates": 50,
       "would_included": 23,
-      "unquoted": 0,
       "mismatch": 0,
       "nondet": 0,
       "fuzzy": 5
@@ -229,16 +228,6 @@
       "module": "css/css-scroll-snap",
       "candidates": 194,
       "would_included": 23,
-      "unquoted": 0,
-      "mismatch": 0,
-      "nondet": 0,
-      "fuzzy": 0
-    },
-    {
-      "module": "shadow-dom",
-      "candidates": 298,
-      "would_included": 22,
-      "unquoted": 2,
       "mismatch": 0,
       "nondet": 0,
       "fuzzy": 0
@@ -247,7 +236,6 @@
       "module": "density-size-correction",
       "candidates": 32,
       "would_included": 20,
-      "unquoted": 0,
       "mismatch": 0,
       "nondet": 0,
       "fuzzy": 0
@@ -256,7 +244,6 @@
       "module": "css/css-rhythm",
       "candidates": 35,
       "would_included": 18,
-      "unquoted": 0,
       "mismatch": 0,
       "nondet": 0,
       "fuzzy": 0
@@ -265,7 +252,6 @@
       "module": "css/css-nesting",
       "candidates": 53,
       "would_included": 17,
-      "unquoted": 0,
       "mismatch": 0,
       "nondet": 0,
       "fuzzy": 0
@@ -274,7 +260,6 @@
       "module": "css/css-color-adjust",
       "candidates": 51,
       "would_included": 16,
-      "unquoted": 0,
       "mismatch": 1,
       "nondet": 0,
       "fuzzy": 0
@@ -283,7 +268,6 @@
       "module": "animation-worklet",
       "candidates": 47,
       "would_included": 15,
-      "unquoted": 0,
       "mismatch": 0,
       "nondet": 0,
       "fuzzy": 0
@@ -292,7 +276,6 @@
       "module": "css/css-style-attr",
       "candidates": 19,
       "would_included": 15,
-      "unquoted": 0,
       "mismatch": 0,
       "nondet": 0,
       "fuzzy": 0
@@ -301,7 +284,6 @@
       "module": "web-animations",
       "candidates": 190,
       "would_included": 14,
-      "unquoted": 0,
       "mismatch": 0,
       "nondet": 4,
       "fuzzy": 2
@@ -310,25 +292,46 @@
       "module": "css/css-view-transitions",
       "candidates": 703,
       "would_included": 13,
-      "unquoted": 0,
       "mismatch": 0,
       "nondet": 294,
       "fuzzy": 118
     },
     {
+      "module": "selection",
+      "candidates": 162,
+      "would_included": 13,
+      "mismatch": 1,
+      "nondet": 0,
+      "fuzzy": 0
+    },
+    {
+      "module": "css/css-forms",
+      "candidates": 31,
+      "would_included": 12,
+      "mismatch": 1,
+      "nondet": 0,
+      "fuzzy": 0
+    },
+    {
       "module": "css/cssom",
       "candidates": 213,
       "would_included": 11,
-      "unquoted": 0,
       "mismatch": 0,
       "nondet": 0,
       "fuzzy": 0
     },
     {
+      "module": "css/cssom-view",
+      "candidates": 230,
+      "would_included": 11,
+      "mismatch": 0,
+      "nondet": 0,
+      "fuzzy": 1
+    },
+    {
       "module": "fetch",
       "candidates": 303,
       "would_included": 11,
-      "unquoted": 0,
       "mismatch": 0,
       "nondet": 0,
       "fuzzy": 0
@@ -337,34 +340,14 @@
       "module": "scroll-animations",
       "candidates": 258,
       "would_included": 11,
-      "unquoted": 0,
       "mismatch": 0,
       "nondet": 22,
       "fuzzy": 3
     },
     {
-      "module": "css/cssom-view",
-      "candidates": 230,
-      "would_included": 9,
-      "unquoted": 2,
-      "mismatch": 0,
-      "nondet": 0,
-      "fuzzy": 1
-    },
-    {
-      "module": "infrastructure",
-      "candidates": 176,
-      "would_included": 9,
-      "unquoted": 39,
-      "mismatch": 13,
-      "nondet": 0,
-      "fuzzy": 6
-    },
-    {
       "module": "css/printing",
       "candidates": 34,
       "would_included": 8,
-      "unquoted": 0,
       "mismatch": 9,
       "nondet": 6,
       "fuzzy": 1
@@ -373,25 +356,6 @@
       "module": "css/css-properties-values-api",
       "candidates": 123,
       "would_included": 7,
-      "unquoted": 0,
-      "mismatch": 0,
-      "nondet": 0,
-      "fuzzy": 0
-    },
-    {
-      "module": "selection",
-      "candidates": 162,
-      "would_included": 7,
-      "unquoted": 6,
-      "mismatch": 1,
-      "nondet": 0,
-      "fuzzy": 0
-    },
-    {
-      "module": "content-dpr",
-      "candidates": 12,
-      "would_included": 5,
-      "unquoted": 0,
       "mismatch": 0,
       "nondet": 0,
       "fuzzy": 0
@@ -399,8 +363,23 @@
     {
       "module": "css/css-font-loading",
       "candidates": 36,
+      "would_included": 6,
+      "mismatch": 0,
+      "nondet": 0,
+      "fuzzy": 0
+    },
+    {
+      "module": "fullscreen",
+      "candidates": 96,
+      "would_included": 6,
+      "mismatch": 0,
+      "nondet": 0,
+      "fuzzy": 1
+    },
+    {
+      "module": "content-dpr",
+      "candidates": 12,
       "would_included": 5,
-      "unquoted": 1,
       "mismatch": 0,
       "nondet": 0,
       "fuzzy": 0
@@ -409,7 +388,6 @@
       "module": "css/css-typed-om",
       "candidates": 369,
       "would_included": 5,
-      "unquoted": 0,
       "mismatch": 0,
       "nondet": 0,
       "fuzzy": 0
@@ -418,7 +396,6 @@
       "module": "css/css-exclusions",
       "candidates": 16,
       "would_included": 4,
-      "unquoted": 0,
       "mismatch": 0,
       "nondet": 0,
       "fuzzy": 0
@@ -427,7 +404,6 @@
       "module": "css/css-scroll-anchoring",
       "candidates": 84,
       "would_included": 4,
-      "unquoted": 0,
       "mismatch": 0,
       "nondet": 0,
       "fuzzy": 0
@@ -436,34 +412,30 @@
       "module": "dom",
       "candidates": 576,
       "would_included": 4,
-      "unquoted": 0,
       "mismatch": 0,
       "nondet": 0,
       "fuzzy": 0
     },
     {
-      "module": "css/css-forms",
-      "candidates": 31,
-      "would_included": 3,
-      "unquoted": 9,
-      "mismatch": 1,
-      "nondet": 0,
-      "fuzzy": 0
-    },
-    {
-      "module": "fullscreen",
-      "candidates": 96,
-      "would_included": 3,
-      "unquoted": 3,
+      "module": "encoding",
+      "candidates": 160,
+      "would_included": 4,
       "mismatch": 0,
       "nondet": 0,
-      "fuzzy": 1
+      "fuzzy": 0
     },
     {
       "module": "resize-observer",
       "candidates": 24,
       "would_included": 3,
-      "unquoted": 0,
+      "mismatch": 0,
+      "nondet": 0,
+      "fuzzy": 0
+    },
+    {
+      "module": "xml",
+      "candidates": 14,
+      "would_included": 3,
       "mismatch": 0,
       "nondet": 0,
       "fuzzy": 0
@@ -472,7 +444,6 @@
       "module": "acid",
       "candidates": 9,
       "would_included": 2,
-      "unquoted": 0,
       "mismatch": 0,
       "nondet": 0,
       "fuzzy": 0
@@ -481,7 +452,6 @@
       "module": "css/css-animations",
       "candidates": 246,
       "would_included": 2,
-      "unquoted": 0,
       "mismatch": 0,
       "nondet": 27,
       "fuzzy": 1
@@ -490,7 +460,6 @@
       "module": "focus",
       "candidates": 113,
       "would_included": 2,
-      "unquoted": 0,
       "mismatch": 0,
       "nondet": 0,
       "fuzzy": 0
@@ -499,7 +468,6 @@
       "module": "tools",
       "candidates": 155,
       "would_included": 2,
-      "unquoted": 1,
       "mismatch": 0,
       "nondet": 0,
       "fuzzy": 0
@@ -508,7 +476,6 @@
       "module": "FileAPI",
       "candidates": 47,
       "would_included": 1,
-      "unquoted": 0,
       "mismatch": 0,
       "nondet": 0,
       "fuzzy": 0
@@ -517,7 +484,6 @@
       "module": "apng",
       "candidates": 3,
       "would_included": 1,
-      "unquoted": 0,
       "mismatch": 0,
       "nondet": 0,
       "fuzzy": 0
@@ -526,7 +492,6 @@
       "module": "avif",
       "candidates": 2,
       "would_included": 1,
-      "unquoted": 0,
       "mismatch": 0,
       "nondet": 0,
       "fuzzy": 0
@@ -535,7 +500,6 @@
       "module": "content-security-policy",
       "candidates": 862,
       "would_included": 1,
-      "unquoted": 0,
       "mismatch": 0,
       "nondet": 0,
       "fuzzy": 0
@@ -544,7 +508,6 @@
       "module": "contenteditable",
       "candidates": 4,
       "would_included": 1,
-      "unquoted": 0,
       "mismatch": 0,
       "nondet": 0,
       "fuzzy": 0
@@ -553,7 +516,6 @@
       "module": "css/css-syntax",
       "candidates": 46,
       "would_included": 1,
-      "unquoted": 0,
       "mismatch": 0,
       "nondet": 0,
       "fuzzy": 0
@@ -562,7 +524,6 @@
       "module": "css/fill-stroke",
       "candidates": 12,
       "would_included": 1,
-      "unquoted": 0,
       "mismatch": 0,
       "nondet": 0,
       "fuzzy": 1
@@ -571,25 +532,14 @@
       "module": "custom-elements",
       "candidates": 182,
       "would_included": 1,
-      "unquoted": 0,
       "mismatch": 2,
       "nondet": 0,
       "fuzzy": 0
     },
     {
-      "module": "forced-colors-mode",
-      "candidates": 111,
-      "would_included": 1,
-      "unquoted": 48,
-      "mismatch": 0,
-      "nondet": 0,
-      "fuzzy": 1
-    },
-    {
       "module": "gif",
       "candidates": 2,
       "would_included": 1,
-      "unquoted": 0,
       "mismatch": 0,
       "nondet": 0,
       "fuzzy": 0
@@ -598,7 +548,6 @@
       "module": "html-ruby-extensions",
       "candidates": 193,
       "would_included": 1,
-      "unquoted": 0,
       "mismatch": 83,
       "nondet": 0,
       "fuzzy": 0
@@ -607,7 +556,6 @@
       "module": "intersection-observer",
       "candidates": 135,
       "would_included": 1,
-      "unquoted": 0,
       "mismatch": 0,
       "nondet": 0,
       "fuzzy": 0
@@ -616,7 +564,6 @@
       "module": "page-lifecycle",
       "candidates": 11,
       "would_included": 1,
-      "unquoted": 0,
       "mismatch": 0,
       "nondet": 0,
       "fuzzy": 0
@@ -625,7 +572,6 @@
       "module": "preload",
       "candidates": 69,
       "would_included": 1,
-      "unquoted": 0,
       "mismatch": 0,
       "nondet": 0,
       "fuzzy": 0
@@ -634,7 +580,6 @@
       "module": "scroll-to-text-fragment",
       "candidates": 36,
       "would_included": 1,
-      "unquoted": 0,
       "mismatch": 0,
       "nondet": 0,
       "fuzzy": 0
@@ -643,7 +588,6 @@
       "module": "service-workers",
       "candidates": 407,
       "would_included": 1,
-      "unquoted": 0,
       "mismatch": 0,
       "nondet": 0,
       "fuzzy": 0
@@ -652,7 +596,6 @@
       "module": "trusted-types",
       "candidates": 236,
       "would_included": 1,
-      "unquoted": 0,
       "mismatch": 0,
       "nondet": 0,
       "fuzzy": 0
@@ -661,7 +604,6 @@
       "module": "visual-viewport",
       "candidates": 32,
       "would_included": 1,
-      "unquoted": 0,
       "mismatch": 0,
       "nondet": 0,
       "fuzzy": 0
@@ -670,10 +612,10 @@
   "flags": {
     "mismatch_in_scope": 281,
     "mismatch_total": 643,
-    "fuzzy_included": 563,
+    "fuzzy_included": 566,
     "fuzzy_total": 1023,
-    "alternates_included": 68,
+    "alternates_included": 69,
     "chained_included": 6,
-    "print_reftests": 377
+    "print_reftests": 384
   }
 }

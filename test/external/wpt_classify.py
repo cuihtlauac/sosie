@@ -14,6 +14,8 @@ Usage:
     wpt_classify.py tag PATH TAG # Add a tag to a test
     wpt_classify.py note PATH TXT # Add a note to a test
     wpt_classify.py sync-expectations  # Update expectations.json reasons
+    wpt_classify.py bulk-xfail [--prune] [--dry-run]
+                                 # Xfail cached fail/error results
 """
 
 import argparse
@@ -650,6 +652,85 @@ def cmd_note(args):
     print(f"Note added to '{args.path}'")
 
 
+def diffs_to_reason(diffs):
+    """Derive an expectations reason from a result's diff list.
+
+    Mirrors the reason vocabulary of the original triage (REASON_TO_TAG):
+    the dominant diff type decides. Structural-only failures are the
+    tag-agnostic-matching class; otherwise the most frequent type wins.
+    """
+    types = [classify_diff(d) for d in diffs]
+    if not types:
+        return 'unclassified failure'
+    if all(t == 'structural' for t in types):
+        return 'requires tag-agnostic matching'
+    counts = {}
+    for t in types:
+        if t == 'structural':
+            continue
+        counts[t] = counts.get(t, 0) + 1
+    dominant = max(counts, key=lambda t: (counts[t], t))
+    if dominant == 'bounds':
+        return 'layout: bounds differ between test/ref'
+    if dominant.startswith('style:'):
+        prop = dominant.split(':', 1)[1]
+        return f'style: {prop} differs between test/ref'
+    if dominant == 'other' and any('text' in d for d in diffs):
+        return 'content: text differs'
+    return 'unclassified failure'
+
+
+def cmd_bulk_xfail(args):
+    """Add xfail expectations for cached fail/error results; prune stale ones.
+
+    fail results get a reason derived from their diffs; error results get
+    'error: <first line>'. With --prune, xfail entries whose cached status
+    is now "pass" (unexpected passes) are removed. --dry-run prints the
+    changes without writing.
+    """
+    with open(EXPECTATIONS_JSON) as f:
+        data = json.load(f)
+    wpt = data.setdefault('wpt', {})
+
+    added, pruned = [], []
+    for root, _dirs, files in os.walk(RESULTS_DIR):
+        for fname in files:
+            if not fname.endswith('.json'):
+                continue
+            full = Path(root) / fname
+            test_path = str(full.relative_to(RESULTS_DIR)).removesuffix('.json')
+            with open(full) as f:
+                result = json.load(f)
+            status = result.get('status')
+            if status in ('fail', 'error') and test_path not in wpt:
+                if status == 'error':
+                    first = result.get('diffs') or ['unknown error']
+                    reason = 'error: ' + first[0].splitlines()[0][:120]
+                else:
+                    reason = diffs_to_reason(result.get('diffs', []))
+                wpt[test_path] = {'status': 'xfail', 'reason': reason}
+                added.append((test_path, reason))
+            elif (status == 'pass' and args.prune
+                  and wpt.get(test_path, {}).get('status') == 'xfail'):
+                del wpt[test_path]
+                pruned.append(test_path)
+
+    for path, reason in sorted(added):
+        print(f"  xfail {path} — {reason}")
+    for path in sorted(pruned):
+        print(f"  prune {path} (now passes)")
+    print(f"Added {len(added)} xfails, pruned {len(pruned)} stale entries")
+
+    if args.dry_run:
+        print("(dry run — expectations.json not written)")
+        return
+    data['wpt'] = dict(sorted(wpt.items()))
+    with open(EXPECTATIONS_JSON, 'w') as f:
+        json.dump(data, f, indent=2)
+        f.write('\n')
+    print(f"Wrote {EXPECTATIONS_JSON.name}")
+
+
 def cmd_sync_expectations(args):
     """Update expectations.json reasons from the DB's primary tag."""
     conn = sqlite3.connect(str(DB_PATH))
@@ -709,6 +790,13 @@ def main():
 
     sub.add_parser('sync-expectations', help='Update expectations.json reasons from DB')
 
+    p_bulk = sub.add_parser('bulk-xfail',
+                            help='Add xfails for cached fail/error results')
+    p_bulk.add_argument('--prune', action='store_true',
+                        help='Remove xfail entries whose cached status is pass')
+    p_bulk.add_argument('--dry-run', action='store_true',
+                        help='Print changes without writing expectations.json')
+
     args = parser.parse_args()
 
     commands = {
@@ -720,6 +808,7 @@ def main():
         'tag': cmd_tag,
         'note': cmd_note,
         'sync-expectations': cmd_sync_expectations,
+        'bulk-xfail': cmd_bulk_xfail,
     }
 
     if args.command is None:

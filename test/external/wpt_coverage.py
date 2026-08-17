@@ -44,47 +44,29 @@ OCAML_EXTS = ('.html', '.xhtml', '.xht')
 
 
 # ---------------------------------------------------------------------------
-# Regexes — OCaml-fidelity tier (byte-exact ports of ext_test_lib.ml)
+# Regexes — mirror of ext_test_lib.ml parsing (as of the 2026-08 rewrite the
+# OCaml parser accepts everything the broad scan does, so there is a single
+# tier; keep these in lockstep with ext_test_lib.ml)
 # ---------------------------------------------------------------------------
 
-# ext_test_lib.ml reftest_link_re / reftest_link_re_alt: case-sensitive,
-# quoted rel value only. parse_reftest_link tries the first regex over the
-# whole document, and only if it matches nowhere falls back to the alt
-# attribute order.
-OCAML_MATCH_RE = re.compile(
-    rb'<link\s[^>]*rel\s*=\s*["\']match["\'][^>]*href\s*=\s*["\']([^"\']+)["\']')
-OCAML_MATCH_ALT_RE = re.compile(
-    rb'<link\s[^>]*href\s*=\s*["\']([^"\']+)["\'][^>]*rel\s*=\s*["\']match["\']')
+# Tag spans end at the next '<' or '>' (malformed-tag recovery, matching
+# link_tag_re in ext_test_lib.ml).
+LINK_TAG_RE = re.compile(rb'<link\s[^<>]*', re.IGNORECASE)
+META_TAG_RE = re.compile(rb'<meta\s[^<>]*', re.IGNORECASE)
+TESTHARNESS_RE = re.compile(rb'testharness\.js', re.IGNORECASE)
 
 # ext_test_lib.ml nondeterministic_re, checked on the whole file BEFORE
-# link parsing (parse_reftest_link_from_file).
+# link parsing (parse_reftest_links_from_file).
 NONDET_RE = re.compile(rb'@keyframes|animation\s*:|transition\s*:|transition-')
 
 
-def ocaml_parse_reftest_link(body):
-    """Replicate parse_reftest_link: primary regex first, then alt order."""
-    m = OCAML_MATCH_RE.search(body)
-    if m:
-        return m.group(1)
-    m = OCAML_MATCH_ALT_RE.search(body)
-    if m:
-        return m.group(1)
-    return None
-
-
-# ---------------------------------------------------------------------------
-# Regexes — broad tier (gap measurement: case-insensitive, unquoted allowed)
-# ---------------------------------------------------------------------------
-
-LINK_TAG_RE = re.compile(rb'<link\b[^>]*>', re.IGNORECASE)
-META_TAG_RE = re.compile(rb'<meta\b[^>]*>', re.IGNORECASE)
-TESTHARNESS_RE = re.compile(rb'testharness\.js', re.IGNORECASE)
-
-
 def get_attr(tag, name):
-    """Extract an attribute value (quoted or bare) from a tag's bytes."""
+    """Extract an attribute value (quoted or bare) from a tag's bytes.
+
+    Mirrors attr_re in ext_test_lib.ml: a leading \\s anchors the name,
+    bare values run to the next whitespace."""
     m = re.search(
-        name + rb'''\s*=\s*("([^"]*)"|'([^']*)'|([^\s>/]+))''',
+        rb'\s' + name + rb'''\s*=\s*("([^"]*)"|'([^']*)'|([^\s>]+))''',
         tag, re.IGNORECASE)
     if not m:
         return None, False
@@ -99,9 +81,11 @@ def broad_link_scan(body):
     """All <link> rel=match / rel=mismatch hrefs, any quoting, any case.
 
     Returns (match_links, mismatch_count) where match_links is a list of
-    (href_bytes, quoted) in document order.
+    (href_bytes, quoted) in document order, deduplicated by href —
+    mirroring parse_reftest_links in ext_test_lib.ml.
     """
     match_links = []
+    seen = set()
     mismatch = 0
     for m in LINK_TAG_RE.finditer(body):
         tag = m.group(0)
@@ -116,7 +100,8 @@ def broad_link_scan(body):
         href, quoted = get_attr(tag, rb'href')
         if is_mismatch:
             mismatch += 1
-        if is_match and href:
+        if is_match and href and href not in seen:
+            seen.add(href)
             match_links.append((href, quoted))
     return match_links, mismatch
 
@@ -234,11 +219,9 @@ def load_groups():
 def extract_features(path, body):
     """All per-file facts needed for attribution and flags."""
     match_links, mismatch_count = broad_link_scan(body)
-    ocaml_href_b = ocaml_parse_reftest_link(body)
     return {
         'match_links': match_links,
         'mismatch_count': mismatch_count,
-        'ocaml_href': ocaml_href_b.decode('latin-1') if ocaml_href_b else None,
         'nondet': bool(NONDET_RE.search(body)),
         'fuzzy': has_fuzzy_meta(body),
         'testharness': bool(TESTHARNESS_RE.search(body)),
@@ -252,6 +235,9 @@ def extract_features(path, body):
 def attribute(path, feat, in_scope, full_tree):
     """Primary category via the discovery rule chain (first hit wins).
 
+    Mirrors ext_test_lib.ml discovery: a test is included when at least
+    one of its match refs exists (the runner tries them in order).
+
     For out-of-scope files also returns would_be: the category the same
     chain would assign if the module were ingested, with ref existence
     checked against the full tree (nothing out of scope is checked out).
@@ -260,36 +246,36 @@ def attribute(path, feat, in_scope, full_tree):
     if in_support_or_reference(path):
         return 'excluded-support-reference-path', None, None, None
 
+    hrefs = [h.decode('latin-1') for h, _ in feat['match_links']]
+    resolved = [resolve_href(path, h) for h in hrefs]
+    any_in_ft = any(posixpath.normpath(r) in full_tree for r in resolved)
+
     def chain(ref_exists_fulltree_only):
         if not path.endswith(OCAML_EXTS):
-            return 'not-scanned-svg-extension', None, None
-        if not feat['match_links'] and feat['ocaml_href'] is None:
+            return 'not-scanned-svg-extension', None
+        if not hrefs:
             if feat['mismatch_count'] > 0:
-                return 'excluded-mismatch-only', None, None
-            return 'not-a-reftest', None, None
+                return 'excluded-mismatch-only', None
+            return 'not-a-reftest', None
         if feat['nondet']:
-            return 'excluded-nondeterministic', None, None
-        if feat['ocaml_href'] is None:
-            return 'missed-unquoted-rel', None, None
-        resolved = resolve_href(path, feat['ocaml_href'])
-        in_ft = posixpath.normpath(resolved) in full_tree
+            return 'excluded-nondeterministic', None
         if ref_exists_fulltree_only:
-            if not in_ft:
-                return 'missed-ref-truly-absent', None, in_ft
-            return 'included', None, in_ft
-        in_wt = ref_in_worktree(resolved)
+            if not any_in_ft:
+                return 'missed-ref-truly-absent', None
+            return 'included', None
+        in_wt = any(ref_in_worktree(r) for r in resolved)
         if not in_wt:
-            if in_ft:
-                return 'missed-ref-missing-in-sparse', in_wt, in_ft
-            return 'missed-ref-truly-absent', in_wt, in_ft
-        return 'included', in_wt, in_ft
+            if any_in_ft:
+                return 'missed-ref-missing-in-sparse', in_wt
+            return 'missed-ref-truly-absent', in_wt
+        return 'included', in_wt
 
     if not in_scope:
-        would_be, _, in_ft = chain(ref_exists_fulltree_only=True)
-        return 'out-of-scope-module', would_be, None, in_ft
+        would_be, _ = chain(ref_exists_fulltree_only=True)
+        return 'out-of-scope-module', would_be, None, any_in_ft
 
-    category, in_wt, in_ft = chain(ref_exists_fulltree_only=False)
-    return category, None, in_wt, in_ft
+    category, in_wt = chain(ref_exists_fulltree_only=False)
+    return category, None, in_wt, any_in_ft
 
 
 # ---------------------------------------------------------------------------
@@ -300,7 +286,9 @@ def cmd_scan(args):
     marker = WPT_DIR / '.commit'
     with open(MANIFEST_JSON) as f:
         manifest_commit = json.load(f)['wpt']['commit']
-    if marker.exists() and marker.read_text().strip() != manifest_commit:
+    # Marker line 1 is the commit; later lines record the sparse patterns.
+    if marker.exists() and \
+            marker.read_text().splitlines()[0].strip() != manifest_commit:
         print(f"warning: wpt/.commit != manifest commit {manifest_commit}; "
               "worktree-based checks may be stale", file=sys.stderr)
 
@@ -340,7 +328,8 @@ def cmd_scan(args):
 
         file_rows.append([
             path, sha, size, Path(path).suffix.lstrip('.'), module_of(path),
-            1 if in_scope else 0, category, would_be, feat['ocaml_href'],
+            1 if in_scope else 0, category, would_be,
+            resolved_all[0] if resolved_all else None,
             len(feat['match_links']), feat['mismatch_count'],
             1 if feat['fuzzy'] else 0, 1 if feat['nondet'] else 0,
             1 if feat['testharness'] else 0,
@@ -355,13 +344,8 @@ def cmd_scan(args):
 
     # Chained-ref post-pass: does the first ref itself carry a match link?
     for row in file_rows:
-        path, ocaml_href = row[0], row[8]
-        first = None
-        if ocaml_href is not None:
-            first = posixpath.normpath(resolve_href(path, ocaml_href))
-        elif path in match_map:
-            first = match_map[path][0]
-        if first is not None and first != path and first in match_map:
+        path, first_ref = row[0], row[8]
+        if first_ref is not None and first_ref != path and first_ref in match_map:
             row[16] = 1
 
     if DB_PATH.exists():
@@ -378,7 +362,7 @@ CREATE TABLE files (
   in_scope        INTEGER NOT NULL,
   category        TEXT NOT NULL,
   would_be        TEXT,
-  ocaml_href      TEXT,
+  first_ref       TEXT,
   match_count     INTEGER NOT NULL DEFAULT 0,
   mismatch_count  INTEGER NOT NULL DEFAULT 0,
   fuzzy           INTEGER NOT NULL DEFAULT 0,
@@ -454,16 +438,12 @@ IN_SCOPE_WATERFALL = [
     ('excluded-mismatch-only', 'mismatch reftest (rel="mismatch" only)'),
     ('excluded-nondeterministic', 'animation/transition/@keyframes'),
     ('not-scanned-svg-extension', '.svg extension (walker skips)'),
-    ('missed-unquoted-rel', 'unquoted rel=match (regex gap)'),
-    ('missed-ref-missing-in-sparse', 'ref outside sparse checkout'),
-    ('missed-ref-truly-absent', 'ref absent from full tree'),
+    ('missed-ref-missing-in-sparse', 'all refs outside sparse checkout'),
+    ('missed-ref-truly-absent', 'no ref exists in full tree'),
     ('included', 'discovered reftests'),
 ]
 
 GAP_CATEGORIES = {
-    'missed-unquoted-rel':
-        'Extend the two regexes in ext_test_lib.ml to accept unquoted '
-        'attribute values.',
     'missed-ref-missing-in-sparse':
         'Add the missing paths (or their directories) to the sparse '
         'checkout in fetch.sh / manifest.json support_paths.',
@@ -501,7 +481,6 @@ def cmd_report(args):
         SELECT module,
                COUNT(*) AS candidates,
                SUM(would_be = 'included') AS would_included,
-               SUM(would_be = 'missed-unquoted-rel') AS unquoted,
                SUM(would_be = 'excluded-mismatch-only') AS mismatch,
                SUM(would_be = 'excluded-nondeterministic') AS nondet,
                SUM(category = 'out-of-scope-module' AND fuzzy = 1) AS fuzzy
@@ -595,14 +574,13 @@ def cmd_report(args):
       'exists in the full tree — the tests sosie would gain by adding the '
       'module to manifest.json groups (plus checking out its refs).')
     w('')
-    w('| module | candidates | would-included | unquoted | mismatch | '
-      'nondet | fuzzy |')
-    w('|---|---:|---:|---:|---:|---:|---:|')
-    for mod, cand, inc, unq, mis, nod, fuz in mod_rows:
-        w(f'| {mod} | {cand} | {inc} | {unq} | {mis} | {nod} | {fuz} |')
-    tot = [sum(r[i] for r in mod_rows) for i in range(1, 7)]
+    w('| module | candidates | would-included | mismatch | nondet | fuzzy |')
+    w('|---|---:|---:|---:|---:|---:|')
+    for mod, cand, inc, mis, nod, fuz in mod_rows:
+        w(f'| {mod} | {cand} | {inc} | {mis} | {nod} | {fuz} |')
+    tot = [sum(r[i] for r in mod_rows) for i in range(1, 6)]
     w(f'| **total** | **{tot[0]}** | **{tot[1]}** | **{tot[2]}** | '
-      f'**{tot[3]}** | **{tot[4]}** | **{tot[5]}** |')
+      f'**{tot[3]}** | **{tot[4]}** |')
     w('')
     w('## Semantic opportunities')
     w('')
@@ -640,7 +618,7 @@ def cmd_report(args):
         'in_scope_categories': cat_in,
         'out_of_scope_modules': [
             {'module': r[0], 'candidates': r[1], 'would_included': r[2],
-             'unquoted': r[3], 'mismatch': r[4], 'nondet': r[5], 'fuzzy': r[6]}
+             'mismatch': r[3], 'nondet': r[4], 'fuzzy': r[5]}
             for r in mod_rows],
         'flags': flags,
     }

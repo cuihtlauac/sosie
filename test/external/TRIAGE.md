@@ -6,6 +6,13 @@
 Step 10b addendum), 2,623 pass (20.3%). The remaining 10,286 xfails are
 classified by root cause in `expectations.json`.
 
+**2026-08-17 update (ingestion campaign session A):** discovery now
+accepts unquoted attributes, alternate references, and malformed link
+tags (roadmap Step 10c). 13,096 reftests discovered (+187); 2,646 pass,
+10,450 xfail, 0 fail. The 164 new xfails were bulk-classified with
+`wpt_classify.py bulk-xfail`. The percentages below describe the
+original 12,909-test corpus.
+
 ## Classification
 
 | Category | Count | % total | Description |

@@ -665,6 +665,45 @@ mismatch negative controls (sensitivity suite), CSS2 + css-break group
 expansion (+7,274, at ~2 captures/test runtime cost), alternate-reference
 semantics, `.svg` reftest support.
 
+## Step 10c: WPT corpus expansion (campaign, 2026-08)
+
+Ingest everything from WPT that property-level comparison can see
+(plan: `plans/wpt-ingestion-campaign.md`). Excluded with rationale:
+image decoders, WOFF2, webvtt, html/canvas, Houdini worklet APIs,
+animation modules, paged media (until print-media emulation). Target
+≈ +10,300 tests over five sessions.
+
+### Session A (2026-08-17): discovery fixes and shared tooling [done]
+
+Reftest link parsing rewritten (see commit for details): unquoted
+attributes, either attribute order, rel token lists, case-insensitive
+names, malformed-tag recovery, and ALL match links collected. The
+runner implements WPT alternates semantics: pass if the test matches
+ANY of its references, first ref's diffs reported otherwise. fetch.sh
+re-syncs the sparse checkout from local objects when groups/support
+paths change, without refetching or clearing the result cache.
+`wpt_classify.py bulk-xfail [--prune]` recreates (durably, this time)
+the bulk triage step: xfail entries derived from cached diffs.
+
+Two parser bugs found by the recovered tests, worth recording:
+- A WPT source (css-contain) contains a link tag with a missing `>`;
+  a greedy `[^>]*` swallowed the following match link. Tag spans now
+  terminate at the next `<` or `>`.
+- Bare attribute values must not stop at `/` — unquoted hrefs contain
+  path separators. `[^\s>/]+` silently truncated them.
+
+Result: 12,909 → 13,096 discovered (+187); 2,646 pass (+23), 10,450
+xfail, 0 fail. Coverage validation gate: 13,096/13,096 exact. In-scope
+recoverable gaps are now zero (remaining: 21 upstream-broken refs, 132
+`.svg` reftests deferred).
+
+### Sessions B–E [pending]
+
+B: mismatch reftests as negative controls (281 in scope — Equivalent on
+a `rel=mismatch` pair is a measured false negative, sosie's blind-spot
+list). C: css/CSS2 (+6,271). D: remaining css/* layout modules
+(+~2,600). E: html/rendering+semantics+dom, mathml, svg (+~750).
+
 ---
 
 ## Step 11: CI integration for ocaml.org
