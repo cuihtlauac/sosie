@@ -8,6 +8,12 @@
  (modules test_wpt_reftests)
  (libraries sosie ext_test_lib))
 
+; Pure unit tests for reftest link parsing — no browser, runs with @runtest.
+(test
+ (name test_reftest_parsing)
+ (modules test_reftest_parsing)
+ (libraries ext_test_lib alcotest))
+
 (executable
  (name test_acid3)
  (modules test_acid3)

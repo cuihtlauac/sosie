@@ -62,10 +62,13 @@ val compare_pair :
     tolerate structural differences. Returns {!Equivalent} if no diffs are
     found, [Diff descriptions] otherwise. Default: [matched = false]. *)
 
-val parse_reftest_link : string -> string option
-(** [parse_reftest_link html] extracts the [href] from the first
-    [<link rel="match" href="...">] in the HTML string.
-    @return [Some href] or [None] if no reftest link is found. *)
+val parse_reftest_links : string -> string list
+(** [parse_reftest_links html] extracts the [href] of every
+    [<link rel="match">] in the HTML string, in document order, deduplicated.
+    Attribute names and the [rel] value are matched case-insensitively;
+    values may be double-quoted, single-quoted, or bare; [rel] may be a
+    token list (e.g. ["match stylesheet"]). Empty hrefs are dropped.
+    @return the hrefs as written in the HTML, [[]] if none. *)
 
 val is_deterministic_test : string -> bool
 (** [is_deterministic_test html] returns [true] if the HTML content does not
@@ -79,15 +82,19 @@ val read_file : string -> string
 (** {1 Reftest discovery} *)
 
 type reftest = {
-  rel_path : string;  (** Path relative to wpt_dir, e.g. "css/css-color/a98rgb-001.html" *)
-  ref_href : string;  (** The href from <link rel="match">, as written in the HTML *)
+  rel_path : string;
+      (** Path relative to wpt_dir, e.g. "css/css-color/a98rgb-001.html" *)
+  ref_hrefs : string list;
+      (** The hrefs from every [<link rel="match">] whose target exists on
+          disk, in document order. Never empty. WPT semantics: the test
+          passes if it matches ANY of these references. *)
 }
-(** A discovered reftest: a test file paired with its reference. *)
+(** A discovered reftest: a test file paired with its candidate references. *)
 
 val discover_reftests : wpt_dir:string -> group:string -> reftest list
 (** [discover_reftests ~wpt_dir ~group] walks [wpt_dir/group] and returns all
     valid reftests: files with a [<link rel="match">], deterministic content,
-    and an existing reference file. Results are sorted by path. *)
+    and at least one existing reference file. Results are sorted by path. *)
 
 val discover_all_reftests : wpt_dir:string -> groups:string list -> reftest list
 (** [discover_all_reftests ~wpt_dir ~groups] discovers reftests across all

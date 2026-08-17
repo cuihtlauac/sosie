@@ -45,12 +45,21 @@
       "css/support/",
       "css/reference/",
       "common/",
-      "fonts/"
+      "fonts/",
+      "css/CSS2/reference/",
+      "css/filter-effects/reference/",
+      "quirks/reference/"
     ]
   },
   "zen_garden": {
     "base_url": "http://www.csszengarden.com",
-    "designs": [1, 2, 3, 5, 8]
+    "designs": [
+      1,
+      2,
+      3,
+      5,
+      8
+    ]
   },
   "acid3": {
     "url": "http://acid3.acidtests.org/"

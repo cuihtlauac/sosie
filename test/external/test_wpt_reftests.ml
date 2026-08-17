@@ -106,31 +106,45 @@ let run_one_test conn ~port ~viewport ~all_expectations
         : Ext_test_lib.cached_result)
   | _ ->
       let t0 = Unix.gettimeofday () in
-      let ref_path =
-        if String.length test.ref_href > 0 && test.ref_href.[0] = '/' then
-          test.ref_href
-        else
-          let dir = Filename.dirname rel_path in
-          "/" ^ Filename.concat dir test.ref_href
-      in
       let test_url =
         Printf.sprintf "http://127.0.0.1:%d/%s" port rel_path
       in
-      let ref_url =
+      let ref_url_of ref_href =
+        let ref_path =
+          if String.length ref_href > 0 && ref_href.[0] = '/' then ref_href
+          else
+            let dir = Filename.dirname rel_path in
+            "/" ^ Filename.concat dir ref_href
+        in
         Printf.sprintf "http://127.0.0.1:%d%s" port ref_path
       in
-      let outcome =
-        try
-          with_timeout 30 (fun () ->
-            match
-              Ext_test_lib.capture_pair conn ~extractor_js ~viewport ~test_url
-                ~ref_url
-            with
-            | Error msg -> Ext_test_lib.Error msg
-            | Ok (test_snap, ref_snap) ->
-                Ext_test_lib.compare_pair ~normalize:wpt_normalize ~matched:true
-                  wpt_config test_snap ref_snap)
+      let compare_against ref_href =
+        match
+          Ext_test_lib.capture_pair conn ~extractor_js ~viewport ~test_url
+            ~ref_url:(ref_url_of ref_href)
         with
+        | Error msg -> Ext_test_lib.Error msg
+        | Ok (test_snap, ref_snap) ->
+            Ext_test_lib.compare_pair ~normalize:wpt_normalize ~matched:true
+              wpt_config test_snap ref_snap
+      in
+      (* WPT semantics: pass if the test matches ANY of its references.
+         On failure, report the first reference's outcome — it is the
+         canonical one and keeps diffs stable across runs. *)
+      let rec try_refs first = function
+        | [] -> (
+            match first with
+            | Some o -> o
+            | None -> Ext_test_lib.Error "no reference available")
+        | href :: rest -> (
+            match compare_against href with
+            | Ext_test_lib.Equivalent -> Ext_test_lib.Equivalent
+            | o ->
+                let first = if first = None then Some o else first in
+                try_refs first rest)
+      in
+      let outcome =
+        try with_timeout 30 (fun () -> try_refs None test.ref_hrefs) with
         | Test_timeout -> Ext_test_lib.Error "timeout (30s)"
         | exn -> Ext_test_lib.Error (Printexc.to_string exn)
       in

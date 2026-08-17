@@ -92,23 +92,63 @@ let load_expectations path =
 
 (* ── Reftest parsing ─────────────────────────────────────────────── *)
 
-let reftest_link_re =
-  Re.compile
-    (Re.Pcre.re
-       {|<link\s[^>]*rel\s*=\s*["']match["'][^>]*href\s*=\s*["']([^"']+)["']|})
+(* Reftest links are parsed in two steps: find each <link> tag, then pull
+   its rel and href attributes out of the tag. This handles what a single
+   regex cannot: either attribute order, quoted or unquoted values, and
+   rel token lists ("match stylesheet"). Attribute names and the rel value
+   are case-insensitive per HTML; the href is taken verbatim. *)
 
-let reftest_link_re_alt =
-  Re.compile
-    (Re.Pcre.re
-       {|<link\s[^>]*href\s*=\s*["']([^"']+)["'][^>]*rel\s*=\s*["']match["']|})
+(* A tag span ends at the next '<' or '>' rather than requiring a closing
+   '>': WPT sources contain malformed link tags with a missing '>', and a
+   greedy [^>]* would swallow the following (well-formed) match link. *)
+let link_tag_re = Re.compile (Re.Pcre.re ~flags:[ `CASELESS ] {|<link\s[^<>]*|})
 
-let parse_reftest_link html =
-  match Re.exec_opt reftest_link_re html with
-  | Some group -> Some (Re.Group.get group 1)
-  | None -> (
-      match Re.exec_opt reftest_link_re_alt html with
-      | Some group -> Some (Re.Group.get group 1)
-      | None -> None)
+(* Value alternatives: group 2 = double-quoted, 3 = single-quoted, 4 = bare
+   (any run of non-whitespace; hrefs routinely contain '/').
+   The leading \s anchors the attribute name so e.g. norel= cannot match. *)
+let attr_re name =
+  Re.compile
+    (Re.Pcre.re ~flags:[ `CASELESS ]
+       (Printf.sprintf {|\s%s\s*=\s*("([^"]*)"|'([^']*)'|([^\s>]+))|} name))
+
+let rel_attr_re = attr_re "rel"
+let href_attr_re = attr_re "href"
+
+let get_attr re tag =
+  match Re.exec_opt re tag with
+  | None -> None
+  | Some g ->
+      let pick i = if Re.Group.test g i then Some (Re.Group.get g i) else None in
+      (match pick 2 with
+      | Some _ as v -> v
+      | None -> ( match pick 3 with Some _ as v -> v | None -> pick 4))
+
+let rel_has_token tag token =
+  match get_attr rel_attr_re tag with
+  | None -> false
+  | Some rel ->
+      String.lowercase_ascii rel
+      |> String.map (function '\t' | '\n' | '\r' -> ' ' | c -> c)
+      |> String.split_on_char ' '
+      |> List.mem token
+
+let parse_reftest_links html =
+  let hrefs =
+    Re.all link_tag_re html
+    |> List.filter_map (fun g ->
+           let tag = Re.Group.get g 0 in
+           if rel_has_token tag "match" then
+             match get_attr href_attr_re tag with
+             | Some href when href <> "" -> Some href
+             | _ -> None
+           else None)
+  in
+  (* Dedupe, preserving document order (WPT: pass if ANY reference matches;
+     duplicates would just be compared twice). *)
+  List.fold_left
+    (fun acc href -> if List.mem href acc then acc else href :: acc)
+    [] hrefs
+  |> List.rev
 
 (* ── Determinism filter ──────────────────────────────────────────── *)
 
@@ -134,7 +174,7 @@ let read_file path =
 
 type reftest = {
   rel_path : string;
-  ref_href : string;
+  ref_hrefs : string list;
 }
 
 let rec walk_dir root prefix acc =
@@ -165,24 +205,28 @@ and acc_if_reftest wpt_dir rel_path full_path acc =
     in
     if in_support then acc
     else
-      match parse_reftest_link_from_file full_path with
-      | None -> acc
-      | Some ref_href ->
-          let ref_file =
-            if String.length ref_href > 0 && ref_href.[0] = '/' then
-              Filename.concat wpt_dir (String.sub ref_href 1 (String.length ref_href - 1))
-            else
-              Filename.concat (Filename.dirname full_path) ref_href
-          in
-          if not (Sys.file_exists ref_file) then acc
-          else { rel_path; ref_href } :: acc
+      let ref_exists ref_href =
+        let ref_file =
+          if String.length ref_href > 0 && ref_href.[0] = '/' then
+            Filename.concat wpt_dir (String.sub ref_href 1 (String.length ref_href - 1))
+          else
+            Filename.concat (Filename.dirname full_path) ref_href
+        in
+        Sys.file_exists ref_file
+      in
+      (* Keep every reference that exists on disk; the runner tries them in
+         order (WPT semantics: pass if any matches). A test whose references
+         are all absent cannot be run and is skipped. *)
+      match List.filter ref_exists (parse_reftest_links_from_file full_path) with
+      | [] -> acc
+      | ref_hrefs -> { rel_path; ref_hrefs } :: acc
 
-and parse_reftest_link_from_file path =
+and parse_reftest_links_from_file path =
   try
     let html = read_file path in
-    if not (is_deterministic_test html) then None
-    else parse_reftest_link html
-  with _ -> None
+    if not (is_deterministic_test html) then []
+    else parse_reftest_links html
+  with _ -> []
 
 let discover_reftests ~wpt_dir ~group =
   let tests = walk_dir wpt_dir group [] in

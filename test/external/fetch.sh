@@ -60,8 +60,34 @@ fetch_wpt() {
   local marker="$dest/.commit"
   local results_dir="$SCRIPT_DIR/wpt-results"
 
-  if [ -f "$marker" ] && [ "$(cat "$marker")" = "$commit" ]; then
-    echo "wpt: already at $commit, skipping"
+  # Sparse-checkout patterns from groups + support paths. The marker records
+  # commit + patterns so that a groups/support change re-syncs the working
+  # tree without refetching (the shallow clone already has all blobs) and
+  # WITHOUT clearing the result cache (results are keyed by test path and
+  # stay valid when the checkout only widens).
+  local patterns
+  patterns="$(
+    json_arr .wpt.groups | while read -r group; do echo "$group/"; done
+    json_arr .wpt.support_paths
+  )"
+  local want_marker="$commit
+$patterns"
+
+  if [ -f "$marker" ] && [ "$(cat "$marker")" = "$want_marker" ]; then
+    echo "wpt: already at $commit with current sparse patterns, skipping"
+    return
+  fi
+
+  local sparse_file="$dest/.git/info/sparse-checkout"
+
+  if [ -f "$marker" ] && [ "$(head -n 1 "$marker")" = "$commit" ]; then
+    echo "wpt: same commit, re-syncing sparse checkout ..."
+    printf '%s\n' "$patterns" > "$sparse_file"
+    git -C "$dest" read-tree -mu HEAD
+    printf '%s\n' "$want_marker" > "$marker"
+    local count
+    count=$(find "$dest" -name '*.html' -o -name '*.xhtml' -o -name '*.xht' | wc -l)
+    echo "wpt: done ($count HTML files)"
     return
   fi
 
@@ -80,21 +106,13 @@ fetch_wpt() {
   git remote add origin "$repo"
   git config core.sparseCheckout true
 
-  # Write sparse-checkout patterns from groups + support paths.
-  # Each group gets its directory (includes all files recursively).
-  local sparse_file="$dest/.git/info/sparse-checkout"
-  : > "$sparse_file"
-
-  json_arr .wpt.groups | while read -r group; do
-    echo "$group/" >> "$sparse_file"
-  done
-
-  json_arr .wpt.support_paths >> "$sparse_file"
+  mkdir -p "$(dirname "$sparse_file")"
+  printf '%s\n' "$patterns" > "$sparse_file"
 
   git fetch --depth 1 origin "$commit" -q
   git checkout FETCH_HEAD -q
 
-  echo "$commit" > "$marker"
+  printf '%s\n' "$want_marker" > "$marker"
   local count
   count=$(find . -name '*.html' -o -name '*.xhtml' -o -name '*.xht' | wc -l)
   echo "wpt: done ($count HTML files)"
