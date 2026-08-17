@@ -58,7 +58,12 @@
       "css/css-style-attr",
       "quirks",
       "compat",
-      "density-size-correction"
+      "density-size-correction",
+      "html/rendering",
+      "html/semantics",
+      "html/dom",
+      "mathml",
+      "svg"
     ],
     "support_paths": [
       "css/support/",

@@ -300,6 +300,76 @@ recomputation on DOM mutation, `@media`/container-query re-evaluation,
 `::cue`). No new extractor crash class appeared — the session C
 null-`document.head` diagnosis stands as the only open extractor bug.
 
+## Session E: non-CSS trees (2026-08-17)
+
+Five non-CSS trees ingested in one capture run (+1,207 discovered, 444
+pass = 36.8%, 763 xfail): `html/rendering`, `html/semantics`,
+`html/dom`, `mathml`, `svg`. `html/canvas` was deliberately excluded —
+its assertions are bitmap comparisons invisible to property-level
+capture. No new `support_paths` were needed: the coverage scanner
+confirmed 1,222 of the trees' references resolve within the ingested
+subtrees themselves, 21 against existing support paths, and 1 into
+`compat/` (already a group).
+
+The 36.8% aggregate pass rate is more than double session D's — these
+trees carry many self-contained reftests that render identically
+across test and reference, rather than the cross-page fragmentation
+suites that dominate `css/css-break`.
+
+| Group | Pass/Total | % |
+|-------|-----------:|--:|
+| html/rendering | 134/277 | 48.4% |
+| html/semantics | 115/359 | 32.0% |
+| html/dom | 69/127 | 54.3% |
+| mathml | 90/272 | 33.1% |
+| svg | 36/172 | 20.9% |
+| **total** | **444/1,207** | **36.8%** |
+
+`svg` is the weakest tree (20.9%): its `.html`-wrapped reftests draw the
+same picture from structurally different SVG DOMs (different `use`
+expansions, `defs`/`symbol` instancing), which surface as bounds and
+tag-agnostic diffs. `html/dom` and `html/rendering` lead — they assert
+concrete box geometry that the property capture reproduces well.
+
+Xfail reasons (`wpt_classify.py bulk-xfail`):
+
+| Reason | Count | % of session |
+|--------|------:|-------------:|
+| layout: bounds differ between test/ref | 245 | 32.1% |
+| requires tag-agnostic matching | 226 | 29.6% |
+| style: property differs (various) | 98 | 12.8% |
+| error (85 timeout, 7 null-`head` crash) | 92 | 12.1% |
+| unclassified failure | 36 | 4.7% |
+| sensitivity: mismatch false negative | 35 | 4.6% |
+| content: text differs | 31 | 4.1% |
+
+The 35 `sensitivity:` entries are mismatch reftests in these trees whose
+two pages render equivalent under the comparison whitelist — genuine
+blind spots, folded into the whitelist-extension work queued from
+session B.
+
+### No new extractor crash class; null-`head` crash extends to session E
+
+Of the 92 errors, 85 are `reftest-wait` timeouts (the bulk from
+`html/semantics/forms/the-select-element/` — `appearance: base-select`
+and `filterable-select` popovers that gate on user interaction never
+delivered headless). The remaining 7 are the **session-C
+null-`document.head` crash**, same signature verbatim (`TypeError:
+Cannot read properties of null (reading 'appendChild')` in
+`freeze_page`):
+
+- 3 mathml `.xhtml` (`dynamic-rowspan-mozilla-370692`,
+  `mi-mathvariant-1`/`-2`) — XML-parsed, no synthesized `<head>`, as
+  diagnosed in session C.
+- 4 svg `.html` (`painting/reftests/non-scaling-stroke-001`/`-003`/
+  `-004`, `symbol-in-mask`) — *surprising*, since the HTML parser
+  synthesizes a `<head>`. Worth checking against the queued fix: the
+  `documentElement` fallback covers them regardless, but the mechanism
+  (head present yet insertion point null?) differs from the XML case.
+
+These 7 do not change the fix already queued in the backlog; they
+expand its affected-test list and its test evidence.
+
 ## Possible improvement phases (by ROI)
 
 **Phase B — Body/HTML container normalization (~1,200 tests):**

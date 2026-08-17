@@ -1,27 +1,27 @@
 {
   "wpt_commit": "55d076dca564300616a75eec5ec696e805c7bc3b",
-  "scan_timestamp": "2026-08-17T13:13:00+00:00",
+  "scan_timestamp": "2026-08-17T13:45:35+00:00",
   "tree_file_total": 102822,
   "candidate_total": 79222,
-  "in_scope_total": 42685,
-  "out_of_scope_total": 36537,
+  "in_scope_total": 49477,
+  "out_of_scope_total": 29745,
   "validation_ok": true,
   "in_scope_categories": {
-    "excluded-nondeterministic": 216,
-    "excluded-support-reference-path": 2675,
-    "included": 22044,
-    "missed-ref-truly-absent": 26,
-    "not-a-reftest": 17586,
-    "not-scanned-svg-extension": 138
+    "excluded-nondeterministic": 232,
+    "excluded-support-reference-path": 2788,
+    "included": 23251,
+    "missed-ref-truly-absent": 28,
+    "not-a-reftest": 21912,
+    "not-scanned-svg-extension": 1266
   },
   "out_of_scope_modules": [
     {
       "module": "html",
-      "candidates": 10355,
-      "would_included": 1259,
-      "mismatch": 59,
-      "nondet": 7,
-      "fuzzy": 126
+      "candidates": 6265,
+      "would_included": 496,
+      "mismatch": 14,
+      "nondet": 0,
+      "fuzzy": 88
     },
     {
       "module": "css/WOFF2",
@@ -30,14 +30,6 @@
       "mismatch": 0,
       "nondet": 0,
       "fuzzy": 0
-    },
-    {
-      "module": "mathml",
-      "candidates": 807,
-      "would_included": 272,
-      "mismatch": 38,
-      "nondet": 0,
-      "fuzzy": 3
     },
     {
       "module": "webvtt",
@@ -54,14 +46,6 @@
       "mismatch": 4,
       "nondet": 0,
       "fuzzy": 0
-    },
-    {
-      "module": "svg",
-      "candidates": 1895,
-      "would_included": 172,
-      "mismatch": 2,
-      "nondet": 9,
-      "fuzzy": 4
     },
     {
       "module": "css/css-layout-api",
@@ -457,12 +441,12 @@
     }
   ],
   "flags": {
-    "mismatch_included": 299,
-    "mixed_included": 115,
-    "fuzzy_included": 715,
+    "mismatch_included": 384,
+    "mixed_included": 116,
+    "fuzzy_included": 759,
     "fuzzy_total": 1023,
     "alternates_included": 91,
-    "chained_included": 272,
+    "chained_included": 279,
     "print_reftests": 408
   }
 }

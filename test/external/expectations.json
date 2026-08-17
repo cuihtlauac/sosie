@@ -73753,6 +73753,2514 @@
       "status": "xfail",
       "reason": "layout: bounds differ between test/ref"
     },
+    "html/dom/directionality/bdi-element-invalid-dir.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/dom/elements/global-attributes/dir-auto-dynamic-simple-dataChange.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/dom/elements/global-attributes/dir-auto-dynamic-simple-replace.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/dom/elements/global-attributes/dir-auto-dynamic-simple-textContent.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/dom/elements/global-attributes/dir-shadow-13.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/dom/elements/global-attributes/dir-shadow-14.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/dom/elements/global-attributes/dir-shadow-15.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/dom/elements/global-attributes/dir-shadow-16.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/dom/elements/global-attributes/dir-shadow-17.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/dom/elements/global-attributes/dir-shadow-18.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/dom/elements/global-attributes/dir-shadow-19.html": {
+      "status": "xfail",
+      "reason": "content: text differs"
+    },
+    "html/dom/elements/global-attributes/dir-shadow-20.html": {
+      "status": "xfail",
+      "reason": "content: text differs"
+    },
+    "html/dom/elements/global-attributes/dir-shadow-21.html": {
+      "status": "xfail",
+      "reason": "content: text differs"
+    },
+    "html/dom/elements/global-attributes/dir-shadow-22.html": {
+      "status": "xfail",
+      "reason": "content: text differs"
+    },
+    "html/dom/elements/global-attributes/dir-shadow-23.html": {
+      "status": "xfail",
+      "reason": "content: text differs"
+    },
+    "html/dom/elements/global-attributes/dir-shadow-24.html": {
+      "status": "xfail",
+      "reason": "content: text differs"
+    },
+    "html/dom/elements/global-attributes/dir-shadow-25.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/dom/elements/global-attributes/dir-shadow-26.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/dom/elements/global-attributes/dir-shadow-27.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/dom/elements/global-attributes/dir-shadow-28.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/dom/elements/global-attributes/dir-shadow-29.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/dom/elements/global-attributes/dir-shadow-30.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/dom/elements/global-attributes/dir-shadow-32.html": {
+      "status": "xfail",
+      "reason": "content: text differs"
+    },
+    "html/dom/elements/global-attributes/dir-shadow-33.html": {
+      "status": "xfail",
+      "reason": "content: text differs"
+    },
+    "html/dom/elements/global-attributes/dir-shadow-34.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/dom/elements/global-attributes/dir-shadow-35.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/dom/elements/global-attributes/dir-shadow-40.html": {
+      "status": "xfail",
+      "reason": "content: text differs"
+    },
+    "html/dom/elements/global-attributes/dir-shadow-41.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/dom/elements/global-attributes/dir-shadow-42.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/dom/elements/global-attributes/dir_auto-isolate.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/dom/elements/global-attributes/lang-xmllang-01.html": {
+      "status": "xfail",
+      "reason": "style: background-color differs between test/ref"
+    },
+    "html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-001a.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-001b.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-001c.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-002a.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-002b.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-002c.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-003a.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-003b.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-003c.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-004a.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-004b.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-004c.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-005a.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-005b.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-005c.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-006a.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-006b.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-006c.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-007a.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-007b.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-007c.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-008a.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-008b.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-008c.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-009a.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-009b.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-009c.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/rendering/bidi-rendering/slot-no-isolate-001.html": {
+      "status": "xfail",
+      "reason": "style: display differs between test/ref"
+    },
+    "html/rendering/bindings/the-select-element-0/option-label.html": {
+      "status": "xfail",
+      "reason": "content: text differs"
+    },
+    "html/rendering/non-replaced-elements/flow-content-0/div-align.html": {
+      "status": "xfail",
+      "reason": "style: text-align differs between test/ref"
+    },
+    "html/rendering/non-replaced-elements/flow-content-0/figure.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/rendering/non-replaced-elements/form-controls/input-line-height.html": {
+      "status": "xfail",
+      "reason": "style: line-height differs between test/ref"
+    },
+    "html/rendering/non-replaced-elements/form-controls/select-sizing-001.html": {
+      "status": "xfail",
+      "reason": "content: text differs"
+    },
+    "html/rendering/non-replaced-elements/lists/li-type-supported-xhtml.xhtml": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/rendering/non-replaced-elements/lists/list-style-position-quirks-mode.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/rendering/non-replaced-elements/lists/ol-type-supported-xhtml.xhtml": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/rendering/non-replaced-elements/lists/ul-type-supported-xhtml.xhtml": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/rendering/non-replaced-elements/phrasing-content-0/b-strong-styles.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/rendering/non-replaced-elements/phrasing-content-0/br-wbr-content/content-property.tentative.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/rendering/non-replaced-elements/phrasing-content-0/font-element-text-decoration-color/001-a.html": {
+      "status": "xfail",
+      "reason": "style: display differs between test/ref"
+    },
+    "html/rendering/non-replaced-elements/phrasing-content-0/font-element-text-decoration-color/001-q.html": {
+      "status": "xfail",
+      "reason": "style: display differs between test/ref"
+    },
+    "html/rendering/non-replaced-elements/phrasing-content-0/font-element-text-decoration-color/001-s.html": {
+      "status": "xfail",
+      "reason": "style: display differs between test/ref"
+    },
+    "html/rendering/non-replaced-elements/phrasing-content-0/font-element-text-decoration-color/001-x.xhtml": {
+      "status": "xfail",
+      "reason": "style: display differs between test/ref"
+    },
+    "html/rendering/non-replaced-elements/tables/table-border-3q.html": {
+      "status": "xfail",
+      "reason": "style: color differs between test/ref"
+    },
+    "html/rendering/non-replaced-elements/tables/table-border-3s.html": {
+      "status": "xfail",
+      "reason": "style: color differs between test/ref"
+    },
+    "html/rendering/non-replaced-elements/tables/table-bordercolor-001.html": {
+      "status": "xfail",
+      "reason": "style: border-top-color differs between test/ref"
+    },
+    "html/rendering/non-replaced-elements/tables/table-cell-nowrap-with-fixed-width.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/rendering/non-replaced-elements/tables/table-cell-width-s.html": {
+      "status": "xfail",
+      "reason": "style: display differs between test/ref"
+    },
+    "html/rendering/non-replaced-elements/tables/table-cell-width.html": {
+      "status": "xfail",
+      "reason": "style: display differs between test/ref"
+    },
+    "html/rendering/non-replaced-elements/tables/table-column-width.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/rendering/non-replaced-elements/tables/table-direction.html": {
+      "status": "xfail",
+      "reason": "style: border-right-width differs between test/ref"
+    },
+    "html/rendering/non-replaced-elements/tables/table-row-direction.html": {
+      "status": "xfail",
+      "reason": "style: border-right-width differs between test/ref"
+    },
+    "html/rendering/non-replaced-elements/tables/table-row-group-direction.html": {
+      "status": "xfail",
+      "reason": "unclassified failure"
+    },
+    "html/rendering/non-replaced-elements/tables/table-row-height.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/rendering/non-replaced-elements/tables/table-row-pagination-001-print.html": {
+      "status": "xfail",
+      "reason": "style: display differs between test/ref"
+    },
+    "html/rendering/non-replaced-elements/tables/table-row-pagination-002-print.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/rendering/non-replaced-elements/tables/table-width-s.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/rendering/non-replaced-elements/tables/table-width.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/rendering/non-replaced-elements/tables/tr-transform-and-will-change.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/absolute-fixed-in-legend.html": {
+      "status": "xfail",
+      "reason": "style: background-color differs between test/ref"
+    },
+    "html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/empty-scrollable.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-baseline.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-border-gap-negative-margin.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-border-gap-position-relative.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-border-radius-with-alpha.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-containing-block.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-content-rtl.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-dynamic-baseline.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-list-item.html": {
+      "status": "xfail",
+      "reason": "style: display differs between test/ref"
+    },
+    "html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-max-block-size.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-overflow-hidden.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-overflow.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-painting-order.html": {
+      "status": "xfail",
+      "reason": "unclassified failure"
+    },
+    "html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-resize.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-transform-translatez.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-vertical.html": {
+      "status": "xfail",
+      "reason": "style: display differs between test/ref"
+    },
+    "html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/grid-template-propagation.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/legend-auto-margins.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/legend-block-margins-2.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/legend-block-margins.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/legend-display-none-rendering.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/legend-display-rendering.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/legend-float.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/legend-in-slot.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/legend-list-item-numbering.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/legend-list-item.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/legend-painting-order.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/legend-position-relative-2.html": {
+      "status": "xfail",
+      "reason": "style: overflow-y differs between test/ref"
+    },
+    "html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/legend-position-relative.html": {
+      "status": "xfail",
+      "reason": "unclassified failure"
+    },
+    "html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/legend-tall.html": {
+      "status": "xfail",
+      "reason": "content: text differs"
+    },
+    "html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/sticky-content.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/rendering/non-replaced-elements/the-frameset-and-frame-elements/frameset-visibility-hidden.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/rendering/non-replaced-elements/the-frameset-and-frame-elements/large-cols-abssize.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/rendering/non-replaced-elements/the-frameset-and-frame-elements/large-cols-percentage.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/rendering/non-replaced-elements/the-frameset-and-frame-elements/large-rows-abssize.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/rendering/non-replaced-elements/the-frameset-and-frame-elements/large-rows-percentage.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/rendering/non-replaced-elements/the-hr-element-0/align.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/rendering/non-replaced-elements/the-hr-element-0/color.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/rendering/non-replaced-elements/the-hr-element-0/size-with-color-or-noshade.html": {
+      "status": "xfail",
+      "reason": "style: border-top-width differs between test/ref"
+    },
+    "html/rendering/non-replaced-elements/the-hr-element-0/width.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/rendering/non-replaced-elements/the-page/body_text_00ffff.xhtml": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/rendering/replaced-elements/attributes-for-embedded-content-and-images/canvas-dimension-attributes.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/rendering/replaced-elements/attributes-for-embedded-content-and-images/img_border_percent.xhtml": {
+      "status": "xfail",
+      "reason": "style: border-top-style differs between test/ref"
+    },
+    "html/rendering/replaced-elements/attributes-for-embedded-content-and-images/input-image-inline-alt.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/rendering/replaced-elements/attributes-for-embedded-content-and-images/video-default-object-height-constrained-by-max-width.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/rendering/replaced-elements/attributes-for-embedded-content-and-images/video-default-object-width-constrained-by-max-height.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/rendering/replaced-elements/embedded-content-rendering-rules/audio-without-controls.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/rendering/replaced-elements/embedded-content-rendering-rules/canvas-fallback.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/rendering/replaced-elements/embedded-content-rendering-rules/canvas-update-with-border-object-fit.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/rendering/replaced-elements/embedded-content-rendering-rules/canvas_scale.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/rendering/replaced-elements/embedded-content-rendering-rules/canvas_without_context_a.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/rendering/replaced-elements/embedded-content/cross-domain-iframe-in-multicol.sub.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/rendering/replaced-elements/embedded-content/object-fallback-text-decoration.html": {
+      "status": "xfail",
+      "reason": "style: overflow-y differs between test/ref"
+    },
+    "html/rendering/replaced-elements/embedded-content/video-controls-stacking.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/rendering/replaced-elements/embedded-content/video-controls-vertical-writing-mode.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/rendering/replaced-elements/the-option-element/option-label-whitespace.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/rendering/replaced-elements/the-option-element/option-with-br.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/rendering/replaced-elements/the-option-element/select-multiple-covered-by-abspos.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/rendering/replaced-elements/the-select-element/customizable-select/min-height-in-flex.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/rendering/replaced-elements/the-select-element/customizable-select/min-size-empty-001-ref2.html": {
+      "status": "xfail",
+      "reason": "sensitivity: mismatch pair rendered equivalent under the comparison whitelist (false negative)"
+    },
+    "html/rendering/replaced-elements/the-select-element/customizable-select/min-size-empty-002-ref2.html": {
+      "status": "xfail",
+      "reason": "sensitivity: mismatch pair rendered equivalent under the comparison whitelist (false negative)"
+    },
+    "html/rendering/replaced-elements/the-select-element/customizable-select/min-width-in-flex.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/rendering/replaced-elements/the-select-element/select-1-block-size-001-ref.html": {
+      "status": "xfail",
+      "reason": "style: text-align differs between test/ref"
+    },
+    "html/rendering/replaced-elements/the-select-element/select-1-block-size-001.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/rendering/replaced-elements/the-select-element/select-1-block-size.html": {
+      "status": "xfail",
+      "reason": "style: font-size differs between test/ref"
+    },
+    "html/rendering/replaced-elements/the-select-element/select-intrinsic-option-font-size.html": {
+      "status": "xfail",
+      "reason": "style: font-size differs between test/ref"
+    },
+    "html/rendering/replaced-elements/the-select-element/select-text-decoration.html": {
+      "status": "xfail",
+      "reason": "style: text-decoration differs between test/ref"
+    },
+    "html/rendering/replaced-elements/the-textarea-element/textarea-padding-bend-overlaps-content-001.tentative.html": {
+      "status": "xfail",
+      "reason": "style: overflow-y differs between test/ref"
+    },
+    "html/rendering/replaced-elements/the-textarea-element/textarea-padding-bstart-moves-content-001.tentative.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/rendering/replaced-elements/the-textarea-element/textarea-padding-istart-moves-content-001.tentative.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/rendering/sections/headingoffset-and-headingreset.html": {
+      "status": "xfail",
+      "reason": "unclassified failure"
+    },
+    "html/rendering/the-details-element/details-display-type-001-ref.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/rendering/the-details-element/details-display-type-001.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/rendering/the-details-element/details-display-type-002.html": {
+      "status": "xfail",
+      "reason": "style: display differs between test/ref"
+    },
+    "html/rendering/the-details-element/details-page-break-after-1-print.html": {
+      "status": "xfail",
+      "reason": "style: display differs between test/ref"
+    },
+    "html/rendering/the-details-element/details-page-break-after-2-print.html": {
+      "status": "xfail",
+      "reason": "style: display differs between test/ref"
+    },
+    "html/rendering/the-details-element/details-page-break-before-1-print.html": {
+      "status": "xfail",
+      "reason": "style: display differs between test/ref"
+    },
+    "html/rendering/the-details-element/details-page-break-before-2-print.html": {
+      "status": "xfail",
+      "reason": "style: display differs between test/ref"
+    },
+    "html/rendering/the-details-element/details-pseudo-elements-001.html": {
+      "status": "xfail",
+      "reason": "style: background-color differs between test/ref"
+    },
+    "html/rendering/the-details-element/details-pseudo-elements-002.html": {
+      "status": "xfail",
+      "reason": "style: background-color differs between test/ref"
+    },
+    "html/rendering/the-details-element/details-pseudo-elements-003.html": {
+      "status": "xfail",
+      "reason": "content: text differs"
+    },
+    "html/rendering/the-details-element/details-pseudo-elements-005.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/rendering/the-details-element/details-summary-display-inline-001.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/rendering/the-details-element/details-summary-display-inline-002.html": {
+      "status": "xfail",
+      "reason": "content: text differs"
+    },
+    "html/rendering/the-details-element/summary-display-flex.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/rendering/the-details-element/summary-display-grid.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/rendering/the-details-element/summary-display-inline-flex.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/rendering/the-details-element/summary-display-inline-grid.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/rendering/the-details-element/summary-display-list-item-002.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/rendering/the-details-element/summary-text-decoration.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/rendering/widgets/button-layout/anonymous-button-content-box.html": {
+      "status": "xfail",
+      "reason": "style: cursor differs between test/ref"
+    },
+    "html/rendering/widgets/button-layout/block-in-inline.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/rendering/widgets/button-layout/display-none-or-contents.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/rendering/widgets/button-layout/inline-level.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/rendering/widgets/button-layout/input-type-button-clip.html": {
+      "status": "xfail",
+      "reason": "unclassified failure"
+    },
+    "html/rendering/widgets/button-layout/propagate-text-decoration.html": {
+      "status": "xfail",
+      "reason": "content: text differs"
+    },
+    "html/rendering/widgets/button-layout/scrollable-button-centering.html": {
+      "status": "xfail",
+      "reason": "style: overflow-y differs between test/ref"
+    },
+    "html/rendering/widgets/button-layout/scrollbars.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/rendering/widgets/field-sizing-placeholder-stretch.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/rendering/widgets/field-sizing-textarea-relayout.html": {
+      "status": "xfail",
+      "reason": "unclassified failure"
+    },
+    "html/rendering/widgets/input-checkbox-disabled-checked.html": {
+      "status": "xfail",
+      "reason": "sensitivity: mismatch pair rendered equivalent under the comparison whitelist (false negative)"
+    },
+    "html/rendering/widgets/input-checkbox-no-centering.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/rendering/widgets/input-checkbox-zero-size.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/rendering/widgets/input-date-baseline-print.html": {
+      "status": "xfail",
+      "reason": "unclassified failure"
+    },
+    "html/rendering/widgets/input-date-baseline.html": {
+      "status": "xfail",
+      "reason": "unclassified failure"
+    },
+    "html/rendering/widgets/input-number-text-size.tentative.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/rendering/widgets/input-radio-disabled-checked.html": {
+      "status": "xfail",
+      "reason": "sensitivity: mismatch pair rendered equivalent under the comparison whitelist (false negative)"
+    },
+    "html/rendering/widgets/input-radio-no-centering.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/rendering/widgets/the-select-element/option-add-label-quirks.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/rendering/widgets/the-select-element/option-only-label.html": {
+      "status": "xfail",
+      "reason": "unclassified failure"
+    },
+    "html/semantics/document-metadata/the-style-element/html_style_in_comment.xhtml": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/embedded-content/media-elements/track/track-element/track-cue-rendering-after-controls-added.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/embedded-content/media-elements/track/track-element/track-cue-rendering-after-controls-removed.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/embedded-content/media-elements/track/track-element/track-cue-rendering-line-doesnt-fit.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/embedded-content/media-elements/track/track-element/track-cue-rendering-transformed-video.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/embedded-content/media-elements/track/track-element/track-webvtt-non-snap-to-lines.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/embedded-content/media-elements/track/track-element/track-webvtt-two-cue-layout-after-first-end.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/embedded-content/the-embed-element/embed-hidden-attribute.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/embedded-content/the-embed-element/embed-in-object-fallback-image.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/embedded-content/the-embed-element/embed-represent-nothing-01.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/embedded-content/the-embed-element/embed-represent-nothing-02.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/embedded-content/the-embed-element/embed-represent-nothing-03.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/embedded-content/the-iframe-element/iframe-initially-empty-is-updated.html": {
+      "status": "xfail",
+      "reason": "error: Dune__exe__Test_wpt_reftests.Test_timeout"
+    },
+    "html/semantics/embedded-content/the-img-element/adopt-from-image-document.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/embedded-content/the-img-element/available-images.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/embedded-content/the-img-element/content-type-with-parameters.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/embedded-content/the-img-element/image-compositing-large-scale-change.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/embedded-content/the-img-element/image-loading-lazy-clip-path.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/embedded-content/the-img-element/image-loading-lazy-slow-aspect-ratio.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/embedded-content/the-img-element/image-loading-lazy-slow.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/embedded-content/the-img-element/image-loading-subpixel-clip.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/embedded-content/the-img-element/image-srcdoc-relative-uri-print.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/embedded-content/the-img-element/responsive-image-select-print.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/embedded-content/the-img-element/sizes/sizes-auto-rendering-2.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/embedded-content/the-img-element/sizes/sizes-auto-rendering-3.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/embedded-content/the-img-element/sizes/sizes-auto-rendering-dynamic.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/embedded-content/the-img-element/sizes/sizes-auto-rendering.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/embedded-content/the-img-element/sizes/sizes-dynamic-002.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/embedded-content/the-img-element/svg-img-with-external-stylesheet.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/embedded-content/the-object-element/object-image-display-none-loading-for-print.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/embedded-content/the-object-element/object-image-only-for-print.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/embedded-content/the-object-element/object-svg-only-for-print.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/embedded-content/the-video-element/video-poster-shown-preload-auto.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/embedded-content/the-video-element/video_initially_paused.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/forms/customizable-combobox/customizable-combobox-appearance.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-input-element/image01.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/forms/the-input-element/placeholder-update.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/forms/the-input-element/range-intrinsic-size.html": {
+      "status": "xfail",
+      "reason": "style: display differs between test/ref"
+    },
+    "html/semantics/forms/the-input-element/range-tick-marks-03.html": {
+      "status": "xfail",
+      "reason": "sensitivity: mismatch pair rendered equivalent under the comparison whitelist (false negative)"
+    },
+    "html/semantics/forms/the-meter-element/meter-appearance-none-even-less-good-value-rendering.html": {
+      "status": "xfail",
+      "reason": "sensitivity: mismatch pair rendered equivalent under the comparison whitelist (false negative)"
+    },
+    "html/semantics/forms/the-meter-element/meter-appearance-none-optimum-value-rendering.html": {
+      "status": "xfail",
+      "reason": "sensitivity: mismatch pair rendered equivalent under the comparison whitelist (false negative)"
+    },
+    "html/semantics/forms/the-meter-element/meter-appearance-none-rendering.html": {
+      "status": "xfail",
+      "reason": "sensitivity: mismatch pair rendered equivalent under the comparison whitelist (false negative)"
+    },
+    "html/semantics/forms/the-meter-element/meter-appearance-none-suboptimum-value-rendering.html": {
+      "status": "xfail",
+      "reason": "sensitivity: mismatch pair rendered equivalent under the comparison whitelist (false negative)"
+    },
+    "html/semantics/forms/the-option-element/dynamic-content-change-rendering.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/customizable-select-listbox/customizable-select-listbox-appearance-focused.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/forms/the-select-element/customizable-select-listbox/customizable-select-listbox-appearance.html": {
+      "status": "xfail",
+      "reason": "content: text differs"
+    },
+    "html/semantics/forms/the-select-element/customizable-select-listbox/customizable-select-listbox-sizing.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/forms/the-select-element/customizable-select-multiple-popup/select-multiple-popup-appearance.tentative.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/appearance-base-and-base-select.tentative.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/border-rendering.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/checkmark-animation-002.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/closed-listbox-rendering.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/focus-ring-rendering.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/picker-and-slotted-invalidation.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/picker-and-slotted.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/picker-icon-and-slotted.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/picker-icon-animation-002.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-appearance-active.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-appearance-button-after-option.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-appearance-button-after-span.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-appearance-button-after-text.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-appearance-custom-button.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-appearance-dark-mode.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-appearance-default-button.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-appearance-disabled-option.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-appearance-disabled.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-appearance-fallback-bottom-left-scroller.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-appearance-fallback-bottom-left.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-appearance-fallback-bottom-right-scroller.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-appearance-fallback-bottom-right.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-appearance-fallback-top-left-scroller.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-appearance-fallback-top-left.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-appearance-fallback-top-right-scroller.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-appearance-fallback-top-right.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-appearance-font-inheriting.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-appearance-hover.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-appearance-optgroup-legend-and-label.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-appearance-optgroup-legend.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-appearance-optgroup-rendering.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-appearance-option-with-label.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-appearance-picker-select-border.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-appearance-sizing-in-flex.html": {
+      "status": "xfail",
+      "reason": "style: display differs between test/ref"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-appearance-switching-invalidation.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-appearance-writing-mode-vertical-lr.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-appearance-writing-mode-vertical-rl.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-appearance-wrong-picker-argument.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-display-block.tentative.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-explicit-size.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-font-size.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-grid-before-after.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-icon-color.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-only-button-opt-in.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-only-picker-opt-in.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-open-invalidation.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-optgroup-legend-label.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-option-images.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-picker-pseudo-backdrop.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-picker-pseudo-before-after.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-picker-pseudo-first-letter-first-line.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-picker-pseudo-highlight.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-picker-pseudo-selection.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-picker-pseudo-target-text.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-second-child-button.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-size-multiple-new-content.html": {
+      "status": "xfail",
+      "reason": "content: text differs"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/select-text-only.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/selectedcontent-color.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/standalone-optgroup-no-shadow-tree-after-select.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/standalone-optgroup-no-shadow-tree.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/standalone-option-no-shadow-tree-after-select.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/standalone-option-no-shadow-tree.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/forms/the-select-element/customizable-select/uses-label-dynamic.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/filterable-select/filterable-select-appearance.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/list-box-important-colors.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/reset-algorithm-rendering.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/forms/the-select-element/select-innerHTML-selected.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/forms/the-select-element/select-marker-end-aligned.tentative.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/forms/the-textarea-element/multiline-placeholder-cr.html": {
+      "status": "xfail",
+      "reason": "unclassified failure"
+    },
+    "html/semantics/forms/the-textarea-element/multiline-placeholder-crlf.html": {
+      "status": "xfail",
+      "reason": "unclassified failure"
+    },
+    "html/semantics/forms/the-textarea-element/multiline-placeholder.html": {
+      "status": "xfail",
+      "reason": "unclassified failure"
+    },
+    "html/semantics/forms/the-textarea-element/placeholder-white-space.tentative.html": {
+      "status": "xfail",
+      "reason": "sensitivity: mismatch pair rendered equivalent under the comparison whitelist (false negative)"
+    },
+    "html/semantics/grouping-content/the-li-element/grouping-li-reftest-002.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/grouping-content/the-li-element/grouping-li-reftest-006.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/grouping-content/the-li-element/grouping-li-reftest-007.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/grouping-content/the-li-element/grouping-li-reftest-display-list-item.html": {
+      "status": "xfail",
+      "reason": "style: display differs between test/ref"
+    },
+    "html/semantics/grouping-content/the-li-element/grouping-li-reftest-list-owner-menu.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/grouping-content/the-li-element/grouping-li-reftest-list-owner-mixed.html": {
+      "status": "xfail",
+      "reason": "content: text differs"
+    },
+    "html/semantics/grouping-content/the-li-element/grouping-li-reftest-list-owner-not-dir.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/grouping-content/the-li-element/grouping-li-reftest-list-owner-ol.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/grouping-content/the-li-element/grouping-li-reftest-list-owner-parent.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/grouping-content/the-li-element/grouping-li-reftest-list-owner-skip-no-boxes.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/grouping-content/the-li-element/grouping-li-reftest-list-owner-ul.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/grouping-content/the-li-element/grouping-li-reftest-not-being-rendered.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/grouping-content/the-ol-element/grouping-ol-rev-reftest-001.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/grouping-content/the-ol-element/grouping-ol-start-reftest-001.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/grouping-content/the-ol-element/grouping-ol-start-reftest-002.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/grouping-content/the-ol-element/grouping-ol-type-reftest-001.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/grouping-content/the-ol-element/grouping-ol-type-reftest-002.html": {
+      "status": "xfail",
+      "reason": "content: text differs"
+    },
+    "html/semantics/grouping-content/the-ol-element/grouping-ol-type-reftest-003.html": {
+      "status": "xfail",
+      "reason": "content: text differs"
+    },
+    "html/semantics/grouping-content/the-ol-element/reversed-1d.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/interactive-elements/the-details-element/details-add-summary.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/interactive-elements/the-dialog-element/backdrop-descendant-selector.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/interactive-elements/the-dialog-element/backdrop-dynamic-display-none.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/interactive-elements/the-dialog-element/backdrop-dynamic-style-change.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/interactive-elements/the-dialog-element/backdrop-in-flow.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/interactive-elements/the-dialog-element/backdrop-inherits.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/interactive-elements/the-dialog-element/backdrop-stacking-order.html": {
+      "status": "xfail",
+      "reason": "unclassified failure"
+    },
+    "html/semantics/interactive-elements/the-dialog-element/dialog-popover-overlay.html": {
+      "status": "xfail",
+      "reason": "style: background-color differs between test/ref"
+    },
+    "html/semantics/interactive-elements/the-dialog-element/dialogs-with-no-backdrop.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/interactive-elements/the-dialog-element/element-removed-from-top-layer-has-original-position.html": {
+      "status": "xfail",
+      "reason": "style: background-color differs between test/ref"
+    },
+    "html/semantics/interactive-elements/the-dialog-element/fixed-position-child-with-contain-ancestor.html": {
+      "status": "xfail",
+      "reason": "style: overflow-y differs between test/ref"
+    },
+    "html/semantics/interactive-elements/the-dialog-element/fixed-position-child-with-fo-ancestor.html": {
+      "status": "xfail",
+      "reason": "style: overflow-y differs between test/ref"
+    },
+    "html/semantics/interactive-elements/the-dialog-element/fixed-position-child-with-transformed-ancestor.tentative.html": {
+      "status": "xfail",
+      "reason": "style: overflow-y differs between test/ref"
+    },
+    "html/semantics/interactive-elements/the-dialog-element/fixed-position-child-with-will-change-ancestor.tentative.html": {
+      "status": "xfail",
+      "reason": "style: overflow-y differs between test/ref"
+    },
+    "html/semantics/interactive-elements/the-dialog-element/inert-node-is-not-highlighted.html": {
+      "status": "xfail",
+      "reason": "content: text differs"
+    },
+    "html/semantics/interactive-elements/the-dialog-element/modal-dialog-backdrop-opacity.html": {
+      "status": "xfail",
+      "reason": "style: overflow-y differs between test/ref"
+    },
+    "html/semantics/interactive-elements/the-dialog-element/modal-dialog-backdrop.html": {
+      "status": "xfail",
+      "reason": "unclassified failure"
+    },
+    "html/semantics/interactive-elements/the-dialog-element/modal-dialog-display-contents.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/interactive-elements/the-dialog-element/modal-dialog-generated-content.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/interactive-elements/the-dialog-element/modal-dialog-in-iframe.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/interactive-elements/the-dialog-element/modal-dialog-in-object.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/interactive-elements/the-dialog-element/modal-dialog-in-replaced-renderer.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/interactive-elements/the-dialog-element/modal-dialog-in-table-column.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/interactive-elements/the-dialog-element/modal-dialog-sibling.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/interactive-elements/the-dialog-element/removed-element-is-removed-from-top-layer.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/interactive-elements/the-dialog-element/top-layer-containing-block.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/interactive-elements/the-dialog-element/top-layer-display-none.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/interactive-elements/the-dialog-element/top-layer-nesting.html": {
+      "status": "xfail",
+      "reason": "unclassified failure"
+    },
+    "html/semantics/interactive-elements/the-dialog-element/top-layer-parent-clip.html": {
+      "status": "xfail",
+      "reason": "style: overflow-y differs between test/ref"
+    },
+    "html/semantics/interactive-elements/the-dialog-element/top-layer-parent-filter.html": {
+      "status": "xfail",
+      "reason": "style: overflow-y differs between test/ref"
+    },
+    "html/semantics/interactive-elements/the-dialog-element/top-layer-parent-mask.html": {
+      "status": "xfail",
+      "reason": "style: overflow-y differs between test/ref"
+    },
+    "html/semantics/interactive-elements/the-dialog-element/top-layer-parent-opacity.html": {
+      "status": "xfail",
+      "reason": "style: overflow-y differs between test/ref"
+    },
+    "html/semantics/interactive-elements/the-dialog-element/top-layer-parent-overflow-clip.html": {
+      "status": "xfail",
+      "reason": "style: overflow-y differs between test/ref"
+    },
+    "html/semantics/interactive-elements/the-dialog-element/top-layer-parent-overflow-hidden.html": {
+      "status": "xfail",
+      "reason": "style: overflow-y differs between test/ref"
+    },
+    "html/semantics/interactive-elements/the-dialog-element/top-layer-parent-overflow-scroll.html": {
+      "status": "xfail",
+      "reason": "style: overflow-y differs between test/ref"
+    },
+    "html/semantics/interactive-elements/the-dialog-element/top-layer-parent-transform.html": {
+      "status": "xfail",
+      "reason": "style: overflow-y differs between test/ref"
+    },
+    "html/semantics/interactive-elements/the-dialog-element/top-layer-stacking-correct-order-remove-readd.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/interactive-elements/the-dialog-element/top-layer-stacking-dynamic.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/interactive-elements/the-dialog-element/top-layer-stacking.tentative.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/interestfor/interestfor-keyboard-invalidation.tentative.html": {
+      "status": "xfail",
+      "reason": "style: background-color differs between test/ref"
+    },
+    "html/semantics/interestfor/interestfor-plain-inline-element.tentative.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "html/semantics/interestfor/interestfor-pseudo-element-appearance.tentative.html": {
+      "status": "xfail",
+      "reason": "content: text differs"
+    },
+    "html/semantics/interestfor/interestfor-pseudo-element-dynamic.tentative.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/menu/tentative/menu-elements-default-style.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/menu/tentative/menuitem-anchor-positioning.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/permission-element/border-radius-different.tentative.html": {
+      "status": "xfail",
+      "reason": "style: border-radius differs between test/ref"
+    },
+    "html/semantics/permission-element/border-radius-identical.tentative.html": {
+      "status": "xfail",
+      "reason": "style: border-radius differs between test/ref"
+    },
+    "html/semantics/permission-element/bounded-sizes-reftest.tentative.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/permission-element/geolocation-element/border-radius-different.tentative.html": {
+      "status": "xfail",
+      "reason": "style: border-radius differs between test/ref"
+    },
+    "html/semantics/permission-element/geolocation-element/border-radius-identical.tentative.html": {
+      "status": "xfail",
+      "reason": "style: border-radius differs between test/ref"
+    },
+    "html/semantics/permission-element/geolocation-element/geolocation-element-with-comment.tentative.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/permission-element/geolocation-element/icon-css-property-fill-reftest.html": {
+      "status": "xfail",
+      "reason": "sensitivity: mismatch pair rendered equivalent under the comparison whitelist (false negative)"
+    },
+    "html/semantics/permission-element/geolocation-element/icon-css-property-height-reftest.html": {
+      "status": "xfail",
+      "reason": "sensitivity: mismatch pair rendered equivalent under the comparison whitelist (false negative)"
+    },
+    "html/semantics/permission-element/geolocation-element/icon-css-property-stroke-reftest.html": {
+      "status": "xfail",
+      "reason": "sensitivity: mismatch pair rendered equivalent under the comparison whitelist (false negative)"
+    },
+    "html/semantics/permission-element/geolocation-element/icon-css-property-stroke-width-reftest.html": {
+      "status": "xfail",
+      "reason": "sensitivity: mismatch pair rendered equivalent under the comparison whitelist (false negative)"
+    },
+    "html/semantics/permission-element/geolocation-element/permission-element-with-comment.tentative.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/permission-element/geolocation-element/text-decoration-tentative.html": {
+      "status": "xfail",
+      "reason": "style: text-decoration differs between test/ref"
+    },
+    "html/semantics/permission-element/invalid-type-reftest.tentative.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/permission-element/large-min-size-reftest.tentative.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/permission-element/permission-icon/icon-css-property-fill-reftest.html": {
+      "status": "xfail",
+      "reason": "sensitivity: mismatch pair rendered equivalent under the comparison whitelist (false negative)"
+    },
+    "html/semantics/permission-element/permission-icon/icon-css-property-height-reftest.html": {
+      "status": "xfail",
+      "reason": "sensitivity: mismatch pair rendered equivalent under the comparison whitelist (false negative)"
+    },
+    "html/semantics/permission-element/permission-icon/icon-css-property-stroke-reftest.html": {
+      "status": "xfail",
+      "reason": "sensitivity: mismatch pair rendered equivalent under the comparison whitelist (false negative)"
+    },
+    "html/semantics/permission-element/permission-icon/icon-css-property-stroke-width-reftest.html": {
+      "status": "xfail",
+      "reason": "sensitivity: mismatch pair rendered equivalent under the comparison whitelist (false negative)"
+    },
+    "html/semantics/permission-element/permission-icon/icon-slotted-pseudo-element.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/permission-element/permission-icon/icon-unique-per-type-reftest.html": {
+      "status": "xfail",
+      "reason": "sensitivity: mismatch pair rendered equivalent under the comparison whitelist (false negative)"
+    },
+    "html/semantics/permission-element/text-decoration-tentative.html": {
+      "status": "xfail",
+      "reason": "style: text-decoration differs between test/ref"
+    },
+    "html/semantics/permission-element/unbounded-width-with-border-reftest.tentative.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/permission-element/usermedia-element-with-comment.tentative.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/popovers/popover-alignment-001.html": {
+      "status": "xfail",
+      "reason": "style: overflow-y differs between test/ref"
+    },
+    "html/semantics/popovers/popover-alignment-002.html": {
+      "status": "xfail",
+      "reason": "style: overflow-y differs between test/ref"
+    },
+    "html/semantics/popovers/popover-anchor-nested-display.tentative.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/popovers/popover-appearance.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/popovers/popover-backdrop-appearance.html": {
+      "status": "xfail",
+      "reason": "content: text differs"
+    },
+    "html/semantics/popovers/popover-checkbox-backdrop.html": {
+      "status": "xfail",
+      "reason": "style: background-color differs between test/ref"
+    },
+    "html/semantics/popovers/popover-hidden-appearance.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/popovers/popover-iframe-backdrop.html": {
+      "status": "xfail",
+      "reason": "style: background-color differs between test/ref"
+    },
+    "html/semantics/popovers/popover-img-backdrop.html": {
+      "status": "xfail",
+      "reason": "style: background-color differs between test/ref"
+    },
+    "html/semantics/popovers/popover-open-display.html": {
+      "status": "xfail",
+      "reason": "style: z-index differs between test/ref"
+    },
+    "html/semantics/popovers/popover-open-overflow-display.tentative.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/popovers/popover-progress-backdrop.html": {
+      "status": "xfail",
+      "reason": "style: background-color differs between test/ref"
+    },
+    "html/semantics/popovers/popover-textarea-backdrop.html": {
+      "status": "xfail",
+      "reason": "style: background-color differs between test/ref"
+    },
+    "html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/worklet.https.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/text-level-semantics/the-bdi-element/bdi-auto-dir-default.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/text-level-semantics/the-bdi-element/bdi-neutral-missing-pdf.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/text-level-semantics/the-bdi-element/bdi-neutral-nested.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/text-level-semantics/the-bdi-element/bdi-neutral-number.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/text-level-semantics/the-bdi-element/bdi-neutral-separate.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/text-level-semantics/the-bdi-element/bdi-neutral-to-another-bdi-1.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/text-level-semantics/the-bdi-element/bdi-neutral-to-another-bdi-2.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/text-level-semantics/the-bdi-element/bdi-neutral-to-letter-following-1.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/text-level-semantics/the-bdi-element/bdi-neutral-to-letter-following-2.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/text-level-semantics/the-bdi-element/bdi-neutral-to-letter-preceding-1.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/text-level-semantics/the-bdi-element/bdi-neutral-to-letter-preceding-2.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/text-level-semantics/the-bdi-element/bdi-neutral-to-number-following-1.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/text-level-semantics/the-bdi-element/bdi-neutral-to-number-following-2.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/text-level-semantics/the-bdi-element/bdi-neutral-to-surrounding-run.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/text-level-semantics/the-bdi-element/bdi-neutral-wrapped.html": {
+      "status": "xfail",
+      "reason": "content: text differs"
+    },
+    "html/semantics/text-level-semantics/the-bdi-element/bdi-paragraph-level-container.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/text-level-semantics/the-bdo-element/bdo-child.html": {
+      "status": "xfail",
+      "reason": "style: display differs between test/ref"
+    },
+    "html/semantics/text-level-semantics/the-bdo-element/bdo-ltr.html": {
+      "status": "xfail",
+      "reason": "style: display differs between test/ref"
+    },
+    "html/semantics/text-level-semantics/the-bdo-element/bdo-override.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "html/semantics/text-level-semantics/the-bdo-element/bidi-001.html": {
+      "status": "xfail",
+      "reason": "style: display differs between test/ref"
+    },
+    "html/semantics/text-level-semantics/the-br-element/br-bidi-in-inline-ancestors.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "html/semantics/text-level-semantics/the-br-element/br-bidi.html": {
+      "status": "xfail",
+      "reason": "unclassified failure"
+    },
+    "html/semantics/text-level-semantics/the-wbr-element/wbr-element.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/presentation-markup/direction/direction-006.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/presentation-markup/direction/direction-007.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/presentation-markup/direction/direction-008.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/presentation-markup/direction/direction-mpadded.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/presentation-markup/direction/direction-overall-002.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/direction/direction-overall-003.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/direction/direction-overall.html": {
+      "status": "xfail",
+      "reason": "style: background-color differs between test/ref"
+    },
+    "mathml/presentation-markup/fractions/frac-bar-001.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/fractions/frac-bar-002.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/presentation-markup/fractions/frac-bar-003.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/fractions/frac-color-002.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/fractions/frac-created-dynamically-4.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "mathml/presentation-markup/fractions/frac-default-padding.html": {
+      "status": "xfail",
+      "reason": "unclassified failure"
+    },
+    "mathml/presentation-markup/fractions/frac-invalid-2.html": {
+      "status": "xfail",
+      "reason": "style: font-size differs between test/ref"
+    },
+    "mathml/presentation-markup/fractions/frac-invalid-3.html": {
+      "status": "xfail",
+      "reason": "style: font-size differs between test/ref"
+    },
+    "mathml/presentation-markup/fractions/frac-invalid.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/fractions/frac-linethickness-003.html": {
+      "status": "xfail",
+      "reason": "sensitivity: mismatch pair rendered equivalent under the comparison whitelist (false negative)"
+    },
+    "mathml/presentation-markup/fractions/frac-linethickness-005.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "mathml/presentation-markup/fractions/frac-linethickness-006.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "mathml/presentation-markup/fractions/frac-linethickness-007.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "mathml/presentation-markup/fractions/frac-linethickness-008.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "mathml/presentation-markup/fractions/frac-mrow-001.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/presentation-markup/fractions/frac-numalign-denomalign-001.html": {
+      "status": "xfail",
+      "reason": "unclassified failure"
+    },
+    "mathml/presentation-markup/fractions/frac-parameters-gap-001.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/fractions/frac-parameters-gap-002.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/fractions/frac-parameters-gap-003.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/fractions/frac-parameters-gap-004.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/fractions/frac-parameters-gap-005.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/fractions/frac-parameters-gap-006.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/fractions/frac-rendering-from-in-flow.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/fractions/frac-visibility-001.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/mpadded/mpadded-010.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/presentation-markup/mpadded/mpadded-011.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/presentation-markup/mpadded/mpadded-012.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/presentation-markup/mpadded/mpadded-013.html": {
+      "status": "xfail",
+      "reason": "unclassified failure"
+    },
+    "mathml/presentation-markup/mpadded/mpadded-percentage-001.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/mrow/legacy-mfenced-element-001.html": {
+      "status": "xfail",
+      "reason": "style: color differs between test/ref"
+    },
+    "mathml/presentation-markup/mrow/legacy-mrow-like-elements-002.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/presentation-markup/mrow/mrow-painting-order.html": {
+      "status": "xfail",
+      "reason": "content: text differs"
+    },
+    "mathml/presentation-markup/mrow/semantics-001.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/mrow/semantics-002.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/mrow/semantics-003.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/mrow/semantics-004.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/mrow/semantics-005.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/operators/embellished-op-1-2.html": {
+      "status": "xfail",
+      "reason": "sensitivity: mismatch pair rendered equivalent under the comparison whitelist (false negative)"
+    },
+    "mathml/presentation-markup/operators/embellished-op-1-3.html": {
+      "status": "xfail",
+      "reason": "sensitivity: mismatch pair rendered equivalent under the comparison whitelist (false negative)"
+    },
+    "mathml/presentation-markup/operators/embellished-op-1-4.html": {
+      "status": "xfail",
+      "reason": "sensitivity: mismatch pair rendered equivalent under the comparison whitelist (false negative)"
+    },
+    "mathml/presentation-markup/operators/embellished-op-1-5.html": {
+      "status": "xfail",
+      "reason": "sensitivity: mismatch pair rendered equivalent under the comparison whitelist (false negative)"
+    },
+    "mathml/presentation-markup/operators/embellished-op-2-1.html": {
+      "status": "xfail",
+      "reason": "sensitivity: mismatch pair rendered equivalent under the comparison whitelist (false negative)"
+    },
+    "mathml/presentation-markup/operators/embellished-op-2-2.html": {
+      "status": "xfail",
+      "reason": "sensitivity: mismatch pair rendered equivalent under the comparison whitelist (false negative)"
+    },
+    "mathml/presentation-markup/operators/embellished-op-2-3.html": {
+      "status": "xfail",
+      "reason": "sensitivity: mismatch pair rendered equivalent under the comparison whitelist (false negative)"
+    },
+    "mathml/presentation-markup/operators/embellished-op-2-4.html": {
+      "status": "xfail",
+      "reason": "sensitivity: mismatch pair rendered equivalent under the comparison whitelist (false negative)"
+    },
+    "mathml/presentation-markup/operators/embellished-op-3-2.html": {
+      "status": "xfail",
+      "reason": "sensitivity: mismatch pair rendered equivalent under the comparison whitelist (false negative)"
+    },
+    "mathml/presentation-markup/operators/embellished-op-3-3.html": {
+      "status": "xfail",
+      "reason": "sensitivity: mismatch pair rendered equivalent under the comparison whitelist (false negative)"
+    },
+    "mathml/presentation-markup/operators/embellished-op-3-4.html": {
+      "status": "xfail",
+      "reason": "sensitivity: mismatch pair rendered equivalent under the comparison whitelist (false negative)"
+    },
+    "mathml/presentation-markup/operators/embellished-op-3-5.html": {
+      "status": "xfail",
+      "reason": "sensitivity: mismatch pair rendered equivalent under the comparison whitelist (false negative)"
+    },
+    "mathml/presentation-markup/operators/embellished-op-5-1.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/presentation-markup/operators/embellished-op-5-2.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/presentation-markup/operators/mo-invisibleoperators-2.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "mathml/presentation-markup/operators/mo-invisibleoperators.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/presentation-markup/operators/mo-lspace-rspace-4.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/operators/mo-lspace-rspace.html": {
+      "status": "xfail",
+      "reason": "content: text differs"
+    },
+    "mathml/presentation-markup/operators/mo-movablelimits-and-embellished-operator.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/operators/mo-movablelimits-from-in-flow.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/operators/mo-movablelimits.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/operators/mo-paint-lspace-rspace.html": {
+      "status": "xfail",
+      "reason": "content: text differs"
+    },
+    "mathml/presentation-markup/operators/mo-single-char-and-children.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/presentation-markup/operators/munderover-accent-dynamic-001.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "mathml/presentation-markup/operators/munderover-accentunder-dynamic-001.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "mathml/presentation-markup/operators/op-dict-9.html": {
+      "status": "xfail",
+      "reason": "sensitivity: mismatch pair rendered equivalent under the comparison whitelist (false negative)"
+    },
+    "mathml/presentation-markup/operators/painting-stretchy-operator-001.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/presentation-markup/operators/painting-stretchy-operator-002.html": {
+      "status": "xfail",
+      "reason": "style: visibility differs between test/ref"
+    },
+    "mathml/presentation-markup/radicals/empty-msqrt.html": {
+      "status": "xfail",
+      "reason": "unclassified failure"
+    },
+    "mathml/presentation-markup/radicals/radical-rendering-from-in-flow.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/scripts/mmultiscript-001.html": {
+      "status": "xfail",
+      "reason": "unclassified failure"
+    },
+    "mathml/presentation-markup/scripts/mmultiscript-002.html": {
+      "status": "xfail",
+      "reason": "unclassified failure"
+    },
+    "mathml/presentation-markup/scripts/mmultiscript-003.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/presentation-markup/scripts/mprescripts-001.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/scripts/munder-mover-align-accent-false.html": {
+      "status": "xfail",
+      "reason": "unclassified failure"
+    },
+    "mathml/presentation-markup/scripts/munder-mover-align-accent-true.html": {
+      "status": "xfail",
+      "reason": "unclassified failure"
+    },
+    "mathml/presentation-markup/scripts/munderover-align-accent-false.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/presentation-markup/scripts/munderover-align-accent-true.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/presentation-markup/scripts/none-001.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/scripts/none-002.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/scripts/stretchy-mover-1a.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/scripts/stretchy-mover-1b.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/presentation-markup/scripts/stretchy-mover-2a.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/presentation-markup/scripts/stretchy-mover-3.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/presentation-markup/scripts/stretchy-msup-1b.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/scripts/stretchy-msup-1c.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/scripts/stretchy-msup-1d.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/presentation-markup/scripts/stretchy-munderover-1b.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/scripts/stretchy-munderover-1c.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/scripts/stretchy-munderover-1d.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/presentation-markup/scripts/stretchy-munderover-1e.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/presentation-markup/scripts/stretchy-munderover-2b.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/scripts/stretchy-munderover-2c.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/scripts/stretchy-munderover-2e.html": {
+      "status": "xfail",
+      "reason": "content: text differs"
+    },
+    "mathml/presentation-markup/scripts/stretchy-munderover-2f.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/scripts/stretchy-munderover-2g.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/presentation-markup/scripts/stretchy-munderover-3a.html": {
+      "status": "xfail",
+      "reason": "sensitivity: mismatch pair rendered equivalent under the comparison whitelist (false negative)"
+    },
+    "mathml/presentation-markup/scripts/stretchy-munderover-3b.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/scripts/stretchy-munderover-3c.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/presentation-markup/scripts/underover-stretchy-001.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/scripts/underover-stretchy-002.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/presentation-markup/scripts/underover-stretchy-003.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/presentation-markup/spaces/mspace-children.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/spaces/mspace-percentage-001.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/spaces/space-2.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/spaces/space-3.html": {
+      "status": "xfail",
+      "reason": "unclassified failure"
+    },
+    "mathml/presentation-markup/spaces/space-vertical-align.tentative.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/tables/columnspan-rowspan-001.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/tables/columnspan-rowspan-002.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/tables/columnspan-rowspan-003.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/presentation-markup/tables/columnspan-rowspan-004.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/presentation-markup/tables/columnspan-rowspan-005.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/presentation-markup/tables/columnspan-rowspan-006.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/presentation-markup/tables/dynamic-columnspan-rowspan-001a.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/tables/dynamic-columnspan-rowspan-001b.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/tables/dynamic-columnspan-rowspan-001c.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/tables/dynamic-columnspan-rowspan-002a.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/tables/dynamic-columnspan-rowspan-002b.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/tables/dynamic-columnspan-rowspan-002c.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/presentation-markup/tables/dynamic-rowspan-mozilla-370692.xhtml": {
+      "status": "xfail",
+      "reason": "error: Failure(\"extractor exception: {\\\"exceptionId\\\":52,\\\"text\\\":\\\"Uncaught\\\",\\\"lineNumber\\\":22191,\\\"columnNumber\\\":35,\\\"scrip"
+    },
+    "mathml/presentation-markup/tokens/dynamic-mi-mozilla-414123.xhtml": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "mathml/presentation-markup/tokens/mi-mathvariant-1.xhtml": {
+      "status": "xfail",
+      "reason": "error: Failure(\"extractor exception: {\\\"exceptionId\\\":53,\\\"text\\\":\\\"Uncaught\\\",\\\"lineNumber\\\":22191,\\\"columnNumber\\\":35,\\\"scrip"
+    },
+    "mathml/presentation-markup/tokens/mi-mathvariant-2.xhtml": {
+      "status": "xfail",
+      "reason": "error: Failure(\"extractor exception: {\\\"exceptionId\\\":54,\\\"text\\\":\\\"Uncaught\\\",\\\"lineNumber\\\":22191,\\\"columnNumber\\\":35,\\\"scrip"
+    },
+    "mathml/relations/css-styling/blur-filter.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/relations/css-styling/clip-path.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/relations/css-styling/clip.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/relations/css-styling/color-001.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/relations/css-styling/color-002.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/relations/css-styling/color-003.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/relations/css-styling/color-004.tentative.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/relations/css-styling/color-005.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/relations/css-styling/display-1.html": {
+      "status": "xfail",
+      "reason": "style: color differs between test/ref"
+    },
+    "mathml/relations/css-styling/display-with-overflow.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/relations/css-styling/displaystyle-011.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/relations/css-styling/displaystyle-012.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/relations/css-styling/displaystyle-013.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/relations/css-styling/displaystyle-015.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/relations/css-styling/first-line-first-letter-pseudo-elements-002.html": {
+      "status": "xfail",
+      "reason": "content: text differs"
+    },
+    "mathml/relations/css-styling/first-line-first-letter-pseudo-elements-004.html": {
+      "status": "xfail",
+      "reason": "content: text differs"
+    },
+    "mathml/relations/css-styling/floats/floating-inside-mathml-with-block-display.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/relations/css-styling/floats/floating-math.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/relations/css-styling/lengths-1.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/relations/css-styling/mathcolor-mathbackground-css.html": {
+      "status": "xfail",
+      "reason": "style: color differs between test/ref"
+    },
+    "mathml/relations/css-styling/non-mathml-namespace-001.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/relations/css-styling/out-of-flow/absolutely-positioned-001.html": {
+      "status": "xfail",
+      "reason": "style: background-color differs between test/ref"
+    },
+    "mathml/relations/css-styling/out-of-flow/fixed-positioned-001.html": {
+      "status": "xfail",
+      "reason": "style: background-color differs between test/ref"
+    },
+    "mathml/relations/css-styling/padding-border-margin/padding-border-margin-001.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/relations/css-styling/padding-border-margin/padding-border-margin-002.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/relations/css-styling/padding-border-margin/padding-border-margin-003.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/relations/css-styling/padding-border-margin/padding-border-margin-004.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/relations/css-styling/padding-border-margin/padding-border-margin-005.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/relations/css-styling/padding-border-margin/padding-border-margin-006.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/relations/css-styling/padding-border-margin/padding-border-margin-007.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/relations/css-styling/table-width-1.xhtml": {
+      "status": "xfail",
+      "reason": "style: color differs between test/ref"
+    },
+    "mathml/relations/css-styling/table-width-2.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/relations/css-styling/table-width-3.html": {
+      "status": "xfail",
+      "reason": "style: color differs between test/ref"
+    },
+    "mathml/relations/css-styling/table-width-4.html": {
+      "status": "xfail",
+      "reason": "style: visibility differs between test/ref"
+    },
+    "mathml/relations/css-styling/transform.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/relations/css-styling/visibility-001.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/relations/css-styling/visibility-002.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/relations/css-styling/visibility-003.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/relations/css-styling/visibility-004.tentative.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/relations/css-styling/visibility-005.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/relations/css-styling/width-height-002.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/relations/css-styling/width-height-003.html": {
+      "status": "xfail",
+      "reason": "style: text-align differs between test/ref"
+    },
+    "mathml/relations/html5-tree/color-attributes-1.html": {
+      "status": "xfail",
+      "reason": "style: color differs between test/ref"
+    },
+    "mathml/relations/html5-tree/dynamic-href-001.tentative.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "mathml/relations/html5-tree/href-click-001.tentative.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/relations/html5-tree/href-click-002.tentative.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "mathml/relations/html5-tree/integration-point-1.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/relations/html5-tree/integration-point-2.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/relations/html5-tree/integration-point-3.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/relations/html5-tree/link-color-001.tentative.html": {
+      "status": "xfail",
+      "reason": "sensitivity: mismatch pair rendered equivalent under the comparison whitelist (false negative)"
+    },
+    "mathml/relations/html5-tree/maction-click.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/relations/html5-tree/required-extensions-2.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "mathml/relations/html5-tree/shadow-dom-mozilla-1066554.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "mathml/relations/text-and-math/mo-glyph-height-with-default-font.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "mathml/relations/text-and-math/use-typo-metrics-1.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
     "quirks/body-fills-html-quirk-float.html": {
       "status": "xfail",
       "reason": "layout: bounds differ between test/ref"
@@ -73862,6 +76370,550 @@
       "reason": "style: text-decoration differs between test/ref"
     },
     "quirks/text-decoration-doesnt-propagate-into-tables/standards.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/animations/animate-display-to-none-001.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/animations/animate-fill-underlying-value-change.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/animations/conditional-processing-01.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/animations/invalid-attribute-type-does-not-block-same-group-animation.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/animations/media-fragment-override-animation.html": {
+      "status": "xfail",
+      "reason": "style: background-color differs between test/ref"
+    },
+    "svg/animations/stop-animation-01.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/animations/switch-animation-01.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/animations/switch-animation-02.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/animations/use-animate-display-none-symbol-2.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/animations/use-animate-display-none-symbol.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/as-image/external-resource-inline-sheet.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "svg/coordinate-systems/abspos.html": {
+      "status": "xfail",
+      "reason": "style: display differs between test/ref"
+    },
+    "svg/coordinate-systems/outer-svg-intrinsic-size-003.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "svg/coordinate-systems/outer-svg-intrinsic-size-004.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "svg/coordinate-systems/outer-svg-intrinsic-size-005.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "svg/coordinate-systems/view-invalid-viewBox.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/coordinate-systems/view-transform-viewBox.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/coordinate-systems/viewBox-baseVal-change-invalid.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/coordinate-systems/viewBox-change-repaint-001.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "svg/coordinate-systems/viewBox-scaling-text-001.html": {
+      "status": "xfail",
+      "reason": "style: line-height differs between test/ref"
+    },
+    "svg/coordinate-systems/viewBox-synthesized-in-img-001.tentative.html": {
+      "status": "xfail",
+      "reason": "unclassified failure"
+    },
+    "svg/embedded/image-embedding-nested-data-url-from-canvas-post-window-load.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "svg/embedded/image-embedding-nested-data-url-from-canvas-window-load.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "svg/embedded/image-embedding-nested-data-url-from-canvas.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "svg/embedded/image-embedding-nested-data-url-png.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/embedded/image-embedding-nested-data-url.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/embedded/image-embedding-nested-external-data-url-png.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/embedded/image-embedding-nesteder-data-url.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/embedded/image-embedding-svg-nested-svg-in-foreignobject.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/embedded/image-embedding-svg-with-near-integral-width.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "svg/extensibility/foreignObject/filter-repaint.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/extensibility/foreignObject/foreign-object-containing-svg-in-svg-in-object.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/extensibility/foreignObject/foreign-object-margin-collapsing.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/extensibility/foreignObject/foreign-object-paints-before-rect.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "svg/extensibility/foreignObject/foreign-object-scale-scroll.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "svg/extensibility/foreignObject/foreign-object-size.html": {
+      "status": "xfail",
+      "reason": "style: background-color differs between test/ref"
+    },
+    "svg/extensibility/foreignObject/foreign-object-with-position-under-clip-path.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/extensibility/foreignObject/isolation-with-html.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/extensibility/foreignObject/isolation-with-svg.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/extensibility/foreignObject/masked.html": {
+      "status": "xfail",
+      "reason": "style: overflow-y differs between test/ref"
+    },
+    "svg/extensibility/foreignObject/overlapped-positioned-and-will-change-transform-descendant.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/extensibility/foreignObject/position-svg-root-in-foreign-object.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/extensibility/foreignObject/scroll-transform-nested-stacked-children.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/extensibility/foreignObject/stacking-context.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/extensibility/foreignObject/will-change-in-foreign-object-paint-order.html": {
+      "status": "xfail",
+      "reason": "style: background-color differs between test/ref"
+    },
+    "svg/extensibility/foreignObject/will-change-in-transformed-foreign-object.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/interact/use-instance-hover.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "svg/layout/svg-embed-intrinsic-size-min-size.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "svg/layout/svg-foreign-relayout-001.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/layout/svg-foreign-relayout-002.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/layout/svg-intrinsic-size-min-size.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "svg/layout/svg-use-symbol-animateMotion-print.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/layout/svg-use-symbol-animateTransform-print.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/layout/svg-use-symbol-opacity-print.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/layout/svg-use-symbol-path-print.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/layout/svg-use-symbol-width-2-print.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/layout/svg-use-symbol-width-print.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/linking/reftests/href-a-element-attr-change.html": {
+      "status": "xfail",
+      "reason": "style: cursor differs between test/ref"
+    },
+    "svg/linking/reftests/href-filter-element.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "svg/linking/reftests/href-gradient-element.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "svg/linking/reftests/href-pattern-element.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "svg/linking/reftests/href-textPath-element.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "svg/linking/reftests/media-fragment-override-multiple.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "svg/linking/reftests/svgview-viewbox-override-multiple.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "svg/linking/reftests/use-descendant-combinator-001.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/linking/reftests/use-descendant-combinator-002.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/linking/reftests/use-descendant-combinator-003.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/linking/reftests/use-hidden-attr-change.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/linking/reftests/use-nested-symbol-001.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/linking/reftests/use-symbol-rendered-001.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/linking/reftests/use-template.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/linking/reftests/view-viewbox-override.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/painting/color-mix-currentcolor-fill-stroke-repaint.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "svg/painting/currentcolor-fill-stroke-repaint.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "svg/painting/foreignObject-overflow.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/painting/inner-outer-svg-overflow-auto.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "svg/painting/reftests/display-none-mask.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/painting/reftests/marker-implicit-subpaths.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/painting/reftests/mask-percentage.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "svg/painting/reftests/non-scaling-stroke-001.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"extractor exception: {\\\"exceptionId\\\":57,\\\"text\\\":\\\"Uncaught\\\",\\\"lineNumber\\\":22191,\\\"columnNumber\\\":35,\\\"scrip"
+    },
+    "svg/painting/reftests/non-scaling-stroke-003.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"extractor exception: {\\\"exceptionId\\\":58,\\\"text\\\":\\\"Uncaught\\\",\\\"lineNumber\\\":22191,\\\"columnNumber\\\":35,\\\"scrip"
+    },
+    "svg/painting/reftests/non-scaling-stroke-004.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"extractor exception: {\\\"exceptionId\\\":59,\\\"text\\\":\\\"Uncaught\\\",\\\"lineNumber\\\":22191,\\\"columnNumber\\\":35,\\\"scrip"
+    },
+    "svg/painting/reftests/non-scaling-stroke-007.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/painting/reftests/small-nested-viewbox.html": {
+      "status": "xfail",
+      "reason": "style: background-color differs between test/ref"
+    },
+    "svg/painting/reftests/symbol-in-mask.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"extractor exception: {\\\"exceptionId\\\":60,\\\"text\\\":\\\"Uncaught\\\",\\\"lineNumber\\\":22191,\\\"columnNumber\\\":35,\\\"scrip"
+    },
+    "svg/painting/reftests/text-shadow-01.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/painting/reftests/text-shadow-02.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/painting/reftests/text-shadow-03.html": {
+      "status": "xfail",
+      "reason": "unclassified failure"
+    },
+    "svg/painting/reftests/zero-scale-svg-transform-inside-g-tag.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/painting/scripted/marker-element-added.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/painting/subpixel-clip-path-transform.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/painting/svg-child-will-change-transform-invalidation.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/painting/svg-with-outline.html": {
+      "status": "xfail",
+      "reason": "content: text differs"
+    },
+    "svg/painting/text-clip-path-transform.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/painting/text-mask-transform.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/painting/will-change-under-mask.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/pservers/reftests/css-color-visited-currentcolor-svg-fill.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "svg/render/reftests/blending-svg-foreign-object.html": {
+      "status": "xfail",
+      "reason": "style: background-color differs between test/ref"
+    },
+    "svg/render/reftests/blending-svg-root.html": {
+      "status": "xfail",
+      "reason": "style: background-color differs between test/ref"
+    },
+    "svg/render/reftests/filter-effects-on-pattern.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "svg/render/reftests/nested-svg-overflow-clip.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/render/reftests/overflow-clip.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/shapes/reftests/polygon-with-filtered-marker.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/struct/reftests/currentScale-change-repaint.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/struct/reftests/use-data-url-setAttribute.tentative.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/struct/reftests/use-event-handler-no-loss-of-events.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
+    "svg/struct/reftests/use-external-html-resource-with-content-type-svg.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/struct/reftests/use-external-html-resource-with-doctype.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/struct/reftests/use-external-html-resource.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/struct/reftests/use-external-resource-no-svg-root.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/struct/reftests/use-external-resource-target-pseudo-001.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/struct/reftests/use-external-resource-target-pseudo-002.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/struct/reftests/use-external-resource-with-revalidation.tentative.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/struct/reftests/use-external-svg-resource-no-fragment-id.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/struct/reftests/use-foreignObject.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/struct/reftests/use-ref-inside-data-url.tentative.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/struct/reftests/use-referencing-non-svg-fragment-element.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/styling/css-linked-parameters/css-linked-parameters-precedence-1.html": {
+      "status": "xfail",
+      "reason": "unclassified failure"
+    },
+    "svg/styling/css-linked-parameters/css-linked-parameters-precedence-2.html": {
+      "status": "xfail",
+      "reason": "unclassified failure"
+    },
+    "svg/styling/css-linked-parameters/img-with-linked-parameters-1.html": {
+      "status": "xfail",
+      "reason": "unclassified failure"
+    },
+    "svg/styling/css-linked-parameters/img-with-linked-parameters-2.html": {
+      "status": "xfail",
+      "reason": "unclassified failure"
+    },
+    "svg/styling/css-linked-parameters/img-with-url-fragment-identifiers-1.html": {
+      "status": "xfail",
+      "reason": "unclassified failure"
+    },
+    "svg/styling/css-linked-parameters/img-with-url-fragment-identifiers-2.html": {
+      "status": "xfail",
+      "reason": "unclassified failure"
+    },
+    "svg/styling/css-linked-parameters/img-with-url-function-1.html": {
+      "status": "xfail",
+      "reason": "unclassified failure"
+    },
+    "svg/styling/css-linked-parameters/img-with-url-function-2.html": {
+      "status": "xfail",
+      "reason": "unclassified failure"
+    },
+    "svg/styling/css-var-on-length-attributes-quirk.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/styling/nested-svg-sizing-viewport-units-with-ICB.tentative.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/styling/use-element-attr-selector.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/styling/use-element-class-selector.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/styling/use-element-id-selector.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/styling/use-element-non-rendered-has-selector.html": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "svg/styling/use-element-non-rendered-sibling-selector.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/styling/use-element-web-animations.html": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "svg/text/reftests/font-size-scaling.html": {
+      "status": "xfail",
+      "reason": "style: font-size differs between test/ref"
+    },
+    "svg/text/reftests/text-font-face-load-image.html": {
+      "status": "xfail",
+      "reason": "unclassified failure"
+    },
+    "svg/text/reftests/text-path-transformed.html": {
       "status": "xfail",
       "reason": "layout: bounds differ between test/ref"
     }

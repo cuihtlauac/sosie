@@ -551,13 +551,13 @@ def cmd_report(args):
     w('|---|---:|')
     for ext, n in ext_counts:
         w(f'| .{ext} candidates | {n} |')
-    w(f'| in scope (37 manifest groups) | {total_in_scope} |')
+    w(f'| in scope ({len(json.loads(meta["groups"]))} manifest groups) | {total_in_scope} |')
     w(f'| out of scope | {total_out} |')
     w('')
     w('## In-scope waterfall')
     w('')
-    w('Every candidate inside the 37 ingested groups, attributed to the '
-      'first discovery rule that stops it:')
+    w(f'Every candidate inside the {len(json.loads(meta["groups"]))} ingested '
+      'groups, attributed to the first discovery rule that stops it:')
     w('')
     w('| category | count | meaning |')
     w('|---|---:|---|')
