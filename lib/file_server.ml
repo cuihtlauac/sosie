@@ -3,11 +3,14 @@
     See {!File_server} (the .mli) for the public interface documentation. *)
 
 let content_type_of path =
-  if
-    Filename.check_suffix path ".html"
-    || Filename.check_suffix path ".xhtml"
-    || Filename.check_suffix path ".xht"
-  then "text/html; charset=utf-8"
+  if Filename.check_suffix path ".html" then "text/html; charset=utf-8"
+  else if
+    (* XHTML must be served as XML: under text/html the parser treats
+       <![CDATA[...]]> in <style> as CSS garbage and drops the rules,
+       so test AND reference render unstyled — silently equal. Found by
+       a mismatch reftest (t31-color-text-a) reporting Equivalent. *)
+    Filename.check_suffix path ".xhtml" || Filename.check_suffix path ".xht"
+  then "application/xhtml+xml; charset=utf-8"
   else if Filename.check_suffix path ".css" then "text/css; charset=utf-8"
   else if Filename.check_suffix path ".js" then
     "application/javascript; charset=utf-8"
