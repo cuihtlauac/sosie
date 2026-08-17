@@ -2,6 +2,21 @@
 
 Completed work, most recent first.
 
+## 2026-08-17 — WPT campaign session C: css/CSS2 module
+
+`css/CSS2` added to manifest groups; sparse re-sync from local
+objects, one ~50 min capture run, `bulk-xfail`, classify
+bootstrap+export, coverage scan/validate/report — session A tooling
+handled the module-sized expansion unchanged. 6,287 reftests ingested;
+408 pass (6.5% — CSS2 predates the reftest style guide, test/ref
+differ in prose and markup), 5,879 xfail (bounds 43%, tag-agnostic
+17%, content-text 13%, style 14%; TRIAGE.md session C section).
+Diagnosed an extractor crash class (8 tests corpus-wide): null
+`document.head` in XML documents without an explicit `<head>`; fix
+queued in backlog.
+Suite: 13,370 → 19,657 (+6,287), 3,189 pass, 16,468 xfail, 0 fail;
+coverage gate 19,657/19,657 exact.
+
 ## 2026-08-17 — WPT campaign session B: mismatch reftests as negative controls
 
 274 mismatch-only reftests ingested with inverted verdicts (Diff →

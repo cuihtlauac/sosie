@@ -3,13 +3,6 @@
 Pending work, current task first. See `plans/wpt-ingestion-campaign.md`
 for the full campaign design and `sosie-roadmap.md` Step 10c for status.
 
-## WPT campaign session C — css/CSS2 module (+~6,270 tests)
-
-Add `css/CSS2` to manifest.json groups; `fetch.sh` re-syncs from local
-objects. Run (~1 h capture), `wpt_classify.py bulk-xfail`, classify
-bootstrap+export, coverage scan/validate/report, TRIAGE category
-summary, commit.
-
 ## WPT campaign session D — remaining css/* layout modules (+~2,600)
 
 Groups: css-break (1,003), filter-effects (263), css-counter-styles
@@ -38,6 +31,22 @@ re-run the negative controls (expect ≈254/274 = 92.7% sensitivity),
 prune the recovered xfails, and re-triage match-test xfails the new
 properties may cause (whitelist growth can add spurious diffs —
 measure both directions). See TRIAGE.md sensitivity section.
+
+## Extractor: null document.head crash on XML documents without <head>
+
+`freeze_page` (`js_extractor/extractor.ml`) appends the
+transition-freeze style to `document.head`, which is null in
+XML-parsed documents lacking an explicit `<head>` — the XML parser
+does not synthesize one (the HTML parser does). Crashes the capture
+with `TypeError: Cannot read properties of null (reading
+'appendChild')` on 8 WPT tests (css/CSS2/tables/table-*-group-001.xht
+via their shared head-less reference; css-ruby root-ruby /
+root-block-ruby; css-pseudo first-letter-of-html-root-refcrash;
+css-cascade scope-implicit-004-print; css-images
+svg-script-is-ignored). Fix: fall back to `documentElement` (or the
+root element) when `head` is null; also audit `unfreeze_page` and any
+other `document.head` uses. Re-run the 8 tests, prune recovered
+xfails. Diagnosed 2026-08-17 (TRIAGE.md session C section).
 
 ## Deferred (not scheduled)
 
