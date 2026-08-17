@@ -8,7 +8,7 @@ Reads the ENTIRE tree via git plumbing (the local object store holds all
 blobs even though the working tree is a sparse checkout), replicates the
 discovery semantics of ext_test_lib.ml byte-for-byte to attribute every
 candidate file to exactly one category, and validates the result against
-classification.json (the 12,909 discovered tests) before reporting.
+classification.json (the discovered-test ground truth) before reporting.
 
 Usage:
     wpt_coverage.py scan       # Full-tree scan -> coverage.db (rebuilds)
@@ -80,30 +80,30 @@ def get_attr(tag, name):
 def broad_link_scan(body):
     """All <link> rel=match / rel=mismatch hrefs, any quoting, any case.
 
-    Returns (match_links, mismatch_count) where match_links is a list of
-    (href_bytes, quoted) in document order, deduplicated by href —
-    mirroring parse_reftest_links in ext_test_lib.ml.
+    Returns (match_links, mismatch_links), each a list of (href_bytes,
+    quoted) in document order, deduplicated by href per rel — mirroring
+    parse_reftest_links / parse_mismatch_links in ext_test_lib.ml.
     """
     match_links = []
-    seen = set()
-    mismatch = 0
+    mismatch_links = []
+    seen_match = set()
+    seen_mismatch = set()
     for m in LINK_TAG_RE.finditer(body):
         tag = m.group(0)
         rel, _ = get_attr(tag, rb'rel')
         if rel is None:
             continue
         tokens = rel.lower().split()
-        is_match = b'match' in tokens
-        is_mismatch = b'mismatch' in tokens
-        if not (is_match or is_mismatch):
-            continue
         href, quoted = get_attr(tag, rb'href')
-        if is_mismatch:
-            mismatch += 1
-        if is_match and href and href not in seen:
-            seen.add(href)
+        if not href:
+            continue
+        if b'match' in tokens and href not in seen_match:
+            seen_match.add(href)
             match_links.append((href, quoted))
-    return match_links, mismatch
+        if b'mismatch' in tokens and href not in seen_mismatch:
+            seen_mismatch.add(href)
+            mismatch_links.append((href, quoted))
+    return match_links, mismatch_links
 
 
 def has_fuzzy_meta(body):
@@ -218,10 +218,10 @@ def load_groups():
 
 def extract_features(path, body):
     """All per-file facts needed for attribution and flags."""
-    match_links, mismatch_count = broad_link_scan(body)
+    match_links, mismatch_links = broad_link_scan(body)
     return {
         'match_links': match_links,
-        'mismatch_count': mismatch_count,
+        'mismatch_links': mismatch_links,
         'nondet': bool(NONDET_RE.search(body)),
         'fuzzy': has_fuzzy_meta(body),
         'testharness': bool(TESTHARNESS_RE.search(body)),
@@ -235,8 +235,10 @@ def extract_features(path, body):
 def attribute(path, feat, in_scope, full_tree):
     """Primary category via the discovery rule chain (first hit wins).
 
-    Mirrors ext_test_lib.ml discovery: a test is included when at least
-    one of its match refs exists (the runner tries them in order).
+    Mirrors ext_test_lib.ml discovery: a file with any rel=match link is a
+    Match test (mismatch links ignored); a file with only rel=mismatch
+    links is a Mismatch test. A test is included when at least one of its
+    kind's refs exists (the runner tries them in order).
 
     For out-of-scope files also returns would_be: the category the same
     chain would assign if the module were ingested, with ref existence
@@ -246,7 +248,8 @@ def attribute(path, feat, in_scope, full_tree):
     if in_support_or_reference(path):
         return 'excluded-support-reference-path', None, None, None
 
-    hrefs = [h.decode('latin-1') for h, _ in feat['match_links']]
+    links = feat['match_links'] or feat['mismatch_links']
+    hrefs = [h.decode('latin-1') for h, _ in links]
     resolved = [resolve_href(path, h) for h in hrefs]
     any_in_ft = any(posixpath.normpath(r) in full_tree for r in resolved)
 
@@ -254,8 +257,6 @@ def attribute(path, feat, in_scope, full_tree):
         if not path.endswith(OCAML_EXTS):
             return 'not-scanned-svg-extension', None
         if not hrefs:
-            if feat['mismatch_count'] > 0:
-                return 'excluded-mismatch-only', None
             return 'not-a-reftest', None
         if feat['nondet']:
             return 'excluded-nondeterministic', None
@@ -306,8 +307,9 @@ def cmd_scan(args):
 
     file_rows = []
     link_rows = []
-    # path -> list of normalized resolved match hrefs, for the chained-ref pass
-    match_map = {}
+    # path -> True for every file that is itself a reftest, for the
+    # chained-ref pass
+    reftest_map = {}
 
     print("Scanning blobs via git cat-file --batch ...")
     n = 0
@@ -316,21 +318,36 @@ def cmd_scan(args):
         in_scope = path.startswith(group_prefixes)
         category, would_be, in_wt, in_ft = attribute(path, feat, in_scope, full_tree)
 
-        resolved_all = []
-        for ord_, (href_b, quoted) in enumerate(feat['match_links']):
-            href = href_b.decode('latin-1')
-            resolved = posixpath.normpath(resolve_href(path, href))
-            resolved_all.append(resolved)
-            link_rows.append((path, ord_, href, 1 if quoted else 0,
-                              resolved, 1 if resolved in full_tree else 0))
-        if resolved_all:
-            match_map[path] = resolved_all
+        # Kind mirrors ext_test_lib.ml: match links win; mismatch-only
+        # files are mismatch tests.
+        if feat['match_links']:
+            kind = 'match'
+        elif feat['mismatch_links']:
+            kind = 'mismatch'
+        else:
+            kind = None
+
+        resolved_kind = []
+        ord_ = 0
+        for rel_name, rel_links in (('match', feat['match_links']),
+                                    ('mismatch', feat['mismatch_links'])):
+            for href_b, quoted in rel_links:
+                href = href_b.decode('latin-1')
+                resolved = posixpath.normpath(resolve_href(path, href))
+                if rel_name == kind:
+                    resolved_kind.append(resolved)
+                link_rows.append((path, ord_, rel_name, href,
+                                  1 if quoted else 0, resolved,
+                                  1 if resolved in full_tree else 0))
+                ord_ += 1
+        if kind is not None:
+            reftest_map[path] = True
 
         file_rows.append([
             path, sha, size, Path(path).suffix.lstrip('.'), module_of(path),
-            1 if in_scope else 0, category, would_be,
-            resolved_all[0] if resolved_all else None,
-            len(feat['match_links']), feat['mismatch_count'],
+            1 if in_scope else 0, category, would_be, kind,
+            resolved_kind[0] if resolved_kind else None,
+            len(feat['match_links']), len(feat['mismatch_links']),
             1 if feat['fuzzy'] else 0, 1 if feat['nondet'] else 0,
             1 if feat['testharness'] else 0,
             None if in_wt is None else int(in_wt),
@@ -342,11 +359,11 @@ def cmd_scan(args):
         if n % 10000 == 0:
             print(f"  {n}/{len(candidates)}")
 
-    # Chained-ref post-pass: does the first ref itself carry a match link?
+    # Chained-ref post-pass: is the first ref itself a reftest?
     for row in file_rows:
-        path, first_ref = row[0], row[8]
-        if first_ref is not None and first_ref != path and first_ref in match_map:
-            row[16] = 1
+        path, first_ref = row[0], row[9]
+        if first_ref is not None and first_ref != path and first_ref in reftest_map:
+            row[17] = 1
 
     if DB_PATH.exists():
         DB_PATH.unlink()
@@ -362,6 +379,7 @@ CREATE TABLE files (
   in_scope        INTEGER NOT NULL,
   category        TEXT NOT NULL,
   would_be        TEXT,
+  kind            TEXT,
   first_ref       TEXT,
   match_count     INTEGER NOT NULL DEFAULT 0,
   mismatch_count  INTEGER NOT NULL DEFAULT 0,
@@ -375,16 +393,18 @@ CREATE TABLE files (
 );
 CREATE INDEX idx_files_cat ON files(category);
 CREATE INDEX idx_files_mod ON files(module, category);
-CREATE TABLE match_links (
-  path TEXT NOT NULL, ord INTEGER NOT NULL, href TEXT NOT NULL,
-  quoted INTEGER NOT NULL, resolved TEXT, in_fulltree INTEGER,
+CREATE TABLE reftest_links (
+  path TEXT NOT NULL, ord INTEGER NOT NULL, rel TEXT NOT NULL,
+  href TEXT NOT NULL, quoted INTEGER NOT NULL, resolved TEXT,
+  in_fulltree INTEGER,
   PRIMARY KEY (path, ord)
 );
 """)
     conn.executemany(
-        "INSERT INTO files VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+        "INSERT INTO files VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
         file_rows)
-    conn.executemany("INSERT INTO match_links VALUES (?,?,?,?,?,?)", link_rows)
+    conn.executemany("INSERT INTO reftest_links VALUES (?,?,?,?,?,?,?)",
+                     link_rows)
     meta = {
         'wpt_commit': commit,
         'scan_timestamp': datetime.now(timezone.utc).isoformat(timespec='seconds'),
@@ -435,7 +455,6 @@ def cmd_validate(args):
 IN_SCOPE_WATERFALL = [
     ('excluded-support-reference-path', 'reference/ or support/ path'),
     ('not-a-reftest', 'no reftest link (testharness, helpers, ...)'),
-    ('excluded-mismatch-only', 'mismatch reftest (rel="mismatch" only)'),
     ('excluded-nondeterministic', 'animation/transition/@keyframes'),
     ('not-scanned-svg-extension', '.svg extension (walker skips)'),
     ('missed-ref-missing-in-sparse', 'all refs outside sparse checkout'),
@@ -481,22 +500,22 @@ def cmd_report(args):
         SELECT module,
                COUNT(*) AS candidates,
                SUM(would_be = 'included') AS would_included,
-               SUM(would_be = 'excluded-mismatch-only') AS mismatch,
+               SUM(would_be = 'included' AND kind = 'mismatch') AS mismatch,
                SUM(would_be = 'excluded-nondeterministic') AS nondet,
                SUM(category = 'out-of-scope-module' AND fuzzy = 1) AS fuzzy
         FROM files WHERE in_scope = 0
         GROUP BY module
-        HAVING would_included > 0 OR mismatch > 0
+        HAVING would_included > 0
         ORDER BY would_included DESC
     """).fetchall()
 
     flags = {
-        'mismatch_in_scope': q1(conn,
-            "SELECT COUNT(*) FROM files WHERE in_scope = 1 "
-            "AND category = 'excluded-mismatch-only'"),
-        'mismatch_total': q1(conn,
-            "SELECT COUNT(*) FROM files WHERE mismatch_count > 0 "
-            "AND category != 'excluded-support-reference-path'"),
+        'mismatch_included': q1(conn,
+            "SELECT COUNT(*) FROM files WHERE category = 'included' "
+            "AND kind = 'mismatch'"),
+        'mixed_included': q1(conn,
+            "SELECT COUNT(*) FROM files WHERE category = 'included' "
+            "AND kind = 'match' AND mismatch_count > 0"),
         'fuzzy_included': q1(conn,
             "SELECT COUNT(*) FROM files WHERE category = 'included' AND fuzzy = 1"),
         'fuzzy_total': q1(conn, "SELECT COUNT(*) FROM files WHERE fuzzy = 1"),
@@ -574,7 +593,7 @@ def cmd_report(args):
       'exists in the full tree — the tests sosie would gain by adding the '
       'module to manifest.json groups (plus checking out its refs).')
     w('')
-    w('| module | candidates | would-included | mismatch | nondet | fuzzy |')
+    w('| module | candidates | would-included | of which mismatch | nondet | fuzzy |')
     w('|---|---:|---:|---:|---:|---:|')
     for mod, cand, inc, mis, nod, fuz in mod_rows:
         w(f'| {mod} | {cand} | {inc} | {mis} | {nod} | {fuz} |')
@@ -585,10 +604,12 @@ def cmd_report(args):
     w('## Semantic opportunities')
     w('')
     w(f"- **Mismatch reftests as negative controls**: "
-      f"{flags['mismatch_in_scope']} in scope, {flags['mismatch_total']} "
-      "corpus-wide. `rel=\"mismatch\"` asserts the pages render "
-      "DIFFERENTLY — sosie must report a diff. Directly tests sensitivity "
-      "(false negatives are fatal); currently entirely unused.")
+      f"{flags['mismatch_included']} included (kind=mismatch). "
+      "`rel=\"mismatch\"` asserts the pages render DIFFERENTLY — the "
+      "runner inverts the verdict, so an Equivalent result is a measured "
+      "false negative (sensitivity gap). "
+      f"{flags['mixed_included']} included match tests also carry mismatch "
+      "links, which are ignored for now (compared against match refs only).")
     w(f"- **Fuzzy reftests**: {flags['fuzzy_included']} of the included "
       f"tests carry `<meta name=fuzzy>` (expected pixel deviation; "
       f"candidates for principled xfail), {flags['fuzzy_total']} "

@@ -254,6 +254,10 @@ REASON_TO_TAG = {
     # Errors
     'CDP connection lost': 'cdp-connection-lost',
     'capture timeout': 'capture-timeout',
+    # Sensitivity gaps (mismatch reftests: sosie saw no difference where
+    # WPT asserts one — measured false negatives)
+    'sensitivity: mismatch pair rendered equivalent under the comparison '
+    'whitelist (false negative)': 'sensitivity-gap-mismatch-equivalent',
     # Overflow:clip variants
     'overflow:clip \u2014 bounds differ between test/ref': 'overflow-clip-bounds-differ',
     "overflow:clip \u2014 computed style 'clip' vs 'hidden'": 'overflow-clip-vs-hidden',
@@ -662,6 +666,11 @@ def diffs_to_reason(diffs):
     types = [classify_diff(d) for d in diffs]
     if not types:
         return 'unclassified failure'
+    # Mismatch-reftest false negatives carry a self-describing marker
+    # written by ext_test_lib.ml cache_status; use it verbatim.
+    for d in diffs:
+        if d.startswith('sensitivity:'):
+            return d
     if all(t == 'structural' for t in types):
         return 'requires tag-agnostic matching'
     counts = {}
