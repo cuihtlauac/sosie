@@ -18,7 +18,19 @@ let default_styles : visual_properties =
     border_bottom = default_border; border_left = default_border;
     border_radius = Px 0.0; box_shadow = Str "none";
     overflow_x = Str "visible"; overflow_y = Str "visible";
-    z_index = Str "auto"; cursor = Str "auto" }
+    z_index = Str "auto"; cursor = Str "auto";
+    text_align_last = Str "auto"; text_decoration_skip_ink = Str "auto";
+    text_underline_offset = Str "auto"; text_shadow = Str "none";
+    text_combine_upright = Str "none"; text_emphasis_style = Str "none";
+    text_emphasis_color = Str "rgb(0, 0, 0)";
+    text_emphasis_position = Str "over right";
+    webkit_text_stroke_width = Str "0px";
+    webkit_text_stroke_color = Str "rgb(0, 0, 0)";
+    font_palette = Str "normal"; writing_mode = Str "horizontal-tb";
+    direction = Str "ltr"; appearance = Str "none"; accent_color = Str "auto";
+    image_rendering = Str "auto"; outline_width = Str "0px";
+    outline_style = Str "none"; outline_color = Str "rgb(0, 0, 0)";
+    outline_offset = Str "0px" }
 
 let make_node ?(tag = "DIV") ?(text = None) ?(children = [])
     ?(bounds = { x = 0.0; y = 0.0; w = 100.0; h = 50.0 })
@@ -411,11 +423,36 @@ let gen_styles =
     let* overflow_y = gen_css_value in
     let* z_index = gen_css_value in
     let* cursor = gen_css_value in
+    let* text_align_last = gen_css_value in
+    let* text_decoration_skip_ink = gen_css_value in
+    let* text_underline_offset = gen_css_value in
+    let* text_shadow = gen_css_value in
+    let* text_combine_upright = gen_css_value in
+    let* text_emphasis_style = gen_css_value in
+    let* text_emphasis_color = gen_css_value in
+    let* text_emphasis_position = gen_css_value in
+    let* webkit_text_stroke_width = gen_css_value in
+    let* webkit_text_stroke_color = gen_css_value in
+    let* font_palette = gen_css_value in
+    let* writing_mode = gen_css_value in
+    let* direction = gen_css_value in
+    let* appearance = gen_css_value in
+    let* accent_color = gen_css_value in
+    let* image_rendering = gen_css_value in
+    let* outline_width = gen_css_value in
+    let* outline_style = gen_css_value in
+    let* outline_color = gen_css_value in
+    let* outline_offset = gen_css_value in
     return { display; visibility; opacity; color; background_color;
              font_family; font_size; font_weight; line_height; text_align;
              text_decoration; border_top; border_right; border_bottom;
              border_left; border_radius; box_shadow; overflow_x; overflow_y;
-             z_index; cursor })
+             z_index; cursor; text_align_last; text_decoration_skip_ink;
+             text_underline_offset; text_shadow; text_combine_upright;
+             text_emphasis_style; text_emphasis_color; text_emphasis_position;
+             webkit_text_stroke_width; webkit_text_stroke_color; font_palette;
+             writing_mode; direction; appearance; accent_color; image_rendering;
+             outline_width; outline_style; outline_color; outline_offset })
 
 let gen_rect =
   QCheck.Gen.(map4 (fun x y w h -> { x; y; w; h })

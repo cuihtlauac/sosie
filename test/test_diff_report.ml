@@ -19,6 +19,14 @@ let default_styles =
     border_bottom = border; border_left = border; border_radius = v;
     box_shadow = v; overflow_x = v; overflow_y = v; z_index = v;
     cursor = v;
+    text_align_last = v; text_decoration_skip_ink = v;
+    text_underline_offset = v; text_shadow = v; text_combine_upright = v;
+    text_emphasis_style = v; text_emphasis_color = v;
+    text_emphasis_position = v; webkit_text_stroke_width = v;
+    webkit_text_stroke_color = v; font_palette = v; writing_mode = v;
+    direction = v; appearance = v; accent_color = v; image_rendering = v;
+    outline_width = v; outline_style = v; outline_color = v;
+    outline_offset = v;
   }
 
 let make_node ?(tag = "DIV") ?(children = []) ?(text = None)

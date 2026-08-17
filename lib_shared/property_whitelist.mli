@@ -6,7 +6,10 @@
 
     Border properties are grouped: [border-top-width], [border-top-style],
     [border-top-color] map to the [border_top : border] record field in
-    {!Snapshot_types}. *)
+    {!Snapshot_types}. Shorthands that [getComputedStyle] does not reliably
+    serialize (outline, text-emphasis, -webkit-text-stroke) are captured as
+    individual longhands, so an empty computed value can never hide a real
+    difference. *)
 
 type property = {
   css_name : string;  (** CSS property name, e.g. ["background-color"]. *)
@@ -15,7 +18,7 @@ type property = {
 (** A single whitelisted CSS property with its CSS and OCaml names. *)
 
 val properties : property list
-(** The 29 whitelisted CSS properties in declaration order. *)
+(** The 49 whitelisted CSS properties in declaration order. *)
 
 val css_names : string list
 (** Just the CSS names, for passing to [getComputedStyle] iteration. *)

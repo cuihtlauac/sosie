@@ -9,7 +9,7 @@
     [compare] when available, falling back to saving both PNGs. *)
 
 val whitelist_css_names : string list
-(** The 29 whitelisted CSS property names from {!Property_whitelist}. *)
+(** The 49 whitelisted CSS property names from {!Property_whitelist}. *)
 
 val all_css_properties : Cdp.connection -> string list
 (** Query [CSS.getSupportedCSSProperties] from the browser.

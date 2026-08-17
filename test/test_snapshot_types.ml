@@ -70,6 +70,26 @@ let default_visual_properties : Snapshot_types.visual_properties =
     overflow_y = Str "visible";
     z_index = Str "auto";
     cursor = Str "auto";
+    text_align_last = Str "auto";
+    text_decoration_skip_ink = Str "auto";
+    text_underline_offset = Str "auto";
+    text_shadow = Str "none";
+    text_combine_upright = Str "none";
+    text_emphasis_style = Str "none";
+    text_emphasis_color = Str "rgb(0, 0, 0)";
+    text_emphasis_position = Str "over right";
+    webkit_text_stroke_width = Str "0px";
+    webkit_text_stroke_color = Str "rgb(0, 0, 0)";
+    font_palette = Str "normal";
+    writing_mode = Str "horizontal-tb";
+    direction = Str "ltr";
+    appearance = Str "none";
+    accent_color = Str "auto";
+    image_rendering = Str "auto";
+    outline_width = Str "0px";
+    outline_style = Str "none";
+    outline_color = Str "rgb(0, 0, 0)";
+    outline_offset = Str "0px";
   }
 
 let test_visual_properties_construction () =
@@ -178,11 +198,11 @@ let test_snapshot_dark_scheme () =
   Alcotest.(check bool) "dark scheme" true (s.color_scheme = `Dark)
 
 let test_whitelist_count () =
-  Alcotest.(check int) "29 properties" 29
+  Alcotest.(check int) "49 properties" 49
     (List.length Property_whitelist.properties)
 
 let test_css_names_count () =
-  Alcotest.(check int) "29 css names" 29
+  Alcotest.(check int) "49 css names" 49
     (List.length Property_whitelist.css_names)
 
 let test_css_names_match_properties () =
@@ -211,6 +231,13 @@ let test_whitelist_matches_raw_js () =
       "box-shadow";
       "overflow-x"; "overflow-y";
       "z-index"; "cursor";
+      "text-align-last"; "text-decoration-skip-ink"; "text-underline-offset";
+      "text-shadow"; "text-combine-upright";
+      "text-emphasis-style"; "text-emphasis-color"; "text-emphasis-position";
+      "-webkit-text-stroke-width"; "-webkit-text-stroke-color";
+      "font-palette"; "writing-mode"; "direction"; "appearance";
+      "accent-color"; "image-rendering";
+      "outline-width"; "outline-style"; "outline-color"; "outline-offset";
     ]
   in
   Alcotest.(check (list string)) "matches raw JS DEFAULT_PROPERTIES"
@@ -274,9 +301,9 @@ let () =
         ] );
       ( "property_whitelist",
         [
-          Alcotest.test_case "has 29 properties" `Quick
+          Alcotest.test_case "has 49 properties" `Quick
             test_whitelist_count;
-          Alcotest.test_case "css_names has 29 entries" `Quick
+          Alcotest.test_case "css_names has 49 entries" `Quick
             test_css_names_count;
           Alcotest.test_case "css_names matches properties" `Quick
             test_css_names_match_properties;

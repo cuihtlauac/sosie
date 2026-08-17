@@ -73,6 +73,26 @@ let styles_of_json j : visual_properties =
     overflow_y = css_str "overflow-y" j;
     z_index = css_str "z-index" j;
     cursor = css_str "cursor" j;
+    text_align_last = css_str "text-align-last" j;
+    text_decoration_skip_ink = css_str "text-decoration-skip-ink" j;
+    text_underline_offset = css_str "text-underline-offset" j;
+    text_shadow = css_str "text-shadow" j;
+    text_combine_upright = css_str "text-combine-upright" j;
+    text_emphasis_style = css_str "text-emphasis-style" j;
+    text_emphasis_color = css_str "text-emphasis-color" j;
+    text_emphasis_position = css_str "text-emphasis-position" j;
+    webkit_text_stroke_width = css_str "-webkit-text-stroke-width" j;
+    webkit_text_stroke_color = css_str "-webkit-text-stroke-color" j;
+    font_palette = css_str "font-palette" j;
+    writing_mode = css_str "writing-mode" j;
+    direction = css_str "direction" j;
+    appearance = css_str "appearance" j;
+    accent_color = css_str "accent-color" j;
+    image_rendering = css_str "image-rendering" j;
+    outline_width = css_str "outline-width" j;
+    outline_style = css_str "outline-style" j;
+    outline_color = css_str "outline-color" j;
+    outline_offset = css_str "outline-offset" j;
   }
 
 let attributes_of_json = function
@@ -175,6 +195,26 @@ let json_of_styles (vp : visual_properties) : Yojson.Safe.t =
     ("overflow-y", json_of_css_value vp.overflow_y);
     ("z-index", json_of_css_value vp.z_index);
     ("cursor", json_of_css_value vp.cursor);
+    ("text-align-last", json_of_css_value vp.text_align_last);
+    ("text-decoration-skip-ink", json_of_css_value vp.text_decoration_skip_ink);
+    ("text-underline-offset", json_of_css_value vp.text_underline_offset);
+    ("text-shadow", json_of_css_value vp.text_shadow);
+    ("text-combine-upright", json_of_css_value vp.text_combine_upright);
+    ("text-emphasis-style", json_of_css_value vp.text_emphasis_style);
+    ("text-emphasis-color", json_of_css_value vp.text_emphasis_color);
+    ("text-emphasis-position", json_of_css_value vp.text_emphasis_position);
+    ("-webkit-text-stroke-width", json_of_css_value vp.webkit_text_stroke_width);
+    ("-webkit-text-stroke-color", json_of_css_value vp.webkit_text_stroke_color);
+    ("font-palette", json_of_css_value vp.font_palette);
+    ("writing-mode", json_of_css_value vp.writing_mode);
+    ("direction", json_of_css_value vp.direction);
+    ("appearance", json_of_css_value vp.appearance);
+    ("accent-color", json_of_css_value vp.accent_color);
+    ("image-rendering", json_of_css_value vp.image_rendering);
+    ("outline-width", json_of_css_value vp.outline_width);
+    ("outline-style", json_of_css_value vp.outline_style);
+    ("outline-color", json_of_css_value vp.outline_color);
+    ("outline-offset", json_of_css_value vp.outline_offset);
   ]
 
 let rec json_of_node (n : node) : Yojson.Safe.t =

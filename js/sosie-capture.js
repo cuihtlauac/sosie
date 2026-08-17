@@ -27,7 +27,14 @@ function sosieCapture(properties) {
     "border-radius",
     "box-shadow",
     "overflow-x", "overflow-y",
-    "z-index", "cursor"
+    "z-index", "cursor",
+    "text-align-last", "text-decoration-skip-ink", "text-underline-offset",
+    "text-shadow", "text-combine-upright",
+    "text-emphasis-style", "text-emphasis-color", "text-emphasis-position",
+    "-webkit-text-stroke-width", "-webkit-text-stroke-color",
+    "font-palette", "writing-mode", "direction", "appearance",
+    "accent-color", "image-rendering",
+    "outline-width", "outline-style", "outline-color", "outline-offset"
   ];
 
   var props = properties || DEFAULT_PROPERTIES;

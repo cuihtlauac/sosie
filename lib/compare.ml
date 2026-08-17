@@ -137,6 +137,26 @@ let compare_styles config path (a : visual_properties) (b : visual_properties) =
     |> check "overflow-y" a.overflow_y b.overflow_y
     |> check "z-index" a.z_index b.z_index
     |> check "cursor" a.cursor b.cursor
+    |> check "text-align-last" a.text_align_last b.text_align_last
+    |> check "text-decoration-skip-ink" a.text_decoration_skip_ink b.text_decoration_skip_ink
+    |> check "text-underline-offset" a.text_underline_offset b.text_underline_offset
+    |> check "text-shadow" a.text_shadow b.text_shadow
+    |> check "text-combine-upright" a.text_combine_upright b.text_combine_upright
+    |> check "text-emphasis-style" a.text_emphasis_style b.text_emphasis_style
+    |> check "text-emphasis-color" a.text_emphasis_color b.text_emphasis_color
+    |> check "text-emphasis-position" a.text_emphasis_position b.text_emphasis_position
+    |> check "-webkit-text-stroke-width" a.webkit_text_stroke_width b.webkit_text_stroke_width
+    |> check "-webkit-text-stroke-color" a.webkit_text_stroke_color b.webkit_text_stroke_color
+    |> check "font-palette" a.font_palette b.font_palette
+    |> check "writing-mode" a.writing_mode b.writing_mode
+    |> check "direction" a.direction b.direction
+    |> check "appearance" a.appearance b.appearance
+    |> check "accent-color" a.accent_color b.accent_color
+    |> check "image-rendering" a.image_rendering b.image_rendering
+    |> check "outline-width" a.outline_width b.outline_width
+    |> check "outline-style" a.outline_style b.outline_style
+    |> check "outline-color" a.outline_color b.outline_color
+    |> check "outline-offset" a.outline_offset b.outline_offset
   in
   let diffs = List.rev diffs in
   diffs

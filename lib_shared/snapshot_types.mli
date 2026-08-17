@@ -47,6 +47,26 @@ type visual_properties = {
   overflow_y : css_value;
   z_index : css_value;
   cursor : css_value;
+  text_align_last : css_value;
+  text_decoration_skip_ink : css_value;
+  text_underline_offset : css_value;
+  text_shadow : css_value;
+  text_combine_upright : css_value;
+  text_emphasis_style : css_value;
+  text_emphasis_color : css_value;
+  text_emphasis_position : css_value;
+  webkit_text_stroke_width : css_value;
+  webkit_text_stroke_color : css_value;
+  font_palette : css_value;
+  writing_mode : css_value;
+  direction : css_value;
+  appearance : css_value;
+  accent_color : css_value;
+  image_rendering : css_value;
+  outline_width : css_value;
+  outline_style : css_value;
+  outline_color : css_value;
+  outline_offset : css_value;
 }
 (** The whitelisted visual properties captured for each element. *)
 

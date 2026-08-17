@@ -33,6 +33,26 @@ let default_styles : visual_properties =
     overflow_y = Str "visible";
     z_index = Str "auto";
     cursor = Str "auto";
+    text_align_last = Str "auto";
+    text_decoration_skip_ink = Str "auto";
+    text_underline_offset = Str "auto";
+    text_shadow = Str "none";
+    text_combine_upright = Str "none";
+    text_emphasis_style = Str "none";
+    text_emphasis_color = Str "rgb(0, 0, 0)";
+    text_emphasis_position = Str "over right";
+    webkit_text_stroke_width = Str "0px";
+    webkit_text_stroke_color = Str "rgb(0, 0, 0)";
+    font_palette = Str "normal";
+    writing_mode = Str "horizontal-tb";
+    direction = Str "ltr";
+    appearance = Str "none";
+    accent_color = Str "auto";
+    image_rendering = Str "auto";
+    outline_width = Str "0px";
+    outline_style = Str "none";
+    outline_color = Str "rgb(0, 0, 0)";
+    outline_offset = Str "0px";
   }
 
 let make_node ?(styles = default_styles) ?(children = []) () : node =
@@ -100,7 +120,17 @@ let enumerate_on_3_node_tree () =
              ("border-left-style", ()); ("border-left-color", ());
              ("border-radius", ()); ("box-shadow", ());
              ("overflow-x", ()); ("overflow-y", ());
-             ("z-index", ()); ("cursor", ()) ]))
+             ("z-index", ()); ("cursor", ());
+             ("text-align-last", ()); ("text-decoration-skip-ink", ());
+             ("text-underline-offset", ()); ("text-shadow", ());
+             ("text-combine-upright", ()); ("text-emphasis-style", ());
+             ("text-emphasis-color", ()); ("text-emphasis-position", ());
+             ("-webkit-text-stroke-width", ());
+             ("-webkit-text-stroke-color", ()); ("font-palette", ());
+             ("writing-mode", ()); ("direction", ()); ("appearance", ());
+             ("accent-color", ()); ("image-rendering", ());
+             ("outline-width", ()); ("outline-style", ());
+             ("outline-color", ()); ("outline-offset", ()) ]))
     muts
 
 let no_identity_mutations () =

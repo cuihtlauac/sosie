@@ -144,6 +144,26 @@ let prop_table =
     ("overflow-y", { default = "visible"; keywords = [ "visible"; "hidden"; "scroll"; "auto" ] });
     ("z-index", { default = "auto"; keywords = [ "auto"; "0"; "1"; "10" ] });
     ("cursor", { default = "auto"; keywords = [ "auto"; "pointer"; "default"; "crosshair"; "text" ] });
+    ("text-align-last", { default = "auto"; keywords = [ "auto"; "start"; "center"; "end"; "justify" ] });
+    ("text-decoration-skip-ink", { default = "auto"; keywords = [ "auto"; "none"; "all" ] });
+    ("text-underline-offset", { default = "auto"; keywords = [] });
+    ("text-shadow", { default = "none"; keywords = [] });
+    ("text-combine-upright", { default = "none"; keywords = [ "none"; "all" ] });
+    ("text-emphasis-style", { default = "none"; keywords = [] });
+    ("text-emphasis-color", { default = "rgb(0, 0, 0)"; keywords = [] });
+    ("text-emphasis-position", { default = "over right"; keywords = [] });
+    ("-webkit-text-stroke-width", { default = "0px"; keywords = [] });
+    ("-webkit-text-stroke-color", { default = "rgb(0, 0, 0)"; keywords = [] });
+    ("font-palette", { default = "normal"; keywords = [] });
+    ("writing-mode", { default = "horizontal-tb"; keywords = [ "horizontal-tb"; "vertical-rl"; "vertical-lr" ] });
+    ("direction", { default = "ltr"; keywords = [ "ltr"; "rtl" ] });
+    ("appearance", { default = "none"; keywords = [ "none"; "auto" ] });
+    ("accent-color", { default = "auto"; keywords = [] });
+    ("image-rendering", { default = "auto"; keywords = [ "auto"; "pixelated"; "crisp-edges" ] });
+    ("outline-width", { default = "0px"; keywords = [] });
+    ("outline-style", { default = "none"; keywords = [ "none"; "solid"; "dashed"; "dotted" ] });
+    ("outline-color", { default = "rgb(0, 0, 0)"; keywords = [] });
+    ("outline-offset", { default = "0px"; keywords = [] });
   ]
 
 (* Get the value of a named property from a node. *)
@@ -179,6 +199,26 @@ let get_property (n : node) (prop : string) : css_value option =
   | "overflow-y" -> Some s.overflow_y
   | "z-index" -> Some s.z_index
   | "cursor" -> Some s.cursor
+  | "text-align-last" -> Some s.text_align_last
+  | "text-decoration-skip-ink" -> Some s.text_decoration_skip_ink
+  | "text-underline-offset" -> Some s.text_underline_offset
+  | "text-shadow" -> Some s.text_shadow
+  | "text-combine-upright" -> Some s.text_combine_upright
+  | "text-emphasis-style" -> Some s.text_emphasis_style
+  | "text-emphasis-color" -> Some s.text_emphasis_color
+  | "text-emphasis-position" -> Some s.text_emphasis_position
+  | "-webkit-text-stroke-width" -> Some s.webkit_text_stroke_width
+  | "-webkit-text-stroke-color" -> Some s.webkit_text_stroke_color
+  | "font-palette" -> Some s.font_palette
+  | "writing-mode" -> Some s.writing_mode
+  | "direction" -> Some s.direction
+  | "appearance" -> Some s.appearance
+  | "accent-color" -> Some s.accent_color
+  | "image-rendering" -> Some s.image_rendering
+  | "outline-width" -> Some s.outline_width
+  | "outline-style" -> Some s.outline_style
+  | "outline-color" -> Some s.outline_color
+  | "outline-offset" -> Some s.outline_offset
   | _ -> None
 
 (* Set the value of a named property on a node. *)
@@ -227,6 +267,26 @@ let set_property (n : node) (prop : string) (v : css_value) : node =
     | "overflow-y" -> { s with overflow_y = v }
     | "z-index" -> { s with z_index = v }
     | "cursor" -> { s with cursor = v }
+    | "text-align-last" -> { s with text_align_last = v }
+    | "text-decoration-skip-ink" -> { s with text_decoration_skip_ink = v }
+    | "text-underline-offset" -> { s with text_underline_offset = v }
+    | "text-shadow" -> { s with text_shadow = v }
+    | "text-combine-upright" -> { s with text_combine_upright = v }
+    | "text-emphasis-style" -> { s with text_emphasis_style = v }
+    | "text-emphasis-color" -> { s with text_emphasis_color = v }
+    | "text-emphasis-position" -> { s with text_emphasis_position = v }
+    | "-webkit-text-stroke-width" -> { s with webkit_text_stroke_width = v }
+    | "-webkit-text-stroke-color" -> { s with webkit_text_stroke_color = v }
+    | "font-palette" -> { s with font_palette = v }
+    | "writing-mode" -> { s with writing_mode = v }
+    | "direction" -> { s with direction = v }
+    | "appearance" -> { s with appearance = v }
+    | "accent-color" -> { s with accent_color = v }
+    | "image-rendering" -> { s with image_rendering = v }
+    | "outline-width" -> { s with outline_width = v }
+    | "outline-style" -> { s with outline_style = v }
+    | "outline-color" -> { s with outline_color = v }
+    | "outline-offset" -> { s with outline_offset = v }
     | _ -> invalid_arg (Printf.sprintf "set_property: unknown property %S" prop)
   in
   { n with styles }

@@ -34,6 +34,26 @@ let default_styles : visual_properties =
     overflow_y = Str "visible";
     z_index = Str "auto";
     cursor = Str "auto";
+    text_align_last = Str "auto";
+    text_decoration_skip_ink = Str "auto";
+    text_underline_offset = Str "auto";
+    text_shadow = Str "none";
+    text_combine_upright = Str "none";
+    text_emphasis_style = Str "none";
+    text_emphasis_color = Str "rgb(0, 0, 0)";
+    text_emphasis_position = Str "over right";
+    webkit_text_stroke_width = Str "0px";
+    webkit_text_stroke_color = Str "rgb(0, 0, 0)";
+    font_palette = Str "normal";
+    writing_mode = Str "horizontal-tb";
+    direction = Str "ltr";
+    appearance = Str "none";
+    accent_color = Str "auto";
+    image_rendering = Str "auto";
+    outline_width = Str "0px";
+    outline_style = Str "none";
+    outline_color = Str "rgb(0, 0, 0)";
+    outline_offset = Str "0px";
   }
 
 let make_node ?(tag = "DIV") ?(attributes = [])
@@ -135,6 +155,26 @@ let rec compare_nodes ~path (expected : node) (actual : node) : string list =
   cmp_css "overflow-y" (fun s -> s.overflow_y);
   cmp_css "z-index" (fun s -> s.z_index);
   cmp_css "cursor" (fun s -> s.cursor);
+  cmp_css "text-align-last" (fun s -> s.text_align_last);
+  cmp_css "text-decoration-skip-ink" (fun s -> s.text_decoration_skip_ink);
+  cmp_css "text-underline-offset" (fun s -> s.text_underline_offset);
+  cmp_css "text-shadow" (fun s -> s.text_shadow);
+  cmp_css "text-combine-upright" (fun s -> s.text_combine_upright);
+  cmp_css "text-emphasis-style" (fun s -> s.text_emphasis_style);
+  cmp_css "text-emphasis-color" (fun s -> s.text_emphasis_color);
+  cmp_css "text-emphasis-position" (fun s -> s.text_emphasis_position);
+  cmp_css "-webkit-text-stroke-width" (fun s -> s.webkit_text_stroke_width);
+  cmp_css "-webkit-text-stroke-color" (fun s -> s.webkit_text_stroke_color);
+  cmp_css "font-palette" (fun s -> s.font_palette);
+  cmp_css "writing-mode" (fun s -> s.writing_mode);
+  cmp_css "direction" (fun s -> s.direction);
+  cmp_css "appearance" (fun s -> s.appearance);
+  cmp_css "accent-color" (fun s -> s.accent_color);
+  cmp_css "image-rendering" (fun s -> s.image_rendering);
+  cmp_css "outline-width" (fun s -> s.outline_width);
+  cmp_css "outline-style" (fun s -> s.outline_style);
+  cmp_css "outline-color" (fun s -> s.outline_color);
+  cmp_css "outline-offset" (fun s -> s.outline_offset);
   (* Compare children count. *)
   let ec = List.length expected.children in
   let ac = List.length actual.children in
@@ -318,6 +358,29 @@ module Gen_rt = struct
         overflow_y = Str overflow_y;
         z_index = Str z_index;
         cursor = Str cursor;
+        (* New whitelist properties: fixed round-trippable initial values.
+           style_attr emits them as inline styles; getComputedStyle must
+           read back the same string. *)
+        text_align_last = Str "auto";
+        text_decoration_skip_ink = Str "auto";
+        text_underline_offset = Str "auto";
+        text_shadow = Str "none";
+        text_combine_upright = Str "none";
+        text_emphasis_style = Str "none";
+        text_emphasis_color = Str "rgb(0, 0, 0)";
+        text_emphasis_position = Str "over right";
+        webkit_text_stroke_width = Str "0px";
+        webkit_text_stroke_color = Str "rgb(0, 0, 0)";
+        font_palette = Str "normal";
+        writing_mode = Str "horizontal-tb";
+        direction = Str "ltr";
+        appearance = Str "none";
+        accent_color = Str "auto";
+        image_rendering = Str "auto";
+        outline_width = Str "0px";
+        outline_style = Str "none";
+        outline_color = Str "rgb(0, 0, 0)";
+        outline_offset = Str "0px";
       }
 
   let float_bounds ~px ~py ~pw ~ph =

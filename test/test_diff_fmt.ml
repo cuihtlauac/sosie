@@ -18,7 +18,19 @@ let default_styles : visual_properties =
     border_bottom = default_border; border_left = default_border;
     border_radius = Px 0.0; box_shadow = Str "none";
     overflow_x = Str "visible"; overflow_y = Str "visible";
-    z_index = Str "auto"; cursor = Str "auto" }
+    z_index = Str "auto"; cursor = Str "auto";
+    text_align_last = Str "auto"; text_decoration_skip_ink = Str "auto";
+    text_underline_offset = Str "auto"; text_shadow = Str "none";
+    text_combine_upright = Str "none"; text_emphasis_style = Str "none";
+    text_emphasis_color = Str "rgb(0, 0, 0)";
+    text_emphasis_position = Str "over right";
+    webkit_text_stroke_width = Str "0px";
+    webkit_text_stroke_color = Str "rgb(0, 0, 0)";
+    font_palette = Str "normal"; writing_mode = Str "horizontal-tb";
+    direction = Str "ltr"; appearance = Str "none"; accent_color = Str "auto";
+    image_rendering = Str "auto"; outline_width = Str "0px";
+    outline_style = Str "none"; outline_color = Str "rgb(0, 0, 0)";
+    outline_offset = Str "0px" }
 
 let make_node ?(tag = "DIV") ?(children = []) () : node =
   { tag; attributes = []; bounds = { x = 0.0; y = 0.0; w = 100.0; h = 50.0 };

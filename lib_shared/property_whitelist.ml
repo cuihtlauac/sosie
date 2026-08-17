@@ -38,6 +38,26 @@ let properties =
     { css_name = "overflow-y"; field = "overflow_y" };
     { css_name = "z-index"; field = "z_index" };
     { css_name = "cursor"; field = "cursor" };
+    { css_name = "text-align-last"; field = "text_align_last" };
+    { css_name = "text-decoration-skip-ink"; field = "text_decoration_skip_ink" };
+    { css_name = "text-underline-offset"; field = "text_underline_offset" };
+    { css_name = "text-shadow"; field = "text_shadow" };
+    { css_name = "text-combine-upright"; field = "text_combine_upright" };
+    { css_name = "text-emphasis-style"; field = "text_emphasis_style" };
+    { css_name = "text-emphasis-color"; field = "text_emphasis_color" };
+    { css_name = "text-emphasis-position"; field = "text_emphasis_position" };
+    { css_name = "-webkit-text-stroke-width"; field = "webkit_text_stroke_width" };
+    { css_name = "-webkit-text-stroke-color"; field = "webkit_text_stroke_color" };
+    { css_name = "font-palette"; field = "font_palette" };
+    { css_name = "writing-mode"; field = "writing_mode" };
+    { css_name = "direction"; field = "direction" };
+    { css_name = "appearance"; field = "appearance" };
+    { css_name = "accent-color"; field = "accent_color" };
+    { css_name = "image-rendering"; field = "image_rendering" };
+    { css_name = "outline-width"; field = "outline_width" };
+    { css_name = "outline-style"; field = "outline_style" };
+    { css_name = "outline-color"; field = "outline_color" };
+    { css_name = "outline-offset"; field = "outline_offset" };
   ]
 
 let css_names = List.map (fun p -> p.css_name) properties

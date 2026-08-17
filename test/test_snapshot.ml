@@ -33,6 +33,26 @@ let default_styles_json =
     ("overflow-y", `String "visible");
     ("z-index", `String "auto");
     ("cursor", `String "auto");
+    ("text-align-last", `String "auto");
+    ("text-decoration-skip-ink", `String "auto");
+    ("text-underline-offset", `String "auto");
+    ("text-shadow", `String "none");
+    ("text-combine-upright", `String "none");
+    ("text-emphasis-style", `String "none");
+    ("text-emphasis-color", `String "rgb(0, 0, 0)");
+    ("text-emphasis-position", `String "over right");
+    ("-webkit-text-stroke-width", `String "0px");
+    ("-webkit-text-stroke-color", `String "rgb(0, 0, 0)");
+    ("font-palette", `String "normal");
+    ("writing-mode", `String "horizontal-tb");
+    ("direction", `String "ltr");
+    ("appearance", `String "none");
+    ("accent-color", `String "auto");
+    ("image-rendering", `String "auto");
+    ("outline-width", `String "0px");
+    ("outline-style", `String "none");
+    ("outline-color", `String "rgb(0, 0, 0)");
+    ("outline-offset", `String "0px");
   ]
 
 let make_node_json ?(tag = "DIV") ?(attributes = `List [])

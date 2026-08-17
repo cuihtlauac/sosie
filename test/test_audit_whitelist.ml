@@ -87,8 +87,8 @@ let handles_vendor_prefixed () =
      Re.execp re css)
 
 let whitelist_has_expected_count () =
-  check bool "whitelist has 29 properties" true
-    (List.length whitelist_names = 29);
+  check bool "whitelist has 49 properties" true
+    (List.length whitelist_names = 49);
   check (list string) "whitelist_css_names matches Property_whitelist"
     whitelist_names Sosie.Audit_whitelist.whitelist_css_names
 

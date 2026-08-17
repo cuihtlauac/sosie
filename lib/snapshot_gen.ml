@@ -62,6 +62,26 @@ let style_attr (vp : visual_properties) ~left ~top ~width ~height =
   Printf.bprintf buf "overflow-y:%s;" (css_value_to_string vp.overflow_y);
   Printf.bprintf buf "z-index:%s;" (css_value_to_string vp.z_index);
   Printf.bprintf buf "cursor:%s;" (css_value_to_string vp.cursor);
+  Printf.bprintf buf "text-align-last:%s;" (css_value_to_string vp.text_align_last);
+  Printf.bprintf buf "text-decoration-skip-ink:%s;" (css_value_to_string vp.text_decoration_skip_ink);
+  Printf.bprintf buf "text-underline-offset:%s;" (css_value_to_string vp.text_underline_offset);
+  Printf.bprintf buf "text-shadow:%s;" (css_value_to_string vp.text_shadow);
+  Printf.bprintf buf "text-combine-upright:%s;" (css_value_to_string vp.text_combine_upright);
+  Printf.bprintf buf "text-emphasis-style:%s;" (css_value_to_string vp.text_emphasis_style);
+  Printf.bprintf buf "text-emphasis-color:%s;" (css_value_to_string vp.text_emphasis_color);
+  Printf.bprintf buf "text-emphasis-position:%s;" (css_value_to_string vp.text_emphasis_position);
+  Printf.bprintf buf "-webkit-text-stroke-width:%s;" (css_value_to_string vp.webkit_text_stroke_width);
+  Printf.bprintf buf "-webkit-text-stroke-color:%s;" (css_value_to_string vp.webkit_text_stroke_color);
+  Printf.bprintf buf "font-palette:%s;" (css_value_to_string vp.font_palette);
+  Printf.bprintf buf "writing-mode:%s;" (css_value_to_string vp.writing_mode);
+  Printf.bprintf buf "direction:%s;" (css_value_to_string vp.direction);
+  Printf.bprintf buf "appearance:%s;" (css_value_to_string vp.appearance);
+  Printf.bprintf buf "accent-color:%s;" (css_value_to_string vp.accent_color);
+  Printf.bprintf buf "image-rendering:%s;" (css_value_to_string vp.image_rendering);
+  Printf.bprintf buf "outline-width:%s;" (css_value_to_string vp.outline_width);
+  Printf.bprintf buf "outline-style:%s;" (css_value_to_string vp.outline_style);
+  Printf.bprintf buf "outline-color:%s;" (css_value_to_string vp.outline_color);
+  Printf.bprintf buf "outline-offset:%s;" (css_value_to_string vp.outline_offset);
   Buffer.contents buf
 
 (* -- Node rendering ------------------------------------------------------ *)

@@ -84,6 +84,26 @@ let get_styles (style : Dom_html.cssStyleDeclaration Js.t)
     overflow_y = p "overflow-y";
     z_index = p "z-index";
     cursor = p "cursor";
+    text_align_last = p "text-align-last";
+    text_decoration_skip_ink = p "text-decoration-skip-ink";
+    text_underline_offset = p "text-underline-offset";
+    text_shadow = p "text-shadow";
+    text_combine_upright = p "text-combine-upright";
+    text_emphasis_style = p "text-emphasis-style";
+    text_emphasis_color = p "text-emphasis-color";
+    text_emphasis_position = p "text-emphasis-position";
+    webkit_text_stroke_width = p "-webkit-text-stroke-width";
+    webkit_text_stroke_color = p "-webkit-text-stroke-color";
+    font_palette = p "font-palette";
+    writing_mode = p "writing-mode";
+    direction = p "direction";
+    appearance = p "appearance";
+    accent_color = p "accent-color";
+    image_rendering = p "image-rendering";
+    outline_width = p "outline-width";
+    outline_style = p "outline-style";
+    outline_color = p "outline-color";
+    outline_offset = p "outline-offset";
   }
 
 (* -- Pseudo-elements ------------------------------------------------------ *)
@@ -232,6 +252,26 @@ let styles_to_js (vp : Snapshot_types.visual_properties) : Js.Unsafe.any =
          ("overflow-y", css_value_to_js vp.overflow_y);
          ("z-index", css_value_to_js vp.z_index);
          ("cursor", css_value_to_js vp.cursor);
+         ("text-align-last", css_value_to_js vp.text_align_last);
+         ("text-decoration-skip-ink", css_value_to_js vp.text_decoration_skip_ink);
+         ("text-underline-offset", css_value_to_js vp.text_underline_offset);
+         ("text-shadow", css_value_to_js vp.text_shadow);
+         ("text-combine-upright", css_value_to_js vp.text_combine_upright);
+         ("text-emphasis-style", css_value_to_js vp.text_emphasis_style);
+         ("text-emphasis-color", css_value_to_js vp.text_emphasis_color);
+         ("text-emphasis-position", css_value_to_js vp.text_emphasis_position);
+         ("-webkit-text-stroke-width", css_value_to_js vp.webkit_text_stroke_width);
+         ("-webkit-text-stroke-color", css_value_to_js vp.webkit_text_stroke_color);
+         ("font-palette", css_value_to_js vp.font_palette);
+         ("writing-mode", css_value_to_js vp.writing_mode);
+         ("direction", css_value_to_js vp.direction);
+         ("appearance", css_value_to_js vp.appearance);
+         ("accent-color", css_value_to_js vp.accent_color);
+         ("image-rendering", css_value_to_js vp.image_rendering);
+         ("outline-width", css_value_to_js vp.outline_width);
+         ("outline-style", css_value_to_js vp.outline_style);
+         ("outline-color", css_value_to_js vp.outline_color);
+         ("outline-offset", css_value_to_js vp.outline_offset);
        |])
 
 let rec node_to_js (n : Snapshot_types.node) : Js.Unsafe.any =
