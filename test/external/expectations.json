@@ -1097,6 +1097,14 @@
       "status": "xfail",
       "reason": "layout: bounds differ between test/ref"
     },
+    "css/css-backgrounds/background-gradient-interpolation-001.html": {
+      "status": "xfail",
+      "reason": "sensitivity: gradient image pixels invisible (background-image not compared)"
+    },
+    "css/css-backgrounds/background-gradient-interpolation-002.html": {
+      "status": "xfail",
+      "reason": "sensitivity: gradient image pixels invisible (background-image not compared)"
+    },
     "css/css-backgrounds/background-gradient-interpolation-003.html": {
       "status": "xfail",
       "reason": "style: line-height differs between test/ref"
@@ -2508,6 +2516,18 @@
     "css/css-backgrounds/border-image-space-001.html": {
       "status": "xfail",
       "reason": "requires tag-agnostic matching"
+    },
+    "css/css-backgrounds/border-image-width-005.xht": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "css/css-backgrounds/border-image-width-006.xht": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "css/css-backgrounds/border-image-width-007.xht": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
     },
     "css/css-backgrounds/border-image-width-008.html": {
       "status": "xfail",
@@ -4325,7 +4345,15 @@
       "status": "xfail",
       "reason": "requires tag-agnostic matching"
     },
+    "css/css-color/t32-opacity-basic-1.0-a.xht": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
     "css/css-color/t32-opacity-clamping-0.0-b.xht": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "css/css-color/t32-opacity-clamping-1.0-b.xht": {
       "status": "xfail",
       "reason": "requires tag-agnostic matching"
     },
@@ -6413,6 +6441,10 @@
       "status": "xfail",
       "reason": "requires tag-agnostic matching"
     },
+    "css/css-display/run-in/height-applies-to-011.xht": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
     "css/css-display/run-in/letter-spacing-applies-to-004.xht": {
       "status": "xfail",
       "reason": "style: line-height differs between test/ref"
@@ -6422,6 +6454,18 @@
       "reason": "requires tag-agnostic matching"
     },
     "css/css-display/run-in/list-style-type-applies-to-011.xht": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "css/css-display/run-in/max-height-applies-to-011.xht": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "css/css-display/run-in/max-width-applies-to-011.xht": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "css/css-display/run-in/min-height-applies-to-011.xht": {
       "status": "xfail",
       "reason": "requires tag-agnostic matching"
     },
@@ -6496,22 +6540,6 @@
     "css/css-display/run-in/run-in-basic-013.xht": {
       "status": "xfail",
       "reason": "layout: bounds differ between test/ref"
-    },
-    "css/css-display/run-in/run-in-basic-014.xht": {
-      "status": "xfail",
-      "reason": "style: border property differs between test/ref"
-    },
-    "css/css-display/run-in/run-in-basic-015.xht": {
-      "status": "xfail",
-      "reason": "style: border property differs between test/ref"
-    },
-    "css/css-display/run-in/run-in-basic-016.xht": {
-      "status": "xfail",
-      "reason": "style: border property differs between test/ref"
-    },
-    "css/css-display/run-in/run-in-basic-017.xht": {
-      "status": "xfail",
-      "reason": "style: border property differs between test/ref"
     },
     "css/css-display/run-in/run-in-basic-018.xht": {
       "status": "xfail",
@@ -6797,10 +6825,6 @@
       "status": "xfail",
       "reason": "style: border property differs between test/ref"
     },
-    "css/css-display/run-in/run-in-restyle-001.xht": {
-      "status": "xfail",
-      "reason": "style: border property differs between test/ref"
-    },
     "css/css-display/run-in/run-in-restyle-002.xht": {
       "status": "xfail",
       "reason": "style: border property differs between test/ref"
@@ -6900,6 +6924,14 @@
     "css/css-display/run-in/text-decoration-applies-to-004.xht": {
       "status": "xfail",
       "reason": "style: display property differs between test/ref"
+    },
+    "css/css-display/run-in/text-transform-applies-to-004.xht": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
+    },
+    "css/css-display/run-in/width-applies-to-011.xht": {
+      "status": "xfail",
+      "reason": "requires tag-agnostic matching"
     },
     "css/css-display/select-4-option-optgroup-display-none.html": {
       "status": "xfail",
@@ -7652,6 +7684,10 @@
     "css/css-flexbox/flex-flow-012.html": {
       "status": "xfail",
       "reason": "requires tag-agnostic matching"
+    },
+    "css/css-flexbox/flex-grow-001.xht": {
+      "status": "xfail",
+      "reason": "style: display differs between test/ref"
     },
     "css/css-flexbox/flex-grow-002.html": {
       "status": "xfail",
@@ -8453,10 +8489,6 @@
       "status": "xfail",
       "reason": "style: display property differs between test/ref"
     },
-    "css/css-flexbox/flexbox-margin-auto-horiz-002.xhtml": {
-      "status": "xfail",
-      "reason": "layout: bounds differ between test/ref"
-    },
     "css/css-flexbox/flexbox-mbp-horiz-001-reverse.xhtml": {
       "status": "xfail",
       "reason": "style: border property differs between test/ref"
@@ -8496,10 +8528,6 @@
     "css/css-flexbox/flexbox-mbp-horiz-003v.xhtml": {
       "status": "xfail",
       "reason": "style: display property differs between test/ref"
-    },
-    "css/css-flexbox/flexbox-mbp-horiz-004.xhtml": {
-      "status": "xfail",
-      "reason": "layout: bounds differ between test/ref"
     },
     "css/css-flexbox/flexbox-min-height-auto-001.html": {
       "status": "xfail",
@@ -10453,6 +10481,34 @@
       "status": "xfail",
       "reason": "style: font-family computed value differs"
     },
+    "css/css-fonts/font-palette-13.html": {
+      "status": "xfail",
+      "reason": "sensitivity: font-palette not in property whitelist (glyph palette colors)"
+    },
+    "css/css-fonts/font-palette-16.html": {
+      "status": "xfail",
+      "reason": "sensitivity: font-palette not in property whitelist (glyph palette colors)"
+    },
+    "css/css-fonts/font-palette-17.html": {
+      "status": "xfail",
+      "reason": "sensitivity: font-palette not in property whitelist (glyph palette colors)"
+    },
+    "css/css-fonts/font-palette-18.html": {
+      "status": "xfail",
+      "reason": "sensitivity: font-palette not in property whitelist (glyph palette colors)"
+    },
+    "css/css-fonts/font-palette-19.html": {
+      "status": "xfail",
+      "reason": "sensitivity: font-palette not in property whitelist (glyph palette colors)"
+    },
+    "css/css-fonts/font-palette-22.html": {
+      "status": "xfail",
+      "reason": "sensitivity: font-palette not in property whitelist (glyph palette colors)"
+    },
+    "css/css-fonts/font-palette-3.html": {
+      "status": "xfail",
+      "reason": "sensitivity: font-palette not in property whitelist (glyph palette colors)"
+    },
     "css/css-fonts/font-palette-30.html": {
       "status": "xfail",
       "reason": "style: font-family computed value differs"
@@ -10465,13 +10521,49 @@
       "status": "xfail",
       "reason": "style: font-family computed value differs"
     },
+    "css/css-fonts/font-palette-4.html": {
+      "status": "xfail",
+      "reason": "sensitivity: font-palette not in property whitelist (glyph palette colors)"
+    },
+    "css/css-fonts/font-palette-5.html": {
+      "status": "xfail",
+      "reason": "sensitivity: font-palette not in property whitelist (glyph palette colors)"
+    },
+    "css/css-fonts/font-palette-6.html": {
+      "status": "xfail",
+      "reason": "sensitivity: font-palette not in property whitelist (glyph palette colors)"
+    },
+    "css/css-fonts/font-palette-7.html": {
+      "status": "xfail",
+      "reason": "sensitivity: font-palette not in property whitelist (glyph palette colors)"
+    },
+    "css/css-fonts/font-palette-8.html": {
+      "status": "xfail",
+      "reason": "sensitivity: font-palette not in property whitelist (glyph palette colors)"
+    },
+    "css/css-fonts/font-palette-9.html": {
+      "status": "xfail",
+      "reason": "sensitivity: font-palette not in property whitelist (glyph palette colors)"
+    },
+    "css/css-fonts/font-palette-add.html": {
+      "status": "xfail",
+      "reason": "sensitivity: font-palette not in property whitelist (glyph palette colors)"
+    },
     "css/css-fonts/font-palette-empty-font-family.html": {
       "status": "xfail",
       "reason": "style: font-family computed value differs"
     },
+    "css/css-fonts/font-palette-modify.html": {
+      "status": "xfail",
+      "reason": "sensitivity: font-palette not in property whitelist (glyph palette colors)"
+    },
     "css/css-fonts/font-palette-non-ident-font-family.html": {
       "status": "xfail",
       "reason": "style: font-family computed value differs"
+    },
+    "css/css-fonts/font-palette-remove.html": {
+      "status": "xfail",
+      "reason": "sensitivity: font-palette not in property whitelist (glyph palette colors)"
     },
     "css/css-fonts/font-size-adjust-001.html": {
       "status": "xfail",
@@ -10601,6 +10693,10 @@
       "status": "xfail",
       "reason": "style: display property differs between test/ref"
     },
+    "css/css-fonts/font-variant-emoji-1.html": {
+      "status": "xfail",
+      "reason": "sensitivity: glyph-level font selection/synthesis invisible to property comparison"
+    },
     "css/css-fonts/font-variant-ligatures-11.optional.html": {
       "status": "xfail",
       "reason": "layout: bounds differ between test/ref"
@@ -10633,6 +10729,14 @@
       "status": "xfail",
       "reason": "style: display property differs between test/ref"
     },
+    "css/css-fonts/lang-attribute-affects-rendering-of-second-text-run.html": {
+      "status": "xfail",
+      "reason": "sensitivity: glyph-level font selection/synthesis invisible to property comparison"
+    },
+    "css/css-fonts/lang-attribute-affects-rendering.html": {
+      "status": "xfail",
+      "reason": "sensitivity: glyph-level font selection/synthesis invisible to property comparison"
+    },
     "css/css-fonts/line-gap-override.html": {
       "status": "xfail",
       "reason": "requires tag-agnostic matching"
@@ -10664,6 +10768,14 @@
     "css/css-fonts/metrics-override-normal-keyword.html": {
       "status": "xfail",
       "reason": "style: font-family computed value differs"
+    },
+    "css/css-fonts/palette-values-rule-add.html": {
+      "status": "xfail",
+      "reason": "sensitivity: font-palette not in property whitelist (glyph palette colors)"
+    },
+    "css/css-fonts/palette-values-rule-delete.html": {
+      "status": "xfail",
+      "reason": "sensitivity: font-palette not in property whitelist (glyph palette colors)"
     },
     "css/css-fonts/quoted-generic-ignored.html": {
       "status": "xfail",
@@ -10729,9 +10841,17 @@
       "status": "xfail",
       "reason": "style: font property differs between test/ref"
     },
+    "css/css-fonts/system-ui-ja-vs-zh.html": {
+      "status": "xfail",
+      "reason": "sensitivity: glyph-level font selection/synthesis invisible to property comparison"
+    },
     "css/css-fonts/system-ui-mixed.html": {
       "status": "xfail",
       "reason": "style: display property differs between test/ref"
+    },
+    "css/css-fonts/system-ui-ur-vs-ar.html": {
+      "status": "xfail",
+      "reason": "sensitivity: glyph-level font selection/synthesis invisible to property comparison"
     },
     "css/css-fonts/test-synthetic-italic-2.html": {
       "status": "xfail",
@@ -10740,6 +10860,10 @@
     "css/css-fonts/test-synthetic-italic-3.html": {
       "status": "xfail",
       "reason": "requires tag-agnostic matching"
+    },
+    "css/css-fonts/test-synthetic-italic.html": {
+      "status": "xfail",
+      "reason": "sensitivity: glyph-level font selection/synthesis invisible to property comparison"
     },
     "css/css-fonts/variation-sequences.html": {
       "status": "xfail",
@@ -16177,6 +16301,14 @@
       "status": "xfail",
       "reason": "requires tag-agnostic matching"
     },
+    "css/css-images/image-rendering-border-image.html": {
+      "status": "xfail",
+      "reason": "sensitivity: image-rendering not in property whitelist (pixel scaling)"
+    },
+    "css/css-images/image-rendering-mixed-scaled.html": {
+      "status": "xfail",
+      "reason": "sensitivity: image-rendering not in property whitelist (pixel scaling)"
+    },
     "css/css-images/image-set/image-set-all-options-invalid.html": {
       "status": "xfail",
       "reason": "style: border property differs between test/ref"
@@ -20185,6 +20317,10 @@
       "status": "xfail",
       "reason": "layout: bounds differ between test/ref"
     },
+    "css/css-multicol/multicol-height-002-print.xht": {
+      "status": "xfail",
+      "reason": "style: border-left-width differs between test/ref"
+    },
     "css/css-multicol/multicol-height-block-child-001.xht": {
       "status": "xfail",
       "reason": "layout: bounds differ between test/ref"
@@ -22333,6 +22469,10 @@
       "status": "xfail",
       "reason": "layout: bounds differ between test/ref"
     },
+    "css/css-overflow/overflow-video-hidden.html": {
+      "status": "xfail",
+      "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
+    },
     "css/css-overflow/overflow-video.html": {
       "status": "xfail",
       "reason": "requires tag-agnostic matching"
@@ -23641,6 +23781,10 @@
       "status": "xfail",
       "reason": "requires tag-agnostic matching"
     },
+    "css/css-pseudo/file-selector-button-001.html": {
+      "status": "xfail",
+      "reason": "sensitivity: form control pseudo-element internals invisible to DOM property comparison"
+    },
     "css/css-pseudo/first-letter-001.html": {
       "status": "xfail",
       "reason": "style: display property differs between test/ref"
@@ -23877,6 +24021,10 @@
       "status": "xfail",
       "reason": "requires tag-agnostic matching"
     },
+    "css/css-pseudo/highlight-cascade/highlight-paired-cascade-004.html": {
+      "status": "xfail",
+      "reason": "sensitivity: highlight pseudo-element styling invisible to DOM property comparison"
+    },
     "css/css-pseudo/highlight-custom-properties-dynamic-001.html": {
       "status": "xfail",
       "reason": "requires tag-agnostic matching"
@@ -24097,6 +24245,10 @@
       "status": "xfail",
       "reason": "layout: bounds differ between test/ref"
     },
+    "css/css-pseudo/placeholder-input-number.html": {
+      "status": "xfail",
+      "reason": "sensitivity: form control pseudo-element internals invisible to DOM property comparison"
+    },
     "css/css-pseudo/relative-box-order-of-pseudo-elements.html": {
       "status": "xfail",
       "reason": "requires tag-agnostic matching"
@@ -24164,6 +24316,34 @@
     "css/css-pseudo/selection-textarea-011.html": {
       "status": "xfail",
       "reason": "style: color property differs between test/ref"
+    },
+    "css/css-pseudo/slider/slider-fill-001.html": {
+      "status": "xfail",
+      "reason": "sensitivity: form control pseudo-element internals invisible to DOM property comparison"
+    },
+    "css/css-pseudo/slider/slider-fill-002.html": {
+      "status": "xfail",
+      "reason": "sensitivity: form control pseudo-element internals invisible to DOM property comparison"
+    },
+    "css/css-pseudo/slider/slider-fill-003.html": {
+      "status": "xfail",
+      "reason": "sensitivity: form control pseudo-element internals invisible to DOM property comparison"
+    },
+    "css/css-pseudo/slider/slider-thumb-001.html": {
+      "status": "xfail",
+      "reason": "sensitivity: form control pseudo-element internals invisible to DOM property comparison"
+    },
+    "css/css-pseudo/slider/slider-track-001.html": {
+      "status": "xfail",
+      "reason": "sensitivity: form control pseudo-element internals invisible to DOM property comparison"
+    },
+    "css/css-pseudo/slider/slider-track-002.html": {
+      "status": "xfail",
+      "reason": "sensitivity: form control pseudo-element internals invisible to DOM property comparison"
+    },
+    "css/css-pseudo/slider/slider-track-003.html": {
+      "status": "xfail",
+      "reason": "sensitivity: form control pseudo-element internals invisible to DOM property comparison"
     },
     "css/css-pseudo/spelling-error-001.html": {
       "status": "xfail",
@@ -28177,6 +28357,10 @@
       "status": "xfail",
       "reason": "style: text-decoration differs between test/ref"
     },
+    "css/css-text-decor/text-combine-emphasis.html": {
+      "status": "xfail",
+      "reason": "sensitivity: text-combine-upright/text-emphasis not in property whitelist"
+    },
     "css/css-text-decor/text-decoration-color.html": {
       "status": "xfail",
       "reason": "style: text-decoration differs between test/ref"
@@ -28329,21 +28513,49 @@
       "status": "xfail",
       "reason": "style: display property differs between test/ref"
     },
+    "css/css-text-decor/text-decoration-skip-ink-001.html": {
+      "status": "xfail",
+      "reason": "sensitivity: text-decoration-skip-ink not in property whitelist"
+    },
     "css/css-text-decor/text-decoration-skip-ink-002.html": {
       "status": "xfail",
       "reason": "layout: bounds differ between test/ref"
+    },
+    "css/css-text-decor/text-decoration-skip-ink-004.html": {
+      "status": "xfail",
+      "reason": "sensitivity: text-decoration-skip-ink not in property whitelist"
+    },
+    "css/css-text-decor/text-decoration-skip-ink-005.html": {
+      "status": "xfail",
+      "reason": "sensitivity: text-decoration-skip-ink not in property whitelist"
+    },
+    "css/css-text-decor/text-decoration-skip-ink-sidewayslr-001.html": {
+      "status": "xfail",
+      "reason": "sensitivity: text-decoration-skip-ink not in property whitelist"
     },
     "css/css-text-decor/text-decoration-skip-ink-sidewayslr-002.html": {
       "status": "xfail",
       "reason": "layout: bounds differ between test/ref"
     },
+    "css/css-text-decor/text-decoration-skip-ink-sidewaysrl-001.html": {
+      "status": "xfail",
+      "reason": "sensitivity: text-decoration-skip-ink not in property whitelist"
+    },
     "css/css-text-decor/text-decoration-skip-ink-sidewaysrl-002.html": {
       "status": "xfail",
       "reason": "layout: bounds differ between test/ref"
     },
+    "css/css-text-decor/text-decoration-skip-ink-upright-001.html": {
+      "status": "xfail",
+      "reason": "sensitivity: text-decoration-skip-ink not in property whitelist"
+    },
     "css/css-text-decor/text-decoration-skip-ink-upright-002.html": {
       "status": "xfail",
       "reason": "layout: bounds differ between test/ref"
+    },
+    "css/css-text-decor/text-decoration-skip-ink-vertical-001.html": {
+      "status": "xfail",
+      "reason": "sensitivity: text-decoration-skip-ink not in property whitelist"
     },
     "css/css-text-decor/text-decoration-skip-ink-vertical-002.html": {
       "status": "xfail",
@@ -28997,6 +29209,10 @@
       "status": "xfail",
       "reason": "style: z-index differs between test/ref"
     },
+    "css/css-text-decor/text-shadow/blur.html": {
+      "status": "xfail",
+      "reason": "sensitivity: text-shadow not in property whitelist"
+    },
     "css/css-text-decor/text-shadow/color-inherit.html": {
       "status": "xfail",
       "reason": "style: z-index differs between test/ref"
@@ -29061,6 +29277,10 @@
       "status": "xfail",
       "reason": "layout: bounds differ between test/ref"
     },
+    "css/css-text-decor/text-underline-offset-001.html": {
+      "status": "xfail",
+      "reason": "sensitivity: text-underline-offset not in property whitelist"
+    },
     "css/css-text-decor/text-underline-offset-002.html": {
       "status": "xfail",
       "reason": "layout: bounds differ between test/ref"
@@ -29068,6 +29288,10 @@
     "css/css-text-decor/text-underline-offset-calc.html": {
       "status": "xfail",
       "reason": "requires tag-agnostic matching"
+    },
+    "css/css-text-decor/text-underline-offset-negative.html": {
+      "status": "xfail",
+      "reason": "sensitivity: text-underline-offset not in property whitelist"
     },
     "css/css-text-decor/text-underline-offset-scroll-001.html": {
       "status": "xfail",
@@ -31057,6 +31281,22 @@
       "status": "xfail",
       "reason": "text-align:end \u2014 logical value 'end' vs physical 'start'"
     },
+    "css/css-text/text-align/text-align-center-last-center.html": {
+      "status": "xfail",
+      "reason": "sensitivity: text-align-last not in property whitelist"
+    },
+    "css/css-text/text-align/text-align-center-last-end.html": {
+      "status": "xfail",
+      "reason": "sensitivity: text-align-last not in property whitelist"
+    },
+    "css/css-text/text-align/text-align-center-last-justify.html": {
+      "status": "xfail",
+      "reason": "sensitivity: text-align-last not in property whitelist"
+    },
+    "css/css-text/text-align/text-align-center-last-start.html": {
+      "status": "xfail",
+      "reason": "sensitivity: text-align-last not in property whitelist"
+    },
     "css/css-text/text-align/text-align-end-001.html": {
       "status": "xfail",
       "reason": "style: text-align differs between test/ref"
@@ -31113,6 +31353,22 @@
       "status": "xfail",
       "reason": "requires tag-agnostic matching"
     },
+    "css/css-text/text-align/text-align-end-last-center.html": {
+      "status": "xfail",
+      "reason": "sensitivity: text-align-last not in property whitelist"
+    },
+    "css/css-text/text-align/text-align-end-last-end.html": {
+      "status": "xfail",
+      "reason": "sensitivity: text-align-last not in property whitelist"
+    },
+    "css/css-text/text-align/text-align-end-last-justify.html": {
+      "status": "xfail",
+      "reason": "sensitivity: text-align-last not in property whitelist"
+    },
+    "css/css-text/text-align/text-align-end-last-start.html": {
+      "status": "xfail",
+      "reason": "sensitivity: text-align-last not in property whitelist"
+    },
     "css/css-text/text-align/text-align-justify-001.html": {
       "status": "xfail",
       "reason": "style: border property differs between test/ref"
@@ -31136,6 +31392,22 @@
     "css/css-text/text-align/text-align-justify-006.html": {
       "status": "xfail",
       "reason": "style: border property differs between test/ref"
+    },
+    "css/css-text/text-align/text-align-justify-last-center.html": {
+      "status": "xfail",
+      "reason": "sensitivity: text-align-last not in property whitelist"
+    },
+    "css/css-text/text-align/text-align-justify-last-end.html": {
+      "status": "xfail",
+      "reason": "sensitivity: text-align-last not in property whitelist"
+    },
+    "css/css-text/text-align/text-align-justify-last-justify.html": {
+      "status": "xfail",
+      "reason": "sensitivity: text-align-last not in property whitelist"
+    },
+    "css/css-text/text-align/text-align-justify-last-start.html": {
+      "status": "xfail",
+      "reason": "sensitivity: text-align-last not in property whitelist"
     },
     "css/css-text/text-align/text-align-justify-shy-001.html": {
       "status": "xfail",
@@ -31296,6 +31568,22 @@
     "css/css-text/text-align/text-align-start-017.html": {
       "status": "xfail",
       "reason": "requires tag-agnostic matching"
+    },
+    "css/css-text/text-align/text-align-start-last-center.html": {
+      "status": "xfail",
+      "reason": "sensitivity: text-align-last not in property whitelist"
+    },
+    "css/css-text/text-align/text-align-start-last-end.html": {
+      "status": "xfail",
+      "reason": "sensitivity: text-align-last not in property whitelist"
+    },
+    "css/css-text/text-align/text-align-start-last-justify.html": {
+      "status": "xfail",
+      "reason": "sensitivity: text-align-last not in property whitelist"
+    },
+    "css/css-text/text-align/text-align-start-last-start.html": {
+      "status": "xfail",
+      "reason": "sensitivity: text-align-last not in property whitelist"
     },
     "css/css-text/text-autospace/text-autospace-001.html": {
       "status": "xfail",
@@ -31633,11 +31921,11 @@
       "status": "xfail",
       "reason": "requires tag-agnostic matching"
     },
-    "css/css-text/text-transform/text-transform-capitalize-028.html": {
+    "css/css-text/text-stroke-width-subpixel.html": {
       "status": "xfail",
-      "reason": "layout: bounds differ between test/ref"
+      "reason": "sensitivity: -webkit-text-stroke not in property whitelist"
     },
-    "css/css-text/text-transform/text-transform-capitalize-032.xht": {
+    "css/css-text/text-transform/text-transform-capitalize-028.html": {
       "status": "xfail",
       "reason": "layout: bounds differ between test/ref"
     },
@@ -31698,14 +31986,6 @@
       "reason": "style: text-align differs between test/ref"
     },
     "css/css-text/text-transform/text-transform-fullwidth-010.html": {
-      "status": "xfail",
-      "reason": "layout: bounds differ between test/ref"
-    },
-    "css/css-text/text-transform/text-transform-lowercase-101.xht": {
-      "status": "xfail",
-      "reason": "layout: bounds differ between test/ref"
-    },
-    "css/css-text/text-transform/text-transform-uppercase-101.xht": {
       "status": "xfail",
       "reason": "layout: bounds differ between test/ref"
     },
@@ -32408,6 +32688,10 @@
     "css/css-text/white-space/tab-stop-threshold-006.html": {
       "status": "xfail",
       "reason": "requires tag-agnostic matching"
+    },
+    "css/css-text/white-space/text-wrap-balance-002.html": {
+      "status": "xfail",
+      "reason": "sensitivity: line-breaking geometry invisible at element level"
     },
     "css/css-text/white-space/text-wrap-balance-003.html": {
       "status": "xfail",
@@ -35937,6 +36221,10 @@
       "status": "xfail",
       "reason": "layout: bounds differ between test/ref"
     },
+    "css/css-ui/accent-color-checkbox-checked-001.html": {
+      "status": "xfail",
+      "reason": "sensitivity: accent-color not in property whitelist"
+    },
     "css/css-ui/accent-color-invalidation-currentcolor.html": {
       "status": "xfail",
       "reason": "style: color differs between test/ref"
@@ -35944,6 +36232,10 @@
     "css/css-ui/accent-color-parent-currentcolor.html": {
       "status": "xfail",
       "reason": "style: color differs between test/ref"
+    },
+    "css/css-ui/accent-color-radio-checked-001.html": {
+      "status": "xfail",
+      "reason": "sensitivity: accent-color not in property whitelist"
     },
     "css/css-ui/appearance-auto-non-html-namespace-001.html": {
       "status": "xfail",
@@ -35968,6 +36260,10 @@
     "css/css-ui/appearance-menulist-button-001.html": {
       "status": "xfail",
       "reason": "style: display property differs between test/ref"
+    },
+    "css/css-ui/appearance-menulist-button-002.tentative.html": {
+      "status": "xfail",
+      "reason": "sensitivity: appearance not in property whitelist"
     },
     "css/css-ui/appearance-meter-001.html": {
       "status": "xfail",
@@ -36145,6 +36441,10 @@
       "status": "xfail",
       "reason": "style: border property differs between test/ref"
     },
+    "css/css-ui/outline-021.html": {
+      "status": "xfail",
+      "reason": "sensitivity: outline not in property whitelist"
+    },
     "css/css-ui/outline-022.html": {
       "status": "xfail",
       "reason": "requires tag-agnostic matching"
@@ -36196,6 +36496,10 @@
     "css/css-ui/outline-offset-001.html": {
       "status": "xfail",
       "reason": "requires tag-agnostic matching"
+    },
+    "css/css-ui/outline-offset-table-001.html": {
+      "status": "xfail",
+      "reason": "sensitivity: outline not in property whitelist"
     },
     "css/css-ui/outline-offset.html": {
       "status": "xfail",
@@ -36408,6 +36712,10 @@
     "css/css-ui/webkit-appearance-menulist-button-001.html": {
       "status": "xfail",
       "reason": "style: display property differs between test/ref"
+    },
+    "css/css-ui/webkit-appearance-menulist-button-002.tentative.html": {
+      "status": "xfail",
+      "reason": "sensitivity: appearance not in property whitelist"
     },
     "css/css-ui/webkit-appearance-meter-001.html": {
       "status": "xfail",
@@ -38957,6 +39265,18 @@
       "status": "xfail",
       "reason": "layout: bounds differ between test/ref"
     },
+    "css/css-writing-modes/background-position-vrl-018.xht": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "css/css-writing-modes/background-position-vrl-020.xht": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "css/css-writing-modes/background-position-vrl-022.xht": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
     "css/css-writing-modes/background-size-document-root-vrl-002.html": {
       "status": "xfail",
       "reason": "layout: bounds differ between test/ref"
@@ -38988,6 +39308,14 @@
     "css/css-writing-modes/baseline-inline-non-replaced-005.xht": {
       "status": "xfail",
       "reason": "layout: bounds differ between test/ref"
+    },
+    "css/css-writing-modes/baseline-inline-replaced-002.xht": {
+      "status": "xfail",
+      "reason": "style: line-height differs between test/ref"
+    },
+    "css/css-writing-modes/baseline-inline-replaced-003.xht": {
+      "status": "xfail",
+      "reason": "style: line-height differs between test/ref"
     },
     "css/css-writing-modes/baseline-with-orthogonal-flow-001.html": {
       "status": "xfail",
@@ -39881,6 +40209,18 @@
       "status": "xfail",
       "reason": "requires tag-agnostic matching"
     },
+    "css/css-writing-modes/float-contiguous-vlr-003.xht": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "css/css-writing-modes/float-contiguous-vlr-005.xht": {
+      "status": "xfail",
+      "reason": "style: display differs between test/ref"
+    },
+    "css/css-writing-modes/float-contiguous-vlr-007.xht": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
     "css/css-writing-modes/float-contiguous-vlr-009.xht": {
       "status": "xfail",
       "reason": "layout: bounds differ between test/ref"
@@ -39890,6 +40230,18 @@
       "reason": "layout: bounds differ between test/ref"
     },
     "css/css-writing-modes/float-contiguous-vlr-013.xht": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "css/css-writing-modes/float-contiguous-vrl-002.xht": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "css/css-writing-modes/float-contiguous-vrl-004.xht": {
+      "status": "xfail",
+      "reason": "style: display differs between test/ref"
+    },
+    "css/css-writing-modes/float-contiguous-vrl-006.xht": {
       "status": "xfail",
       "reason": "layout: bounds differ between test/ref"
     },
@@ -40029,6 +40381,22 @@
       "status": "xfail",
       "reason": "layout: bounds differ between test/ref"
     },
+    "css/css-writing-modes/forms/button-appearance-native-horizontal.optional.html": {
+      "status": "xfail",
+      "reason": "sensitivity: writing-mode/direction/appearance not in property whitelist (form controls)"
+    },
+    "css/css-writing-modes/forms/button-appearance-native-vertical.optional.html": {
+      "status": "xfail",
+      "reason": "sensitivity: writing-mode/direction/appearance not in property whitelist (form controls)"
+    },
+    "css/css-writing-modes/forms/button-appearance-none-horizontal.optional.html": {
+      "status": "xfail",
+      "reason": "sensitivity: writing-mode/direction/appearance not in property whitelist (form controls)"
+    },
+    "css/css-writing-modes/forms/button-appearance-none-vertical.optional.html": {
+      "status": "xfail",
+      "reason": "sensitivity: writing-mode/direction/appearance not in property whitelist (form controls)"
+    },
     "css/css-writing-modes/forms/checkbox-appearance-native-vertical-lr-baseline.optional.html": {
       "status": "xfail",
       "reason": "style: visibility differs between test/ref"
@@ -40037,13 +40405,69 @@
       "status": "xfail",
       "reason": "style: visibility differs between test/ref"
     },
+    "css/css-writing-modes/forms/file-input-vertical-rtl.optional.html": {
+      "status": "xfail",
+      "reason": "sensitivity: writing-mode/direction/appearance not in property whitelist (form controls)"
+    },
+    "css/css-writing-modes/forms/file-input-vertical.optional.html": {
+      "status": "xfail",
+      "reason": "sensitivity: writing-mode/direction/appearance not in property whitelist (form controls)"
+    },
     "css/css-writing-modes/forms/input-range-zero-inline-size.html": {
       "status": "xfail",
       "reason": "layout: bounds differ between test/ref"
     },
+    "css/css-writing-modes/forms/meter-appearance-native-horizontal-rtl.optional.html": {
+      "status": "xfail",
+      "reason": "sensitivity: writing-mode/direction/appearance not in property whitelist (form controls)"
+    },
+    "css/css-writing-modes/forms/meter-appearance-native-horizontal.optional.html": {
+      "status": "xfail",
+      "reason": "sensitivity: writing-mode/direction/appearance not in property whitelist (form controls)"
+    },
+    "css/css-writing-modes/forms/meter-appearance-native-vertical-rtl.optional.html": {
+      "status": "xfail",
+      "reason": "sensitivity: writing-mode/direction/appearance not in property whitelist (form controls)"
+    },
+    "css/css-writing-modes/forms/meter-appearance-native-vertical.optional.html": {
+      "status": "xfail",
+      "reason": "sensitivity: writing-mode/direction/appearance not in property whitelist (form controls)"
+    },
     "css/css-writing-modes/forms/number-input-vertical-overflow.html": {
       "status": "xfail",
       "reason": "style: color property differs between test/ref"
+    },
+    "css/css-writing-modes/forms/progress-appearance-native-horizontal-rtl.optional.html": {
+      "status": "xfail",
+      "reason": "sensitivity: writing-mode/direction/appearance not in property whitelist (form controls)"
+    },
+    "css/css-writing-modes/forms/progress-appearance-native-horizontal.optional.html": {
+      "status": "xfail",
+      "reason": "sensitivity: writing-mode/direction/appearance not in property whitelist (form controls)"
+    },
+    "css/css-writing-modes/forms/progress-appearance-native-vertical-rtl.optional.html": {
+      "status": "xfail",
+      "reason": "sensitivity: writing-mode/direction/appearance not in property whitelist (form controls)"
+    },
+    "css/css-writing-modes/forms/progress-appearance-native-vertical.optional.html": {
+      "status": "xfail",
+      "reason": "sensitivity: writing-mode/direction/appearance not in property whitelist (form controls)"
+    },
+    "css/css-writing-modes/forms/progress-appearance-none-horizontal-rtl.optional.html": {
+      "status": "xfail",
+      "reason": "sensitivity: writing-mode/direction/appearance not in property whitelist (form controls)"
+    },
+    "css/css-writing-modes/forms/progress-appearance-none-horizontal.optional.html": {
+      "status": "xfail",
+      "reason": "sensitivity: writing-mode/direction/appearance not in property whitelist (form controls)"
+    },
+    "css/css-writing-modes/forms/progress-appearance-none-vertical-rtl.optional.html": {
+      "status": "xfail",
+      "reason": "sensitivity: writing-mode/direction/appearance not in property whitelist (form controls)"
+    },
+    "css/css-writing-modes/forms/progress-appearance-none-vertical.optional.html": {
+      "status": "xfail",
+      "reason": "sensitivity: writing-mode/direction/appearance not in property whitelist (form controls)"
     },
     "css/css-writing-modes/forms/radio-appearance-native-vertical-lr-baseline.optional.html": {
       "status": "xfail",
@@ -40053,6 +40477,22 @@
       "status": "xfail",
       "reason": "style: visibility differs between test/ref"
     },
+    "css/css-writing-modes/forms/range-input-appearance-native-horizontal-rtl.optional.html": {
+      "status": "xfail",
+      "reason": "sensitivity: writing-mode/direction/appearance not in property whitelist (form controls)"
+    },
+    "css/css-writing-modes/forms/range-input-appearance-native-vertical-rtl.optional.html": {
+      "status": "xfail",
+      "reason": "sensitivity: writing-mode/direction/appearance not in property whitelist (form controls)"
+    },
+    "css/css-writing-modes/forms/range-input-appearance-none-horizontal-rtl.optional.html": {
+      "status": "xfail",
+      "reason": "sensitivity: writing-mode/direction/appearance not in property whitelist (form controls)"
+    },
+    "css/css-writing-modes/forms/range-input-appearance-none-vertical-rtl.optional.html": {
+      "status": "xfail",
+      "reason": "sensitivity: writing-mode/direction/appearance not in property whitelist (form controls)"
+    },
     "css/css-writing-modes/forms/range-input-vertical-ltr-painting.html": {
       "status": "xfail",
       "reason": "layout: bounds differ between test/ref"
@@ -40060,6 +40500,22 @@
     "css/css-writing-modes/forms/range-input-vertical-rtl-painting.html": {
       "status": "xfail",
       "reason": "layout: bounds differ between test/ref"
+    },
+    "css/css-writing-modes/forms/textarea-appearance-native-vlr.optional.html": {
+      "status": "xfail",
+      "reason": "sensitivity: writing-mode/direction/appearance not in property whitelist (form controls)"
+    },
+    "css/css-writing-modes/forms/textarea-appearance-native-vrl.optional.html": {
+      "status": "xfail",
+      "reason": "sensitivity: writing-mode/direction/appearance not in property whitelist (form controls)"
+    },
+    "css/css-writing-modes/forms/textarea-appearance-none-vlr.optional.html": {
+      "status": "xfail",
+      "reason": "sensitivity: writing-mode/direction/appearance not in property whitelist (form controls)"
+    },
+    "css/css-writing-modes/forms/textarea-appearance-none-vrl.optional.html": {
+      "status": "xfail",
+      "reason": "sensitivity: writing-mode/direction/appearance not in property whitelist (form controls)"
     },
     "css/css-writing-modes/height-width-inline-non-replaced-vlr-003.xht": {
       "status": "xfail",
@@ -40149,6 +40605,22 @@
       "status": "xfail",
       "reason": "style: display property differs between test/ref"
     },
+    "css/css-writing-modes/inline-replaced-vlr-003.xht": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "css/css-writing-modes/inline-replaced-vlr-005.xht": {
+      "status": "xfail",
+      "reason": "style: line-height differs between test/ref"
+    },
+    "css/css-writing-modes/inline-replaced-vrl-002.xht": {
+      "status": "xfail",
+      "reason": "layout: bounds differ between test/ref"
+    },
+    "css/css-writing-modes/inline-replaced-vrl-004.xht": {
+      "status": "xfail",
+      "reason": "style: line-height differs between test/ref"
+    },
     "css/css-writing-modes/inline-table-alignment-002.xht": {
       "status": "xfail",
       "reason": "layout: bounds differ between test/ref"
@@ -40165,9 +40637,25 @@
       "status": "xfail",
       "reason": "layout: bounds differ between test/ref"
     },
+    "css/css-writing-modes/line-box-direction-htb-001.xht": {
+      "status": "xfail",
+      "reason": "style: border-top-color differs between test/ref"
+    },
+    "css/css-writing-modes/line-box-direction-slr-043.xht": {
+      "status": "xfail",
+      "reason": "style: border-top-color differs between test/ref"
+    },
+    "css/css-writing-modes/line-box-direction-slr-047.xht": {
+      "status": "xfail",
+      "reason": "style: border-top-color differs between test/ref"
+    },
     "css/css-writing-modes/line-box-direction-slr-048.xht": {
       "status": "xfail",
       "reason": "requires tag-agnostic matching"
+    },
+    "css/css-writing-modes/line-box-direction-slr-050.xht": {
+      "status": "xfail",
+      "reason": "style: border-top-color differs between test/ref"
     },
     "css/css-writing-modes/line-box-direction-slr-053.xht": {
       "status": "xfail",
@@ -40177,13 +40665,33 @@
       "status": "xfail",
       "reason": "style: display property differs between test/ref"
     },
+    "css/css-writing-modes/line-box-direction-slr-056.xht": {
+      "status": "xfail",
+      "reason": "style: border-top-color differs between test/ref"
+    },
+    "css/css-writing-modes/line-box-direction-slr-058.xht": {
+      "status": "xfail",
+      "reason": "style: border-top-color differs between test/ref"
+    },
     "css/css-writing-modes/line-box-direction-slr-060.xht": {
       "status": "xfail",
       "reason": "style: display property differs between test/ref"
     },
+    "css/css-writing-modes/line-box-direction-srl-042.xht": {
+      "status": "xfail",
+      "reason": "style: border-top-color differs between test/ref"
+    },
+    "css/css-writing-modes/line-box-direction-srl-045.xht": {
+      "status": "xfail",
+      "reason": "style: border-top-color differs between test/ref"
+    },
     "css/css-writing-modes/line-box-direction-srl-046.xht": {
       "status": "xfail",
       "reason": "requires tag-agnostic matching"
+    },
+    "css/css-writing-modes/line-box-direction-srl-049.xht": {
+      "status": "xfail",
+      "reason": "style: border-top-color differs between test/ref"
     },
     "css/css-writing-modes/line-box-direction-srl-051.xht": {
       "status": "xfail",
@@ -40193,13 +40701,33 @@
       "status": "xfail",
       "reason": "style: display property differs between test/ref"
     },
+    "css/css-writing-modes/line-box-direction-srl-055.xht": {
+      "status": "xfail",
+      "reason": "style: border-top-color differs between test/ref"
+    },
+    "css/css-writing-modes/line-box-direction-srl-057.xht": {
+      "status": "xfail",
+      "reason": "style: border-top-color differs between test/ref"
+    },
     "css/css-writing-modes/line-box-direction-srl-059.xht": {
       "status": "xfail",
       "reason": "style: display property differs between test/ref"
     },
+    "css/css-writing-modes/line-box-direction-vlr-003.xht": {
+      "status": "xfail",
+      "reason": "style: border-top-color differs between test/ref"
+    },
+    "css/css-writing-modes/line-box-direction-vlr-007.xht": {
+      "status": "xfail",
+      "reason": "style: border-top-color differs between test/ref"
+    },
     "css/css-writing-modes/line-box-direction-vlr-008.xht": {
       "status": "xfail",
       "reason": "requires tag-agnostic matching"
+    },
+    "css/css-writing-modes/line-box-direction-vlr-010.xht": {
+      "status": "xfail",
+      "reason": "style: border-top-color differs between test/ref"
     },
     "css/css-writing-modes/line-box-direction-vlr-013.xht": {
       "status": "xfail",
@@ -40209,13 +40737,33 @@
       "status": "xfail",
       "reason": "style: display property differs between test/ref"
     },
+    "css/css-writing-modes/line-box-direction-vlr-016.xht": {
+      "status": "xfail",
+      "reason": "style: border-top-color differs between test/ref"
+    },
+    "css/css-writing-modes/line-box-direction-vlr-018.xht": {
+      "status": "xfail",
+      "reason": "style: border-top-color differs between test/ref"
+    },
     "css/css-writing-modes/line-box-direction-vlr-020.xht": {
       "status": "xfail",
       "reason": "style: display property differs between test/ref"
     },
+    "css/css-writing-modes/line-box-direction-vrl-002.xht": {
+      "status": "xfail",
+      "reason": "style: border-top-color differs between test/ref"
+    },
+    "css/css-writing-modes/line-box-direction-vrl-005.xht": {
+      "status": "xfail",
+      "reason": "style: border-top-color differs between test/ref"
+    },
     "css/css-writing-modes/line-box-direction-vrl-006.xht": {
       "status": "xfail",
       "reason": "requires tag-agnostic matching"
+    },
+    "css/css-writing-modes/line-box-direction-vrl-009.xht": {
+      "status": "xfail",
+      "reason": "style: border-top-color differs between test/ref"
     },
     "css/css-writing-modes/line-box-direction-vrl-011.xht": {
       "status": "xfail",
@@ -40224,6 +40772,14 @@
     "css/css-writing-modes/line-box-direction-vrl-012.xht": {
       "status": "xfail",
       "reason": "style: display property differs between test/ref"
+    },
+    "css/css-writing-modes/line-box-direction-vrl-015.xht": {
+      "status": "xfail",
+      "reason": "style: border-top-color differs between test/ref"
+    },
+    "css/css-writing-modes/line-box-direction-vrl-017.xht": {
+      "status": "xfail",
+      "reason": "style: border-top-color differs between test/ref"
     },
     "css/css-writing-modes/line-box-direction-vrl-019.xht": {
       "status": "xfail",

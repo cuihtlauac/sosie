@@ -13,6 +13,15 @@ tags (roadmap Step 10c). 13,096 reftests discovered (+187); 2,646 pass,
 `wpt_classify.py bulk-xfail`. The percentages below describe the
 original 12,909-test corpus.
 
+**2026-08-17 update (session B, mismatch negative controls):** 274
+`rel="mismatch"` reftests ingested with inverted verdicts; 13,370
+reftests discovered, 2,781 pass, 10,589 xfail, 0 fail. Their first run
+exposed an XHTML MIME bug in the test file server (see the sensitivity
+section) whose fix invalidated 2,723 cached results: on recapture, 10
+stale xfails became passes and 49 trivial passes became genuine
+xfails. Measured sensitivity: 174/274 asserted differences detected
+(63.5%); the 99 misses are classified below.
+
 ## Classification
 
 | Category | Count | % total | Description |
@@ -108,6 +117,57 @@ Visually identical, but computed values are on different elements.
 
 **Fix:** Normalization rule that canonicalizes body-to-root bg-color
 propagation. Small targeted fix, 15 tests.
+
+## Sensitivity: mismatch reftests as negative controls (2026-08-17)
+
+`rel="mismatch"` reftests assert two pages render DIFFERENTLY, so the
+runner inverts the verdict: a Diff is a pass, an Equivalent is a
+measured **false negative** — the failure mode sosie's design declares
+fatal. Unlike the match-test xfails above (spurious diffs, tolerable),
+every entry here is a real blind spot quantified by WPT itself.
+
+Of the 281 in-scope mismatch-only tests: 274 ingested, 5 excluded as
+nondeterministic (css-ui caret tests use animation), 2 have no
+reference anywhere in the tree (css-transforms text-perspective-001,
+transform-flattening-001).
+
+**Result: 174/274 asserted differences detected (63.5%).** One test
+errors (css-overflow/overflow-video-hidden: reftest-wait never clears
+without video playback). The 99 false negatives, by cause
+(`expectations.json` reasons prefixed `sensitivity:`):
+
+| Gap | Count | Recoverable? |
+|-----|------:|--------------|
+| writing-mode/direction/appearance not in whitelist (form controls) | 26 | whitelist add |
+| font-palette not in whitelist (glyph palette colors) | 18 | whitelist add (partially — `@font-palette-values` changes may not surface in the computed value) |
+| text-align-last not in whitelist | 16 | whitelist add |
+| form control pseudo-element internals (::slider-*, ::placeholder, ::file-selector-button) | 9 | no — extractor walks DOM elements, not pseudo-elements |
+| text-decoration-skip-ink not in whitelist | 7 | whitelist add |
+| glyph-level font selection/synthesis (lang attr, system-ui per locale, emoji, synthetic italic) | 6 | no — computed font properties identical, glyphs differ |
+| text-underline-offset, text-shadow, text-combine-upright/text-emphasis, -webkit-text-stroke | 5 | whitelist add |
+| outline, accent-color, appearance, image-rendering | 8 | whitelist add |
+| gradient image pixels (background-image not compared) | 2 | background-image string comparison would catch these two |
+| highlight pseudo-element styling | 1 | no |
+| line-breaking geometry (text-wrap: balance) | 1 | no — element bounds identical, line boxes differ |
+
+**80 of 99 misses are recoverable by extending the property
+whitelist** — extending it and re-running the negative controls would
+raise measured sensitivity to a potential 254/274 (92.7%). This is the
+trust boundary made concrete: sosie's verdict is exactly as strong as
+the whitelist is complete, and these 274 tests now measure that
+strength on every run.
+
+### Harness bug found by the negative controls
+
+On their first run, `css/css-color/t31-color-text-a.xht` (green text
+vs. black text, `color` IS whitelisted) reported Equivalent. Root
+cause: the test file server served `.xht`/`.xhtml` as `text/html`,
+where the HTML parser hands the XHTML `<![CDATA[...]]>` style wrapper
+to the CSS parser as garbage — dropping ALL style rules on BOTH sides.
+Test and reference genuinely rendered identical (unstyled). Every
+match reftest in that state passed trivially; only a negative control
+could notice. Fix: serve XHTML as `application/xhtml+xml`
+(`lib/file_server.ml`), recapture the 2,723 affected results.
 
 ## Possible improvement phases (by ROI)
 

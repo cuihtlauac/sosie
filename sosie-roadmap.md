@@ -697,11 +697,38 @@ xfail, 0 fail. Coverage validation gate: 13,096/13,096 exact. In-scope
 recoverable gaps are now zero (remaining: 21 upstream-broken refs, 132
 `.svg` reftests deferred).
 
-### Sessions B–E [pending]
+### Session B (2026-08-17): mismatch reftests as negative controls [done]
 
-B: mismatch reftests as negative controls (281 in scope — Equivalent on
-a `rel=mismatch` pair is a measured false negative, sosie's blind-spot
-list). C: css/CSS2 (+6,271). D: remaining css/* layout modules
+274 mismatch-only reftests ingested with inverted verdicts (Diff →
+pass, Equivalent → measured false negative); 5 of the 281 in scope are
+nondeterministic, 2 have no reference in the tree. Discovery gained
+`reftest_kind` (mixed match+mismatch tests stay match-only, 86 flagged
+in coverage); the inversion is a pure `cache_status` function in
+verdict space, so report mode and the try-refs loop are kind-agnostic.
+
+**Measured sensitivity: 174/274 (63.5%).** The 99 false negatives are
+enumerated in TRIAGE.md's sensitivity section; 80 are recoverable by
+extending the property whitelist (text-align-last, font-palette,
+writing-mode/direction/appearance, outline, accent-color,
+text-decoration-* , image-rendering, ...), 19 are genuinely invisible
+at DOM property level (glyph selection, pseudo-element internals,
+line-breaking geometry).
+
+The negative controls caught a harness bug on their first run:
+`.xht`/`.xhtml` served as `text/html` drops CDATA-wrapped style rules
+on both sides of a pair, so both pages rendered unstyled — match tests
+passed trivially, and t31-color-text-a (mismatch, green vs. black
+text) reported Equivalent. Fixed (application/xhtml+xml), 2,723
+results recaptured: 10 stale xfails pruned, 49 formerly-trivial passes
+became honest xfails. Exactly the class of silent false negative the
+controls exist to detect.
+
+Result: 13,096 → 13,370 discovered (+274); 2,781 pass, 10,589 xfail,
+0 fail. Coverage validation gate: 13,370/13,370 exact.
+
+### Sessions C–E [pending]
+
+C: css/CSS2 (+6,271). D: remaining css/* layout modules
 (+~2,600). E: html/rendering+semantics+dom, mathml, svg (+~750).
 
 ---
