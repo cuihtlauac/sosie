@@ -3,13 +3,6 @@
 Pending work, current task first. See `plans/wpt-ingestion-campaign.md`
 for the full campaign design and `sosie-roadmap.md` Step 10c for status.
 
-## WPT campaign session E — non-CSS trees (+~750)
-
-Groups: html/rendering (170), html/semantics (227), html/dom (127),
-mathml (234), svg (168). NOT html/canvas (bitmap assertions invisible
-to property comparison). Watch for cross-tree ref/support needs; add
-support_paths as the missing-ref check dictates.
-
 ## Whitelist extension guided by sensitivity measurement
 
 Session B measured 99 false negatives on mismatch reftests; 80 are
@@ -36,13 +29,25 @@ root-block-ruby; css-pseudo first-letter-of-html-root-refcrash;
 css-cascade scope-implicit-004-print; css-images
 svg-script-is-ignored). Fix: fall back to `documentElement` (or the
 root element) when `head` is null; also audit `unfreeze_page` and any
-other `document.head` uses. Re-run the 8 tests, prune recovered
+other `document.head` uses. Re-run the affected tests, prune recovered
 xfails. Diagnosed 2026-08-17 (TRIAGE.md session C section).
+
+Session E added 7 more with the identical signature (TRIAGE.md session
+E section): 3 mathml `.xhtml` (dynamic-rowspan-mozilla-370692,
+mi-mathvariant-1/-2 — same XML no-`<head>` cause) and 4 svg `.html`
+(painting/reftests/non-scaling-stroke-001/-003/-004, symbol-in-mask).
+The svg `.html` cases are surprising — the HTML parser synthesizes a
+`<head>`, so the null insertion point has a different cause than the
+XML case; verify the `documentElement` fallback actually covers them
+and diagnose why `head` is null there. Affected corpus-wide: 15 tests.
 
 ## Deferred (not scheduled)
 
-- `.svg` reftest support in discovery (132 in-scope tests; snapshot
-  schema currently assumes an HTML/BODY tree).
+- `.svg` reftest support in discovery. Now ~1,266 in-scope tests are
+  skipped by the walker (`acc_if_reftest` accepts only .html/.xhtml/.xht):
+  1,125 in `svg/` alone after session E ingested that tree, plus 113 in
+  css-masking and a long tail. The snapshot schema currently assumes an
+  HTML/BODY tree; SVG-rooted documents need schema work first.
 - Paged-media modules via CDP `Emulation.setEmulatedMedia` (css-page,
   css/printing).
 - Step 11: CI integration for ocaml.org (roadmap; the campaign

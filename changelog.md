@@ -2,6 +2,32 @@
 
 Completed work, most recent first.
 
+## 2026-08-17 — WPT campaign session E: non-CSS trees
+
+Five non-CSS trees added to the manifest in one cycle: `html/rendering`,
+`html/semantics`, `html/dom`, `mathml`, `svg` (NOT `html/canvas` —
+bitmap assertions invisible to property comparison). No new
+`support_paths` needed: the coverage scanner confirmed 1,222 refs
+resolve within the ingested subtrees, 21 against existing support, 1
+into `compat/`. Sparse re-sync, one capture run, `bulk-xfail`, classify
+bootstrap+export, coverage scan/validate/report — session A tooling
+unchanged. 1,207 reftests ingested (plan estimated ~750–926; the
+coverage scan projected the true 1,207 up front); 444 pass (36.8% —
+more than double session D, these trees carry self-contained reftests);
+763 xfail (bounds 32.1%, tag-agnostic 29.6%, style 12.8%, error 12.1%,
+sensitivity 4.6%, content-text 4.1%; TRIAGE.md session E section). No
+new extractor crash class: of 92 errors, 85 are `reftest-wait` timeouts
+(mostly `the-select-element` interactive popovers) and 7 are the
+session-C null-`document.head` crash extended to 3 mathml `.xhtml` +
+4 svg `.html` (the latter surprising — HTML parser synthesizes a head;
+noted in the backlog fix item). Fixed a stale hardcoded "37 groups"
+string in `wpt_coverage.py`'s report generator (now derives from
+scan_meta). Also recorded: the now-ingested `svg/` tree exposes ~1,125
+in-scope `.svg`-extension reftests the walker skips (deferred item
+count updated 132 → ~1,266).
+Suite: 22,044 → 23,251 (+1,207), 4,022 pass, 19,229 xfail, 0 fail;
+coverage gate 23,251/23,251 exact.
+
 ## 2026-08-17 — WPT campaign session D: remaining css/* + top-level modules
 
 18 groups added to the manifest in one cycle — the css/* layout and
