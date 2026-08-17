@@ -3,15 +3,6 @@
 Pending work, current task first. See `plans/wpt-ingestion-campaign.md`
 for the full campaign design and `sosie-roadmap.md` Step 10c for status.
 
-## WPT campaign session D — remaining css/* layout modules (+~2,600)
-
-Groups: css-break (1,003), filter-effects (263), css-counter-styles
-(234), selectors (218), css-conditional (160), motion (93),
-css-highlight-api (92), mediaqueries (58), compositing (56),
-css-scrollbars (31), quirks (25), css-scroll-snap (23), compat (23),
-density-size-correction (20), css-rhythm (18), css-nesting (17),
-css-color-adjust (16), css-style-attr (15). Same cycle as session C.
-
 ## WPT campaign session E — non-CSS trees (+~750)
 
 Groups: html/rendering (170), html/semantics (227), html/dom (127),

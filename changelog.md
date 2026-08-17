@@ -2,6 +2,27 @@
 
 Completed work, most recent first.
 
+## 2026-08-17 — WPT campaign session D: remaining css/* + top-level modules
+
+18 groups added to the manifest in one cycle — the css/* layout and
+style modules left after A–C (css-break, filter-effects,
+css-counter-styles, selectors, css-conditional, motion,
+css-highlight-api, mediaqueries, compositing, css-scrollbars,
+css-scroll-snap, css-rhythm, css-nesting, css-color-adjust,
+css-style-attr) plus three top-level trees (quirks, compat,
+density-size-correction). Sparse re-sync from local objects, one
+capture run, `bulk-xfail`, classify bootstrap+export, coverage
+scan/validate/report — session A tooling unchanged. 2,387 reftests
+ingested (planned ~2,600; the rest skipped for refs absent from the
+sparse checkout); 389 pass (16.3%), 1,998 xfail. `css/css-break` is
+42% of the session (1,004 tests, 1.9% pass, all 987 tag-agnostic
+xfails) — a fragmentation suite where equal visuals come from unequal
+box trees. No new extractor crash class; the 5 errors are
+`reftest-wait` timeouts on events that never fire headless. Category
+and per-module tables in TRIAGE.md session D section.
+Suite: 19,657 → 22,044 (+2,387), 3,578 pass, 18,466 xfail, 0 fail;
+coverage gate 22,044/22,044 exact.
+
 ## 2026-08-17 — WPT campaign session C: css/CSS2 module
 
 `css/CSS2` added to manifest groups; sparse re-sync from local
