@@ -1,28 +1,20 @@
 {
   "wpt_commit": "55d076dca564300616a75eec5ec696e805c7bc3b",
-  "scan_timestamp": "2026-08-17T10:02:52+00:00",
+  "scan_timestamp": "2026-08-17T12:10:43+00:00",
   "tree_file_total": 102822,
   "candidate_total": 79222,
-  "in_scope_total": 26583,
-  "out_of_scope_total": 52639,
+  "in_scope_total": 37976,
+  "out_of_scope_total": 41246,
   "validation_ok": true,
   "in_scope_categories": {
-    "excluded-nondeterministic": 184,
-    "excluded-support-reference-path": 2411,
-    "included": 13370,
-    "missed-ref-truly-absent": 23,
-    "not-a-reftest": 10463,
+    "excluded-nondeterministic": 185,
+    "excluded-support-reference-path": 2490,
+    "included": 19657,
+    "missed-ref-truly-absent": 25,
+    "not-a-reftest": 15487,
     "not-scanned-svg-extension": 132
   },
   "out_of_scope_modules": [
-    {
-      "module": "css/CSS2",
-      "candidates": 11393,
-      "would_included": 6287,
-      "mismatch": 12,
-      "nondet": 1,
-      "fuzzy": 6
-    },
     {
       "module": "html",
       "candidates": 10355,
@@ -609,12 +601,12 @@
     }
   ],
   "flags": {
-    "mismatch_included": 274,
-    "mixed_included": 86,
-    "fuzzy_included": 566,
+    "mismatch_included": 286,
+    "mixed_included": 96,
+    "fuzzy_included": 572,
     "fuzzy_total": 1023,
-    "alternates_included": 69,
-    "chained_included": 129,
+    "alternates_included": 81,
+    "chained_included": 271,
     "print_reftests": 408
   }
 }

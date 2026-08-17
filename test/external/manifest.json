@@ -3,6 +3,7 @@
     "commit": "55d076dca564300616a75eec5ec696e805c7bc3b",
     "repo": "https://github.com/web-platform-tests/wpt.git",
     "groups": [
+      "css/CSS2",
       "css/css-backgrounds",
       "css/css-borders",
       "css/css-box",

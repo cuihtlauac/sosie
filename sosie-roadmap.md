@@ -726,10 +726,33 @@ controls exist to detect.
 Result: 13,096 → 13,370 discovered (+274); 2,781 pass, 10,589 xfail,
 0 fail. Coverage validation gate: 13,370/13,370 exact.
 
-### Sessions C–E [pending]
+### Session C (2026-08-17): css/CSS2 module [done]
 
-C: css/CSS2 (+6,271). D: remaining css/* layout modules
-(+~2,600). E: html/rendering+semantics+dom, mathml, svg (+~750).
+`css/CSS2` added to manifest groups; sparse re-sync from local objects
+(no refetch), single capture run (~50 min), `bulk-xfail`, classify
+bootstrap+export, coverage scan/validate/report — the session A
+tooling handled the module-sized expansion without changes.
+
+6,287 reftests ingested; 408 pass (6.5%), 5,879 xfail. The low pass
+rate is expected: CSS2 tests predate the reftest style guide, so test
+and reference differ in prose and markup strategy (TRIAGE.md session C
+section has the category table — bounds 43%, tag-agnostic 17%,
+content-text 13%, style 14%). 842 of the corpus-wide 862
+`content: text differs` xfails come from this module.
+
+Session C diagnosed an extractor crash class (8 tests corpus-wide,
+3 new): `freeze_page` appends the transition-freeze style to
+`document.head`, which is null in XML-parsed documents lacking an
+explicit `<head>` (the XML parser, unlike HTML, does not synthesize
+one). Fix queued in the backlog.
+
+Result: 13,370 → 19,657 discovered (+6,287); 3,189 pass, 16,468 xfail,
+0 fail. Coverage validation gate: 19,657/19,657 exact.
+
+### Sessions D–E [pending]
+
+D: remaining css/* layout modules (+~2,600). E: html/rendering+
+semantics+dom, mathml, svg (+~750).
 
 ---
 

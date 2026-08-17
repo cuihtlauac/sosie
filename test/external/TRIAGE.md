@@ -22,6 +22,11 @@ stale xfails became passes and 49 trivial passes became genuine
 xfails. Measured sensitivity: 174/274 asserted differences detected
 (63.5%); the 99 misses are classified below.
 
+**2026-08-17 update (session C, css/CSS2 module):** the `css/CSS2`
+group added 6,287 reftests; 19,657 discovered, 3,189 pass, 16,468
+xfail, 0 fail. See the session C section below for the category
+breakdown and the extractor crash it uncovered.
+
 ## Classification
 
 | Category | Count | % total | Description |
@@ -168,6 +173,59 @@ Test and reference genuinely rendered identical (unstyled). Every
 match reftest in that state passed trivially; only a negative control
 could notice. Fix: serve XHTML as `application/xhtml+xml`
 (`lib/file_server.ml`), recapture the 2,723 affected results.
+
+## Session C: css/CSS2 module (2026-08-17)
+
+6,287 reftests from `css/CSS2` (the CSS 2.1 test suite port: normal
+flow, margins/padding/clear, positioning, selectors, borders, tables,
+backgrounds, generated content, floats). 408 pass (6.5%), 5,879 xfail.
+The pass rate is far below the corpus average (20.3%) because CSS2
+tests predate the reftest style guide: test and reference routinely
+differ in prose ("Test passes if..." vs. a bare box) and in markup
+strategy, not just in the property under test.
+
+Xfail reasons (`wpt_classify.py bulk-xfail`):
+
+| Reason | Count | % of CSS2 |
+|--------|------:|----------:|
+| layout: bounds differ between test/ref | 2,727 | 43.4% |
+| requires tag-agnostic matching | 1,076 | 17.1% |
+| content: text differs | 842 | 13.4% |
+| style: property differs (display 174, background-color 158, color 140, line-height 105, border-* ~200, other ~100) | 881 | 14.0% |
+| unclassified failure | 349 | 5.6% |
+| errors (see below) | 4 | 0.1% |
+
+`content: text differs` is essentially a CSS2 phenomenon: 842 of the
+corpus-wide 862 come from this module (test page says "Test passes
+if...", reference page shows different or no prose — real DOM text
+difference, correctly reported, inherent to cross-page comparison).
+
+### Extractor crash diagnosed by session C
+
+Three new tests crash the snapshot extractor —
+`css/CSS2/tables/table-{header,footer,row}-group-001.xht`:
+
+```
+TypeError: Cannot read properties of null (reading 'appendChild')
+    at appendChild (<anonymous>:22192:36)  [js_of_ocaml frames follow]
+```
+
+Root cause (diagnosed here, affects 8 tests corpus-wide): `freeze_page`
+in `js_extractor/extractor.ml` appends the transition-freeze `<style>`
+to `document.head`, which is **null** in an XML-parsed document with no
+explicit `<head>` element — the HTML parser synthesizes a missing head,
+the XML parser does not. The three CSS2 tests share the reference
+`table-row-group-001-ref.xht`, whose markup goes straight from `<html>`
+to `<body>`. The five pre-existing xfails with the same signature fit
+the same pattern (css-ruby `root-ruby`/`root-block-ruby`, css-pseudo
+`first-letter-of-html-root-refcrash`, css-cascade
+`scope-implicit-004-print`, css-images `svg-script-is-ignored`): headless
+documents parsed as XML or with non-HTML roots. Fix is small — fall
+back to `documentElement` when `head` is null — queued in the backlog.
+
+The fourth error is a `reftest-wait` timeout
+(`stacking-context/composite-change-after-scroll-preserves-stacking-order.html`,
+needs compositing activity that never settles headless).
 
 ## Possible improvement phases (by ROI)
 
