@@ -626,6 +626,45 @@ Initial WPT run: 12,909 tests discovered, 1,160 pass (9.0%). Triage of the
 `lib/normalize.ml` / `lib/normalize.mli`. 4 unit tests + 1 QCheck
 idempotency property test.
 
+### Step 10b addendum (2026-08-17): corpus coverage analysis
+
+Question raised after triage: does the ingested corpus contain all WPT
+tests that bring value to sosie? Answer: no — quantified by
+`test/external/wpt_coverage.py`, which scans the *entire* WPT tree at the
+pinned commit via git plumbing (the shallow clone holds all blobs; the
+sparse checkout only limits the working tree), replicates the discovery
+semantics of `ext_test_lib.ml` byte-for-byte, and validates its `included`
+set against classification.json (12,909/12,909 exact). Full numbers in
+`test/external/COVERAGE.md`; machine-readable aggregates in
+`coverage-summary.json`.
+
+Findings (WPT commit `55d076d`):
+
+- **Discovery inside the 37 groups is nearly complete.** Only 185 tests
+  are lost to fixable bugs: 181 use unquoted `rel=match` (the discovery
+  regexes require quotes) and 4 have references outside the sparse
+  checkout. 132 `.svg` reftests are invisible to the walker (extension
+  filter). An earlier triage estimate of ~349 missing-ref tests was
+  wrong — it was a grep delta that ignored the support/nondeterminism
+  filters; the true count is 25, of which 21 are broken upstream.
+- **The big value is out of scope:** 11,271 deterministic match-reftests
+  with available references live in modules not in manifest.json —
+  css/CSS2 (6,271), css/css-break (1,003), html (981), filter-effects,
+  css-counter-styles, selectors, css-page, mathml (~200-300 each).
+- **643 mismatch reftests** (`rel="mismatch"`, 281 in scope) are unused.
+  They assert pages render *differently* — natural negative controls for
+  sosie's sensitivity, directly serving the false-negatives-are-fatal
+  requirement.
+- **Semantics gaps:** 68 included tests have multiple `rel=match` links
+  (WPT: pass if ANY matches; sosie compares only the first), 6 have
+  chained references, 563 carry `<meta name=fuzzy>` (expected pixel
+  deviation — principled xfail candidates).
+
+Follow-up candidates, in ROI order: unquoted-rel regex fix (+181),
+mismatch negative controls (sensitivity suite), CSS2 + css-break group
+expansion (+7,274, at ~2 captures/test runtime cost), alternate-reference
+semantics, `.svg` reftest support.
+
 ---
 
 ## Step 11: CI integration for ocaml.org
