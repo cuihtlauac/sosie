@@ -53129,10 +53129,6 @@
       "status": "xfail",
       "reason": "requires tag-agnostic matching"
     },
-    "css/css-pseudo/file-selector-button-001.html": {
-      "status": "xfail",
-      "reason": "sensitivity: form control pseudo-element internals invisible to DOM property comparison"
-    },
     "css/css-pseudo/first-letter-001.html": {
       "status": "xfail",
       "reason": "style: display property differs between test/ref"
@@ -53592,10 +53588,6 @@
     "css/css-pseudo/outside-marker-paint-order.html": {
       "status": "xfail",
       "reason": "layout: bounds differ between test/ref"
-    },
-    "css/css-pseudo/placeholder-input-number.html": {
-      "status": "xfail",
-      "reason": "sensitivity: form control pseudo-element internals invisible to DOM property comparison"
     },
     "css/css-pseudo/relative-box-order-of-pseudo-elements.html": {
       "status": "xfail",
@@ -76681,6 +76673,10 @@
       "status": "xfail",
       "reason": "layout: bounds differ between test/ref"
     },
+    "html/rendering/replaced-elements/attributes-for-embedded-content-and-images/number-placeholder-right-aligned.html": {
+      "status": "xfail",
+      "reason": "style: overflow-y differs between test/ref"
+    },
     "html/rendering/replaced-elements/attributes-for-embedded-content-and-images/video-default-object-height-constrained-by-max-width.html": {
       "status": "xfail",
       "reason": "requires tag-agnostic matching"
@@ -77705,19 +77701,7 @@
       "status": "xfail",
       "reason": "requires tag-agnostic matching"
     },
-    "html/semantics/permission-element/geolocation-element/icon-css-property-fill-reftest.html": {
-      "status": "xfail",
-      "reason": "sensitivity: mismatch pair rendered equivalent under the comparison whitelist (false negative)"
-    },
     "html/semantics/permission-element/geolocation-element/icon-css-property-height-reftest.html": {
-      "status": "xfail",
-      "reason": "sensitivity: mismatch pair rendered equivalent under the comparison whitelist (false negative)"
-    },
-    "html/semantics/permission-element/geolocation-element/icon-css-property-stroke-reftest.html": {
-      "status": "xfail",
-      "reason": "sensitivity: mismatch pair rendered equivalent under the comparison whitelist (false negative)"
-    },
-    "html/semantics/permission-element/geolocation-element/icon-css-property-stroke-width-reftest.html": {
       "status": "xfail",
       "reason": "sensitivity: mismatch pair rendered equivalent under the comparison whitelist (false negative)"
     },

@@ -2,6 +2,53 @@
 
 Completed work, most recent first.
 
+## 2026-08-18 — Capture UA shadow pseudo-elements beyond `::before`/`::after`
+
+Both extractors now capture a fixed, element-type-gated set of UA shadow
+pseudo-elements unconditionally (no content gate): `::placeholder` (text
+inputs/textarea), `::file-selector-button` (file input),
+`::-webkit-slider-runnable-track`/`-thumb` (range),
+`::-webkit-progress-bar`/`-value`, `::-webkit-meter-bar`/`-inner-element`,
+and `::permission-icon` (geolocation/camera/microphone/permission).
+
+Design finding (plans/pseudo-element-capture.md): `getComputedStyle`
+gives no trustworthy existence signal for UA pseudos — it returns a full
+475-property declaration for almost any (element, pseudo) pair, and no
+discriminator (len, appearance) works across pseudos. So we do NOT detect
+existence; we over-capture. Because sosie compares before-vs-after on the
+same element, a pseudo with no real box resolves identically on both
+sides and adds no spurious diff; the element-type gating only bounds tree
+size. Modern `::slider-*` are unsupported in Chromium (empty), so the
+legacy `-webkit-` names are used. Round-trip `C ∘ G` is unaffected (the
+generator emits plain `<div>`s, never form controls).
+
+**The `::permission-icon` branch, believed refuted by the SVG-paint
+effort, is overturned.** The corpus element is `<geolocation>`, not
+`<permission>`: `<geolocation>` renders with no flag and
+`getComputedStyle(el, "::permission-icon")` cascades the author value
+(test `fill rgb(255,0,0)` vs ref `rgb(0,0,255)`), verified end-to-end
+through the compiled JSOO extractor. The earlier "refuted" reading came
+from probing `<permission type=camera>`, which does not render on
+`file://`.
+
+Re-measured monotonically: adding pseudo nodes only adds diffs AND is a
+no-op for any test whose test/refs contain no gated control, so the
+recapture set was `(pass ∪ sensitivity-FN) ∩ control-bearing` = 356 of
+3,487 (permissive, over-approximating ref parser — safe). **5 sensitivity
+false negatives recovered:** `file-selector-button-001` (::file-selector-
+button), `placeholder-input-number` (::placeholder), and the geolocation
+`icon-css-property-{fill,stroke,stroke-width}` reftests (::permission-
+icon). Cost: 1 tolerable false positive
+(`number-placeholder-right-aligned` — ::placeholder box overflow/display
+differ between interchangeable test/ref markup; bulk-xfailed by type).
+**Sensitivity 316/381 (82.9%) → 321/381 (84.3%)**; residual FN 65→60 (the
+rest need pseudo geometry or non-whitelisted props like the icon
+height/min-height tests — unreachable by design; `height` stays
+unwhitelisted and standard APIs expose no pseudo geometry, so pseudo
+bounds are the parent's rect).
+Suite: 23,251 tests, 3,422→3,426 pass, 19,829→19,825 xfail, 0 fail, 0
+errors; coverage gate 23,251/23,251 exact (no tests added).
+
 ## 2026-08-18 — SVG paint whitelist extension (49→52); recovery hypothesis refuted
 
 Added the SVG paint presentation properties `fill`, `stroke`,

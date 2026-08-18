@@ -114,3 +114,32 @@ corpus sensitivity re-measurement.
   special-cases `::before`/`::after`.
 - Tests: unit (table gating, per element type), round-trip, then corpus
   re-measurement of sensitivity (monotonic recapture).
+
+## Results (2026-08-18)
+
+Implemented in both extractors; integration test
+`capture_includes_ua_shadow_pseudo_elements` added; round-trip and
+mutation integration suites still green.
+
+Corpus re-measurement. Adding pseudo nodes is monotonic (can only add
+diffs) AND a no-op for any test whose test and refs contain no gated
+control (identical captures -> identical verdict). So the recapture set
+was `(pass ∪ sensitivity-FN) ∩ (test-or-ref has a gated control)` = 356
+of 3,487, computed with a permissive (over-approximating, hence safe)
+reftest-link parser. Recaptured those 356; the other 3,131 are provably
+unchanged.
+
+- **5 sensitivity false-negatives recovered:**
+  `css/css-pseudo/file-selector-button-001` (::file-selector-button),
+  `css/css-pseudo/placeholder-input-number` (::placeholder), and the
+  geolocation `icon-css-property-{fill,stroke,stroke-width}` reftests
+  (::permission-icon — the branch the SVG-paint effort thought refuted).
+- **1 tolerable false positive:**
+  `html/rendering/.../number-placeholder-right-aligned` — the
+  ::placeholder box's overflow/display differ between interchangeable
+  test/ref markup. Bulk-xfailed by type.
+- Sensitivity 316/381 (82.9%) -> **321/381 (84.3%)**; residual FN 65->60
+  (60 remaining need pseudo geometry / non-whitelisted props like the
+  icon height/min-height tests — unreachable by design).
+- Suite: 3,422->3,426 pass, 19,829->19,825 xfail, 0 fail, 0 errors;
+  coverage gate 23,251/23,251 (no tests added).
