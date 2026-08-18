@@ -6,6 +6,12 @@
 
 (generate_opam_files true)
 
+(license MIT)
+
+(authors "Cuihtlauac Alvarado <cuihtlauac@tarides.com>")
+
+(maintainers "Cuihtlauac Alvarado <cuihtlauac@tarides.com>")
+
 (package
  (name sosie)
  (synopsis "DOM equivalence checker for UI-conservative HTML/CSS refactoring")
