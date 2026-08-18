@@ -96,7 +96,7 @@
 (executable
  (name test_capture_integration)
  (modules test_capture_integration)
- (libraries sosie alcotest))
+ (libraries sosie alcotest base64))
 
 (executable
  (name test_round_trip)

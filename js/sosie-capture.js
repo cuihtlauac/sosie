@@ -91,6 +91,61 @@ function sosieCapture(properties) {
     };
   }
 
+  // UA shadow pseudo-elements worth capturing, keyed by element type.
+  // getComputedStyle cannot reliably tell whether these generate a box:
+  // it returns a full declaration for almost any (element, pseudo) pair,
+  // so there is no trustworthy existence signal. We therefore do NOT
+  // attempt existence detection. Instead we capture a fixed,
+  // element-type-gated set unconditionally. Because sosie compares
+  // before-vs-after on the SAME element, a pseudo that generates no real
+  // box resolves identically on both sides and contributes no spurious
+  // diff; the gating only bounds tree size. Modern ::slider-* selectors
+  // are unsupported in Chromium (empty declaration), so the legacy
+  // -webkit- names are used. See plans/pseudo-element-capture.md.
+  var TEXT_INPUT_TYPES = {
+    text: 1, search: 1, url: 1, tel: 1, email: 1, password: 1, number: 1
+  };
+
+  function applicablePseudos(el) {
+    switch (el.tagName) {
+      case "INPUT":
+        var t = (el.type || "text").toLowerCase();
+        if (t === "file") return ["::file-selector-button"];
+        if (t === "range")
+          return ["::-webkit-slider-runnable-track", "::-webkit-slider-thumb"];
+        if (TEXT_INPUT_TYPES[t]) return ["::placeholder"];
+        return [];
+      case "TEXTAREA": return ["::placeholder"];
+      case "PROGRESS":
+        return ["::-webkit-progress-bar", "::-webkit-progress-value"];
+      case "METER":
+        return ["::-webkit-meter-bar", "::-webkit-meter-inner-element"];
+      // Permission elements (PEPC): the type-specific tags (<geolocation>,
+      // <camera>, <microphone>) and the generic <permission>. Their
+      // ::permission-icon reflects cascaded fill/stroke via getComputedStyle
+      // (verified: <geolocation> icon fill = author value, not the default).
+      case "GEOLOCATION":
+      case "CAMERA":
+      case "MICROPHONE":
+      case "PERMISSION": return ["::permission-icon"];
+      default: return [];
+    }
+  }
+
+  // Capture a UA shadow pseudo-element unconditionally (no content gate;
+  // these structural pseudos carry content "normal"/"none").
+  function captureUAPseudo(el, selector) {
+    return {
+      tag: selector,
+      attributes: [],
+      bounds: getBounds(el.getBoundingClientRect()),
+      styles: getStyles(window.getComputedStyle(el, selector)),
+      text: null,
+      paintOrder: paintOrder++,
+      children: []
+    };
+  }
+
   function captureElement(el) {
     var rect = el.getBoundingClientRect();
     var computed = window.getComputedStyle(el);
@@ -116,6 +171,12 @@ function sosieCapture(properties) {
     var before = capturePseudo(el, "::before");
     if (before) {
       node.children.push(before);
+    }
+
+    // UA shadow pseudo-elements (element-type-gated, unconditional).
+    var uaPseudos = applicablePseudos(el);
+    for (var pi = 0; pi < uaPseudos.length; pi++) {
+      node.children.push(captureUAPseudo(el, uaPseudos[pi]));
     }
 
     // Walk child nodes: elements and text nodes.

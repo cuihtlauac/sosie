@@ -107,6 +107,70 @@ let capture_headless_document_does_not_crash () =
       let s' = Snapshot.of_json (Snapshot.to_json s) in
       Alcotest.(check string) "round-trip root tag" s.root.tag s'.root.tag)
 
+(* Page exercising every element type in the UA-shadow pseudo-element
+   table (see js/sosie-capture.js applicablePseudos). The <geolocation>
+   permission element renders without a flag and its ::permission-icon
+   picks up the author fill (rgb(255,0,0)); the checkbox and plain div
+   must NOT produce any gated pseudo. *)
+let ua_pseudo_page =
+  "<!doctype html><meta charset=\"utf-8\">\n\
+   <style>geolocation{color:blue}::permission-icon{fill:red}</style>\n\
+   <input type=\"text\" placeholder=\"hi\">\n\
+   <input type=\"file\">\n\
+   <input type=\"range\">\n\
+   <input type=\"checkbox\">\n\
+   <progress value=\"0.5\"></progress>\n\
+   <meter value=\"0.5\"></meter>\n\
+   <textarea placeholder=\"x\"></textarea>\n\
+   <geolocation></geolocation>\n\
+   <div>plain</div>"
+
+(** Collect every pseudo-element tag (starts with "::") in the tree. *)
+let rec collect_pseudos (n : Sosie.Snapshot_types.node) : string list =
+  let here = if String.length n.tag >= 2 && String.sub n.tag 0 2 = "::"
+    then [ n.tag ] else [] in
+  here @ List.concat_map collect_pseudos n.children
+
+(** Find the ::permission-icon node and return its captured fill value. *)
+let rec find_icon_fill (n : Sosie.Snapshot_types.node) : string option =
+  if n.tag = "::permission-icon" then
+    match n.styles.fill with Str s -> Some s | _ -> None
+  else
+    List.fold_left
+      (fun acc c -> match acc with Some _ -> acc | None -> find_icon_fill c)
+      None n.children
+
+let capture_includes_ua_shadow_pseudo_elements () =
+  let url = "data:text/html;base64," ^ Base64.encode_exn ua_pseudo_page in
+  with_capture url (fun json ->
+      let s = Snapshot.of_json json in
+      let pseudos = collect_pseudos s.root in
+      let has p =
+        Alcotest.(check bool)
+          (Printf.sprintf "captured %s" p) true (List.mem p pseudos)
+      in
+      has "::placeholder";
+      has "::file-selector-button";
+      has "::-webkit-slider-runnable-track";
+      has "::-webkit-slider-thumb";
+      has "::-webkit-progress-bar";
+      has "::-webkit-progress-value";
+      has "::-webkit-meter-bar";
+      has "::-webkit-meter-inner-element";
+      has "::permission-icon";
+      (* textarea + text input each contribute one ::placeholder. *)
+      let placeholders =
+        List.length (List.filter (( = ) "::placeholder") pseudos)
+      in
+      Alcotest.(check int) "two ::placeholder nodes" 2 placeholders;
+      (* The permission icon must carry the cascaded author fill, proving
+         the value (not a phantom default) is captured. *)
+      (match find_icon_fill s.root with
+       | Some fill ->
+           Alcotest.(check string) "icon fill is author red"
+             "rgb(255, 0, 0)" fill
+       | None -> Alcotest.fail "::permission-icon node not found"))
+
 let () =
   Alcotest.run "capture-integration"
     [
@@ -122,5 +186,7 @@ let () =
             capture_parses_to_typed_snapshot;
           Alcotest.test_case "headless_document_does_not_crash" `Slow
             capture_headless_document_does_not_crash;
+          Alcotest.test_case "includes_ua_shadow_pseudo_elements" `Slow
+            capture_includes_ua_shadow_pseudo_elements;
         ] );
     ]

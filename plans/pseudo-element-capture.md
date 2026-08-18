@@ -75,15 +75,32 @@ Proposed table (Chrome-accurate names):
 `::marker` and `::details-content` are structural/geometry, out of the
 sensitivity-recovery scope; defer unless cheap.
 
-## OPEN RISK (same shape as the refuted SVG-paint hypothesis)
+## `::permission-icon` risk — RESOLVED, recovery viable (2026-08-18)
 
-Whether capturing `::permission-icon` actually recovers the 9
-`permission-element icon-css-property-*` tests is UNVERIFIED. Those tests
-mutate `fill`/`stroke`/`stroke-width`/`height` on the icon. Recovery
-requires that `getComputedStyle(permissionEl, "::permission-icon")`
-reflects the CSS-set value — needs a real `<permission>` element (behind
-a flag) to confirm. If it does not, this is another refuted branch:
-record it, keep the (trust-positive) capture anyway, do not fake a win.
+The prior SVG-paint refutation concluded these tests were unreachable.
+That is now overturned for `fill`/`stroke`/`stroke-width`:
+
+- The element is `<geolocation>` (a PEPC permission-element subtype), NOT
+  `<permission>`. The 80 corpus occurrences all use `<geolocation>`; the
+  rule is a bare `::permission-icon { fill: red }`. My first probe used
+  `<permission type=camera>`, which does not render on `file://` (0x0
+  box), giving the false "refuted" reading.
+- `<geolocation>` RENDERS with no flag (147x38px box in headless Chrome
+  151) and `getComputedStyle(el, "::permission-icon")` DOES cascade the
+  author value: test icon `fill = rgb(255,0,0)` vs ref `rgb(0,0,255)`
+  (currentColor from `color:blue`). The values differ, so capturing the
+  icon makes sosie detect the mismatch.
+- Verified end-to-end through the COMPILED JSOO extractor: it emits a
+  `::permission-icon` node carrying `fill: rgb(255,0,0)` on the real test
+  HTML. Table updated to gate on GEOLOCATION/CAMERA/MICROPHONE/PERMISSION.
+
+Recoverable: `icon-css-property-{fill,stroke,stroke-width}` (whitelisted).
+NOT recoverable: `icon-css-property-{height,min-height,margin-inline-end}`
+(`height` deliberately unwhitelisted; pseudo geometry not exposed by
+standard APIs — bounds are the parent's rect). `icon-hidden`,
+`icon-restricted-css-no-effect`, `icon-different-for-precise-location`
+depend on non-whitelisted mechanisms; authoritative counts come from the
+corpus sensitivity re-measurement.
 
 ## Implementation surface (both extractors + round-trip)
 

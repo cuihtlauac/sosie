@@ -146,6 +146,63 @@ let capture_pseudo (el : Dom_html.element Js.t) (selector : string)
       }
   end
 
+(** UA shadow pseudo-elements to capture per element type. Mirrors
+    [applicablePseudos] in the canonical js/sosie-capture.js.
+
+    getComputedStyle cannot reliably tell whether these generate a box
+    (it returns a full declaration for almost any element+pseudo pair), so
+    we do NOT detect existence. We capture a fixed, element-type-gated set
+    unconditionally: since sosie compares before-vs-after on the SAME
+    element, a pseudo with no real box resolves identically on both sides
+    and adds no spurious diff — the gating only bounds tree size. Modern
+    ::slider-* are unsupported in Chromium, so the -webkit- names are used.
+    See plans/pseudo-element-capture.md. *)
+let text_input_types =
+  [ "text"; "search"; "url"; "tel"; "email"; "password"; "number" ]
+
+let applicable_pseudos (el : Dom_html.element Js.t) : string list =
+  match Js.to_string el##.tagName with
+  | "INPUT" ->
+      let t =
+        Js.Opt.case
+          (Dom_html.CoerceTo.input el)
+          (fun () -> "text")
+          (fun inp -> String.lowercase_ascii (Js.to_string inp##._type))
+      in
+      if t = "file" then [ "::file-selector-button" ]
+      else if t = "range" then
+        [ "::-webkit-slider-runnable-track"; "::-webkit-slider-thumb" ]
+      else if List.mem t text_input_types then [ "::placeholder" ]
+      else []
+  | "TEXTAREA" -> [ "::placeholder" ]
+  | "PROGRESS" -> [ "::-webkit-progress-bar"; "::-webkit-progress-value" ]
+  | "METER" -> [ "::-webkit-meter-bar"; "::-webkit-meter-inner-element" ]
+  (* Permission elements (PEPC): the type-specific tags and the generic
+     <permission>. Their ::permission-icon reflects cascaded fill/stroke via
+     getComputedStyle (verified: <geolocation> icon fill = author value). *)
+  | "GEOLOCATION" | "CAMERA" | "MICROPHONE" | "PERMISSION" ->
+      [ "::permission-icon" ]
+  | _ -> []
+
+(** Capture a UA shadow pseudo-element unconditionally (no content gate;
+    these structural pseudos carry content "normal"/"none"). *)
+let capture_ua_pseudo (el : Dom_html.element Js.t) (selector : string)
+    (paint_order : int ref) : Snapshot_types.node =
+  let style =
+    Dom_html.window##getComputedStyle_pseudoElt el (Js.string selector)
+  in
+  let order = !paint_order in
+  incr paint_order;
+  {
+    tag = selector;
+    attributes = [];
+    bounds = get_bounds el;
+    styles = get_styles style;
+    text = None;
+    paint_order = order;
+    children = [];
+  }
+
 (* -- DOM walk ------------------------------------------------------------- *)
 
 (** Recursively capture an element and all its descendants. *)
@@ -175,6 +232,12 @@ let rec capture_element (el : Dom_html.element Js.t) (paint_order : int ref)
   (match capture_pseudo el "::before" paint_order with
    | Some n -> children := n :: !children
    | None -> ());
+  (* UA shadow pseudo-elements (element-type-gated, unconditional). Emitted
+     after ::before, before light-DOM children; the list order is preserved
+     because [children] is reversed once at the end. *)
+  List.iter
+    (fun sel -> children := capture_ua_pseudo el sel paint_order :: !children)
+    (applicable_pseudos el);
   (* Walk child nodes: elements and text nodes. *)
   let child_nodes = el##.childNodes in
   let len = child_nodes##.length in
