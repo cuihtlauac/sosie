@@ -88,6 +88,25 @@ let capture_dark_scheme () =
       let color_scheme = json_string "colorScheme" json in
       Alcotest.(check string) "color scheme is dark" "dark" color_scheme)
 
+(* An XHTML document served as application/xhtml+xml is XML-parsed, so the
+   parser does not synthesize a <head> (the HTML parser does). This makes
+   [document.head] null, which previously crashed the freeze step with
+   "Cannot read properties of null (reading 'appendChild')". The extractor
+   must fall back to the document element and still produce a valid snapshot. *)
+let headless_xhtml =
+  "data:application/xhtml+xml,"
+  ^ "<html%20xmlns=%22http://www.w3.org/1999/xhtml%22>"
+  ^ "<body>headless</body></html>"
+
+let capture_headless_document_does_not_crash () =
+  with_capture headless_xhtml (fun json ->
+      (* Reaching here means the freeze step did not raise on a null head. *)
+      let s = Snapshot.of_json json in
+      Alcotest.(check int) "version" 1 s.version;
+      (* Round-trips through the schema despite the missing <head>. *)
+      let s' = Snapshot.of_json (Snapshot.to_json s) in
+      Alcotest.(check string) "round-trip root tag" s.root.tag s'.root.tag)
+
 let () =
   Alcotest.run "capture-integration"
     [
@@ -101,5 +120,7 @@ let () =
             capture_dark_scheme;
           Alcotest.test_case "parses_to_typed_snapshot" `Slow
             capture_parses_to_typed_snapshot;
+          Alcotest.test_case "headless_document_does_not_crash" `Slow
+            capture_headless_document_does_not_crash;
         ] );
     ]

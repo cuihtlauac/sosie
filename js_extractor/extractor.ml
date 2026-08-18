@@ -21,15 +21,24 @@ let freeze_page () =
   style##.textContent :=
     Js.some
       (Js.string "* { transition: none !important; animation: none !important; }");
-  let head = doc##.head in
-  ignore (Dom.appendChild (head :> Dom.node Js.t) (style :> Dom.node Js.t));
+  (* [document.head] is null on XML-parsed documents without an explicit
+     <head> (the XML parser does not synthesize one) and on SVG-rooted
+     documents. The binding types [head] as non-optional, so coerce to an
+     opt to null-check and fall back to the document element. *)
+  let head : Dom.node Js.t Js.opt = Js.Unsafe.get doc (Js.string "head") in
+  let parent =
+    Js.Opt.get head (fun () -> (doc##.documentElement :> Dom.node Js.t))
+  in
+  ignore (Dom.appendChild parent (style :> Dom.node Js.t));
   (* Force reflow so the freeze takes effect before measuring. *)
   ignore (doc##.documentElement##.offsetHeight);
   style
 
 let unfreeze_page style =
-  let head = Dom_html.document##.head in
-  ignore (Dom.removeChild (head :> Dom.node Js.t) (style :> Dom.node Js.t))
+  (* Remove from the actual parent rather than re-deriving the insertion
+     point, so this stays correct under the [document.head] fallback. *)
+  Js.Opt.iter style##.parentNode (fun parent ->
+      ignore (Dom.removeChild parent (style :> Dom.node Js.t)))
 
 (* -- Bounds --------------------------------------------------------------- *)
 

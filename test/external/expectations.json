@@ -21343,11 +21343,11 @@
     },
     "css/CSS2/tables/table-footer-group-001.xht": {
       "status": "xfail",
-      "reason": "error: Failure(\"extractor exception: {\\\"exceptionId\\\":2,\\\"text\\\":\\\"Uncaught\\\",\\\"lineNumber\\\":22191,\\\"columnNumber\\\":35,\\\"script"
+      "reason": "requires tag-agnostic matching"
     },
     "css/CSS2/tables/table-header-group-001.xht": {
       "status": "xfail",
-      "reason": "error: Failure(\"extractor exception: {\\\"exceptionId\\\":3,\\\"text\\\":\\\"Uncaught\\\",\\\"lineNumber\\\":22191,\\\"columnNumber\\\":35,\\\"script"
+      "reason": "requires tag-agnostic matching"
     },
     "css/CSS2/tables/table-height-algorithm-008a.xht": {
       "status": "xfail",
@@ -21367,7 +21367,7 @@
     },
     "css/CSS2/tables/table-row-group-001.xht": {
       "status": "xfail",
-      "reason": "error: Failure(\"extractor exception: {\\\"exceptionId\\\":4,\\\"text\\\":\\\"Uncaught\\\",\\\"lineNumber\\\":22191,\\\"columnNumber\\\":35,\\\"script"
+      "reason": "requires tag-agnostic matching"
     },
     "css/CSS2/tables/table-vertical-align-baseline-001.xht": {
       "status": "xfail",
@@ -24627,15 +24627,15 @@
     },
     "css/css-backgrounds/background-334.html": {
       "status": "xfail",
-      "reason": "background-image with background-size \u2014 different DOM structure between test/ref"
+      "reason": "background-image with background-size — different DOM structure between test/ref"
     },
     "css/css-backgrounds/background-attachment-350.html": {
       "status": "xfail",
-      "reason": "background-attachment test \u2014 different element structure between test/ref"
+      "reason": "background-attachment test — different element structure between test/ref"
     },
     "css/css-backgrounds/background-attachment-353.html": {
       "status": "xfail",
-      "reason": "background-attachment \u2014 border-color differs between test and ref CSS"
+      "reason": "background-attachment — border-color differs between test and ref CSS"
     },
     "css/css-backgrounds/background-attachment-fixed-block-002.html": {
       "status": "xfail",
@@ -26951,19 +26951,19 @@
     },
     "css/css-box/margin-trim/block-container-block-001.html": {
       "status": "xfail",
-      "reason": "margin-trim not in sosie whitelist \u2014 bounds differ"
+      "reason": "margin-trim not in sosie whitelist — bounds differ"
     },
     "css/css-box/margin-trim/block-container-block-002.html": {
       "status": "xfail",
-      "reason": "margin-trim not in sosie whitelist \u2014 bounds differ"
+      "reason": "margin-trim not in sosie whitelist — bounds differ"
     },
     "css/css-box/margin-trim/block-container-block-end-001.html": {
       "status": "xfail",
-      "reason": "margin-trim not in sosie whitelist \u2014 bounds differ"
+      "reason": "margin-trim not in sosie whitelist — bounds differ"
     },
     "css/css-box/margin-trim/block-container-block-end-002.html": {
       "status": "xfail",
-      "reason": "margin-trim not in sosie whitelist \u2014 bounds differ"
+      "reason": "margin-trim not in sosie whitelist — bounds differ"
     },
     "css/css-box/margin-trim/block-container-block-end-collapsed-margins.html": {
       "status": "xfail",
@@ -31363,11 +31363,11 @@
     },
     "css/css-color/a98rgb-001.html": {
       "status": "xfail",
-      "reason": "a98-rgb color space \u2014 computed style string differs from rgb() equivalent"
+      "reason": "a98-rgb color space — computed style string differs from rgb() equivalent"
     },
     "css/css-color/a98rgb-002.html": {
       "status": "xfail",
-      "reason": "a98-rgb color space \u2014 computed style string differs from rgb() equivalent"
+      "reason": "a98-rgb color space — computed style string differs from rgb() equivalent"
     },
     "css/css-color/a98rgb-003.html": {
       "status": "xfail",
@@ -35095,11 +35095,11 @@
     },
     "css/css-display/display-contents-alignment-001.html": {
       "status": "xfail",
-      "reason": "display:contents \u2014 different border-color between test and ref"
+      "reason": "display:contents — different border-color between test and ref"
     },
     "css/css-display/display-contents-alignment-002.html": {
       "status": "xfail",
-      "reason": "display:contents \u2014 different border-color between test and ref"
+      "reason": "display:contents — different border-color between test and ref"
     },
     "css/css-display/display-contents-before-after-001.html": {
       "status": "xfail",
@@ -35107,7 +35107,7 @@
     },
     "css/css-display/display-contents-before-after-002.html": {
       "status": "xfail",
-      "reason": "display:contents with ::before/::after \u2014 text content differs"
+      "reason": "display:contents with ::before/::after — text content differs"
     },
     "css/css-display/display-contents-before-after-003.html": {
       "status": "xfail",
@@ -39239,11 +39239,11 @@
     },
     "css/css-fonts/alternates-order.html": {
       "status": "xfail",
-      "reason": "font-variant-alternates \u2014 font-family computed value differs"
+      "reason": "font-variant-alternates — font-family computed value differs"
     },
     "css/css-fonts/ascent-descent-override.html": {
       "status": "xfail",
-      "reason": "ascent/descent override \u2014 border-color and bounds differ"
+      "reason": "ascent/descent override — border-color and bounds differ"
     },
     "css/css-fonts/downloadable-font-print.html": {
       "status": "xfail",
@@ -39251,7 +39251,7 @@
     },
     "css/css-fonts/first-available-font-001.html": {
       "status": "xfail",
-      "reason": "first-available-font \u2014 bounds differ due to font metrics"
+      "reason": "first-available-font — bounds differ due to font metrics"
     },
     "css/css-fonts/first-available-font-002.html": {
       "status": "xfail",
@@ -46755,7 +46755,7 @@
     },
     "css/css-images/svg-script-is-ignored.html": {
       "status": "xfail",
-      "reason": "error: Failure(\"extractor exception: {\\\"exceptionId\\\":1,\\\"text\\\":\\\"Uncaught\\\",\\\"lineNumber\\\":22191,\\\"column"
+      "reason": "unclassified failure"
     },
     "css/css-images/tiled-conic-gradients.html": {
       "status": "xfail",
@@ -50587,15 +50587,15 @@
     },
     "css/css-overflow/clip-001.html": {
       "status": "xfail",
-      "reason": "overflow:clip \u2014 computed style 'clip' vs 'hidden'"
+      "reason": "overflow:clip — computed style 'clip' vs 'hidden'"
     },
     "css/css-overflow/clip-002.html": {
       "status": "xfail",
-      "reason": "overflow:clip \u2014 bounds differ between test/ref"
+      "reason": "overflow:clip — bounds differ between test/ref"
     },
     "css/css-overflow/clip-003.html": {
       "status": "xfail",
-      "reason": "overflow:clip \u2014 computed style 'clip' vs 'visible'"
+      "reason": "overflow:clip — computed style 'clip' vs 'visible'"
     },
     "css/css-overflow/clip-004.html": {
       "status": "xfail",
@@ -52535,7 +52535,7 @@
     },
     "css/css-position/position-relative-001.html": {
       "status": "xfail",
-      "reason": "position:relative \u2014 background-color differs (green vs transparent)"
+      "reason": "position:relative — background-color differs (green vs transparent)"
     },
     "css/css-position/position-relative-002.html": {
       "status": "xfail",
@@ -53207,7 +53207,7 @@
     },
     "css/css-pseudo/first-letter-of-html-root-refcrash.html": {
       "status": "xfail",
-      "reason": "error: Failure(\"extractor exception: {\\\"exceptionId\\\":5,\\\"text\\\":\\\"Uncaught\\\",\\\"lineNumber\\\":22191,\\\"column"
+      "reason": "requires tag-agnostic matching"
     },
     "css/css-pseudo/first-letter-opacity-001.html": {
       "status": "xfail",
@@ -60859,7 +60859,7 @@
     },
     "css/css-text/text-align/text-align-007.html": {
       "status": "xfail",
-      "reason": "text-align:end \u2014 logical value 'end' vs physical 'start'"
+      "reason": "text-align:end — logical value 'end' vs physical 'start'"
     },
     "css/css-text/text-align/text-align-center-last-default.html": {
       "status": "xfail",
@@ -61015,11 +61015,11 @@
     },
     "css/css-text/text-align/text-align-last-center.html": {
       "status": "xfail",
-      "reason": "text-align-last \u2014 computed 'start' vs 'center'"
+      "reason": "text-align-last — computed 'start' vs 'center'"
     },
     "css/css-text/text-align/text-align-last-end.html": {
       "status": "xfail",
-      "reason": "text-align-last \u2014 computed 'start' vs 'end'"
+      "reason": "text-align-last — computed 'start' vs 'end'"
     },
     "css/css-text/text-align/text-align-last-justify-br.html": {
       "status": "xfail",
@@ -78417,21 +78417,9 @@
       "status": "xfail",
       "reason": "requires tag-agnostic matching"
     },
-    "mathml/presentation-markup/tables/dynamic-rowspan-mozilla-370692.xhtml": {
-      "status": "xfail",
-      "reason": "error: Failure(\"extractor exception: {\\\"exceptionId\\\":52,\\\"text\\\":\\\"Uncaught\\\",\\\"lineNumber\\\":22191,\\\"columnNumber\\\":35,\\\"scrip"
-    },
     "mathml/presentation-markup/tokens/dynamic-mi-mozilla-414123.xhtml": {
       "status": "xfail",
       "reason": "error: Failure(\"timeout waiting for reftest-wait to be removed\")"
-    },
-    "mathml/presentation-markup/tokens/mi-mathvariant-1.xhtml": {
-      "status": "xfail",
-      "reason": "error: Failure(\"extractor exception: {\\\"exceptionId\\\":53,\\\"text\\\":\\\"Uncaught\\\",\\\"lineNumber\\\":22191,\\\"columnNumber\\\":35,\\\"scrip"
-    },
-    "mathml/presentation-markup/tokens/mi-mathvariant-2.xhtml": {
-      "status": "xfail",
-      "reason": "error: Failure(\"extractor exception: {\\\"exceptionId\\\":54,\\\"text\\\":\\\"Uncaught\\\",\\\"lineNumber\\\":22191,\\\"columnNumber\\\":35,\\\"scrip"
     },
     "mathml/relations/css-styling/blur-filter.html": {
       "status": "xfail",
@@ -79087,15 +79075,15 @@
     },
     "svg/painting/reftests/non-scaling-stroke-001.html": {
       "status": "xfail",
-      "reason": "error: Failure(\"extractor exception: {\\\"exceptionId\\\":57,\\\"text\\\":\\\"Uncaught\\\",\\\"lineNumber\\\":22191,\\\"columnNumber\\\":35,\\\"scrip"
+      "reason": "layout: bounds differ between test/ref"
     },
     "svg/painting/reftests/non-scaling-stroke-003.html": {
       "status": "xfail",
-      "reason": "error: Failure(\"extractor exception: {\\\"exceptionId\\\":58,\\\"text\\\":\\\"Uncaught\\\",\\\"lineNumber\\\":22191,\\\"columnNumber\\\":35,\\\"scrip"
+      "reason": "layout: bounds differ between test/ref"
     },
     "svg/painting/reftests/non-scaling-stroke-004.html": {
       "status": "xfail",
-      "reason": "error: Failure(\"extractor exception: {\\\"exceptionId\\\":59,\\\"text\\\":\\\"Uncaught\\\",\\\"lineNumber\\\":22191,\\\"columnNumber\\\":35,\\\"scrip"
+      "reason": "layout: bounds differ between test/ref"
     },
     "svg/painting/reftests/non-scaling-stroke-007.html": {
       "status": "xfail",
@@ -79107,7 +79095,7 @@
     },
     "svg/painting/reftests/symbol-in-mask.html": {
       "status": "xfail",
-      "reason": "error: Failure(\"extractor exception: {\\\"exceptionId\\\":60,\\\"text\\\":\\\"Uncaught\\\",\\\"lineNumber\\\":22191,\\\"columnNumber\\\":35,\\\"scrip"
+      "reason": "requires tag-agnostic matching"
     },
     "svg/painting/reftests/text-shadow-01.html": {
       "status": "xfail",

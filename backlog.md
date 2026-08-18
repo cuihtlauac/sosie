@@ -3,30 +3,19 @@
 Pending work, current task first. See `plans/wpt-ingestion-campaign.md`
 for the full campaign design and `sosie-roadmap.md` Step 10c for status.
 
-## 1. Extractor: null document.head crash on XML documents without <head>
+## 1. Round-trip (`C ∘ G`) breaks on `text-emphasis-position`
 
-`freeze_page` (`js_extractor/extractor.ml`) appends the
-transition-freeze style to `document.head`, which is null in
-XML-parsed documents lacking an explicit `<head>` — the XML parser
-does not synthesize one (the HTML parser does). Crashes the capture
-with `TypeError: Cannot read properties of null (reading
-'appendChild')` on 8 WPT tests (css/CSS2/tables/table-*-group-001.xht
-via their shared head-less reference; css-ruby root-ruby /
-root-block-ruby; css-pseudo first-letter-of-html-root-refcrash;
-css-cascade scope-implicit-004-print; css-images
-svg-script-is-ignored). Fix: fall back to `documentElement` (or the
-root element) when `head` is null; also audit `unfreeze_page` and any
-other `document.head` uses. Re-run the affected tests, prune recovered
-xfails. Diagnosed 2026-08-17 (TRIAGE.md session C section).
-
-Session E added 7 more with the identical signature (TRIAGE.md session
-E section): 3 mathml `.xhtml` (dynamic-rowspan-mozilla-370692,
-mi-mathvariant-1/-2 — same XML no-`<head>` cause) and 4 svg `.html`
-(painting/reftests/non-scaling-stroke-001/-003/-004, symbol-in-mask).
-The svg `.html` cases are surprising — the HTML parser synthesizes a
-`<head>`, so the null insertion point has a different cause than the
-XML case; verify the `documentElement` fallback actually covers them
-and diagnose why `head` is null there. Affected corpus-wide: 15 tests.
+The `@integration` `test_round_trip` suite fails: the generator emits
+`text-emphasis-position: over right` (the canonical two-value form) but
+Chromium's getComputedStyle returns `over`, so `C ∘ G ≠ id` for the
+hand-crafted (single div, nested divs) and qcheck ("C ∘ G preserves
+structure") cases. Pre-existing, surfaced 2026-08-18 during the
+null-`head` fix (unrelated to it). Likely fallout of the 29 → 49
+whitelist extension that added `text-emphasis` longhands. Fix: align
+the generator's serialization with the resolved-value form (or
+normalize both sides) so the round-trip holds. A round-trip break is
+close to the trust boundary — `C ∘ G = id` validates the capture
+pipeline — so treat as higher priority than the deferred items.
 
 ## 2. Whitelist extension: SVG presentation properties
 

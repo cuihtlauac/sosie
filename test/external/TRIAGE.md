@@ -370,6 +370,48 @@ Cannot read properties of null (reading 'appendChild')` in
 These 7 do not change the fix already queued in the backlog; they
 expand its affected-test list and its test evidence.
 
+## Null-`head` crash fixed (2026-08-18)
+
+`freeze_page`/`unfreeze_page` now fall back to `documentElement` when
+`document.head` is null, and `unfreeze` removes the freeze `<style>`
+from its actual parent (`parentNode` / `.remove()`) rather than
+re-deriving the insertion point. Applied identically to both extractors
+(`js_extractor/extractor.ml` and the canonical `js/sosie-capture.js`).
+A regression test (`capture_headless_document_does_not_crash`, an
+`application/xhtml+xml` data-URL with no `<head>`) guards it under
+`@integration`.
+
+Re-ran the **12** xfails carrying the `appendChild`/null-`head`
+signature — the only `extractor exception` class in the corpus. All 12
+now capture without crashing:
+
+- **3 recovered → pass**, pruned from `expectations.json`: mathml
+  `dynamic-rowspan-mozilla-370692`, `mi-mathvariant-1`, `mi-mathvariant-2`.
+- **9 still xfail for genuine reasons** (crash reasons refreshed via
+  `diffs_to_reason`): the three css/CSS2 `table-*-group-001` and
+  css-pseudo `first-letter-of-html-root-refcrash` →
+  *requires tag-agnostic matching* (BODY wrapper / baseline-node
+  insertion); svg `non-scaling-stroke-001`/`-003`/`-004` →
+  *layout: bounds differ*; css-images `svg-script-is-ignored` and svg
+  `symbol-in-mask` → structural.
+
+Corpus xfails 19,829 → 19,826.
+
+### Root cause of the "surprising" svg `.html` cases (resolved)
+
+Session E flagged the 4 svg `.html` crashes as surprising because the
+HTML parser synthesizes a `<head>`. Resolved: the crash was never in the
+`.html` test capture — those parse as HTML with `documentElement = HTML`
+(post-fix captures root at `/HTML/BODY/svg/...`). It was the **reference**
+capture. Each uses `rel="match"` to an SVG reference
+(`non-scaling-stroke`/`symbol-in-mask` → `green-100x100.svg`;
+`svg-script-is-ignored` → `svg-script-is-ignored-ref.svg`), and those
+`.svg` documents are SVG-rooted (`documentElement = <svg>`, no head).
+Same null-`head` mechanism, on the reference rather than the test. The
+`documentElement` fallback covers both. Their residual xfails are now
+SVG-rooted-tree comparison artifacts (SVG reference vs HTML-rooted test),
+i.e. the SVG-schema work tracked in backlog item 3, not a crash.
+
 ## Whitelist extension: sensitivity re-measurement (2026-08-17)
 
 The property whitelist grew from 29 to 49 (commit extending the

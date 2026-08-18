@@ -2,6 +2,32 @@
 
 Completed work, most recent first.
 
+## 2026-08-18 — Fix null `document.head` crash on head-less documents
+
+`freeze_page`/`unfreeze_page` fall back to `documentElement` when
+`document.head` is null, and unfreeze removes the freeze `<style>` from
+its actual parent (`parentNode` / `.remove()`) rather than re-deriving
+the insertion point. Applied identically to both extractors — the
+canonical `js/sosie-capture.js` and the JSOO `js_extractor/extractor.ml`
+(where `document##.head` is typed non-optional, so it is read via
+`Js.Unsafe.get` to null-check it). Regression test
+`capture_headless_document_does_not_crash` (an `application/xhtml+xml`
+data-URL with no `<head>`) added under `@integration`.
+
+Re-ran the 12 xfails carrying the `appendChild`/null-`head` signature —
+the only `extractor exception` class in the corpus. All 12 now capture
+without crashing: 3 mathml tests recovered to pass (pruned from
+`expectations.json`), 9 remain xfail for genuine structural/layout
+reasons (crash reasons refreshed via `diffs_to_reason`). Corpus xfails
+19,829 → 19,826.
+
+Resolved session E's "surprising" svg `.html` crashes: the crash was in
+their SVG *reference* documents (`rel="match"` → `green-100x100.svg`,
+`svg-script-is-ignored-ref.svg`), which are SVG-rooted with no head —
+not the HTML test files (which parse normally). Same null-`head`
+mechanism, on the reference; the `documentElement` fallback covers both.
+Details in TRIAGE.md.
+
 ## 2026-08-17 — Whitelist extension guided by sensitivity measurement
 
 Extended the capture whitelist 29 → 49 properties to recover the false

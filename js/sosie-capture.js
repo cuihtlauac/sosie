@@ -44,7 +44,9 @@ function sosieCapture(properties) {
   var freezeStyle = document.createElement("style");
   freezeStyle.textContent =
     "* { transition: none !important; animation: none !important; }";
-  document.head.appendChild(freezeStyle);
+  // document.head is null on XML documents without an explicit <head> and on
+  // SVG-rooted documents; fall back to the document element.
+  (document.head || document.documentElement).appendChild(freezeStyle);
 
   // Force a reflow so the freeze takes effect before we measure.
   document.documentElement.offsetHeight;
@@ -151,8 +153,9 @@ function sosieCapture(properties) {
 
   var root = captureElement(document.documentElement);
 
-  // Remove the freeze stylesheet.
-  document.head.removeChild(freezeStyle);
+  // Remove the freeze stylesheet from its actual parent (may be head or the
+  // document element, per the fallback above).
+  freezeStyle.remove();
 
   return {
     version: 1,
