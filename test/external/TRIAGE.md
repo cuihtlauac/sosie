@@ -503,7 +503,10 @@ new opportunity:
   declarations target the `::permission-icon` pseudo-element, which the
   extractor does not capture (only `::before`/`::after`); no captured
   element carries the changed value. These belong with the
-  pseudo-element-internals class above.
+  pseudo-element-internals class above. **(Superseded 2026-08-18: once the
+  extractor captures `::permission-icon`, the `fill`/`stroke`/
+  `stroke-width` variants recover — see the addendum at the end of the SVG
+  paint section.)**
 
 ## SVG paint whitelist extension (2026-08-18)
 
@@ -532,6 +535,35 @@ descend into shadow DOM (`js/sosie-capture.js:73`,
 prior "recoverable" note was inferred from the test *source* (the CSS
 declarations), not verified against capture behaviour. These join the
 pseudo-element-internals non-recoverable class.
+
+### Addendum (2026-08-18): permission-icon recovery overturned
+
+The refutation above was correct *for its time* — the extractor then
+captured only `::before`/`::after`, so nothing carried the icon's
+`fill`/`stroke`. But its implicit conclusion (these tests are
+intrinsically unrecoverable) was wrong. Backlog item "capture
+pseudo-elements beyond `::before`/`::after`" recovered three of them.
+
+Two things the SVG-paint analysis missed:
+- The element is `<geolocation>` (a PEPC permission-element subtype), not
+  `<permission>`. `<geolocation>` renders with no flag, and
+  `getComputedStyle(el, "::permission-icon")` **does** cascade the author
+  value — test `fill rgb(255,0,0)` vs ref `rgb(0,0,255)`. (Probing
+  `<permission type=camera>`, which does not render on `file://`, gave a
+  false "still refuted" reading during this session too, before switching
+  to the real corpus element.)
+- The blocker was purely that the extractor did not *capture* the pseudo,
+  not that the value was invisible to `getComputedStyle`.
+
+Once both extractors capture `::permission-icon` (on
+geolocation/camera/microphone/permission), the geolocation
+`icon-css-property-{fill,stroke,stroke-width}` reftests recover. The
+`{height,min-height}` icon tests remain non-recoverable: `height` is
+deliberately unwhitelisted and standard APIs expose no pseudo geometry,
+so pseudo bounds are the host element's rect. Net +5 sensitivity
+recoveries (also `::file-selector-button` and `::placeholder` controls);
+sensitivity 316/381 → 321/381. See `plans/pseudo-element-capture.md` and
+the changelog entry of the same date.
 
 **Cost — 5 spurious Match diffs.** Five previously-passing Match reftests
 now report a paint diff, bulk-xfailed by dominant type:

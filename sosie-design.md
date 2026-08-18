@@ -794,9 +794,20 @@ is the review format.
 
 ## Resolved questions
 
-1. **Pseudo-elements** (`::before`, `::after`). `captureSnapshot` includes them
-   as nodes named `"::before"` / `"::after"`, parented to their host element in
-   document order. They participate in tree matching like any other node.
+1. **Pseudo-elements.** `captureSnapshot` includes `::before` / `::after`
+   (content-gated) as nodes named for the selector, parented to their host
+   element in document order. It also captures a fixed, element-type-gated
+   set of UA shadow pseudo-elements unconditionally — `::placeholder`,
+   `::file-selector-button`, `::-webkit-slider-runnable-track` / `-thumb`,
+   `::-webkit-progress-bar` / `-value`, `::-webkit-meter-bar` /
+   `-inner-element`, `::permission-icon`. `getComputedStyle` offers no
+   trustworthy existence signal for these (it returns a full declaration
+   for almost any element+pseudo pair), so rather than detect existence we
+   over-capture: same-element before/after comparison makes a boxless
+   pseudo resolve identically on both sides, so over-capture risks only
+   tolerable false positives, never a false negative. All participate in
+   tree matching like any other node. See
+   `plans/pseudo-element-capture.md`.
 
 2. **Font loading.** Resolved by awaiting `document.fonts.ready` via
    `Runtime.evaluate` before capturing (see CDP conversation above).
