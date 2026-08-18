@@ -1448,17 +1448,40 @@ way to the source.
   parsing for `drop_subtrees`)
 - Could live in the Cascade project as `cascade.sosie` or stand alone
 
-## Relationship to Cascade
+## Relationship to Cascade and tw
 
-[Cascade](https://github.com/samoht/cascade) defines styles in OCaml; sosie verifies the result matches. Together
-they form a typed-and-verified CSS workflow:
+The ecosystem (all by `samoht`) has three orthogonal layers:
 
-- Cascade provides color parsing/canonicalization (reusable in normalization)
-- Cascade provides selector parsing (reusable for `drop_subtrees` and
-  `mask_text` rules)
-- `cssdiff` compares CSS files; `sosie` compares their rendered effect
-- A refactoring workflow: change styles with Cascade, prove equivalence with
-  sosie
+- **[cascade](https://github.com/samoht/cascade)** — a typed CSS AST, parser,
+  pretty-printer, and optimiser (published on opam as `cascade`). It is the
+  lower-level CSS toolkit, with no Tailwind-specific code.
+- **[tw](https://github.com/samoht/tw)** — type-safe Tailwind CSS in OCaml,
+  built on cascade. It *authors* styles (OCaml values → CSS) and validates
+  itself by **byte-for-byte differential testing against the official
+  Tailwind CLI** — an equality check on CSS *source text* against a golden
+  reference. This is the dual of sosie: same intent, source must be identical.
+- **sosie** — verifies that two *rendered* pages are equivalent despite
+  deliberately different source. No reference implementation; before-vs-after
+  of the same engine.
+
+Together they form a typed-and-verified CSS workflow: change styles with
+tw/cascade, prove the rendered result is unchanged with sosie.
+
+Concrete reuse from cascade (verified against its public `.mli` surface,
+2026-08-18):
+
+- `Cascade.Values` — CSS value/unit parsing (`hex`/`hex_opt`, `rgb`, `hsl`,
+  `oklch`, lengths, angles, `calc()`). Backs sosie's `css_value` parsing.
+- `Cascade.Color_space` — spec-accurate colour-space conversion (sRGB, P3,
+  Lab, OKLab, XYZ; CSS Color 4). Backs `Canonicalize_colors` far better than
+  a 24-bit `Color of int` (see the addendum below).
+- `Cascade.Selector` — `of_string` / `class_` / `id` / `element` /
+  `universal`, with CSS-escape handling. Backs the `simple_selector` used in
+  `Drop_subtree` and `Mask_text` rules.
+- `cascade.diff` (`Cascade_diff.Css_compare` / `Tree_diff` / `String_diff`) —
+  the `cssdiff` that compares CSS *files*. Complementary to, not redundant
+  with, sosie's rendered-snapshot GumTree matcher: it diffs CSS source ASTs;
+  sosie diffs rendered layout+style trees.
 
 ## Extractor architecture addendum (2026-03-20)
 
@@ -1500,3 +1523,42 @@ oracle during the transition. Once the JSOO extractor is validated against
 it on real pages, the raw JS is retired.
 
 See `plans/jsoo-extractor-refactor.md` for the implementation plan.
+
+## Cascade integration addendum (2026-08-18)
+
+### What was investigated
+
+Whether sosie is redundant with `samoht/tw` (and its differential test
+suite). Conclusion: no redundancy. tw is a Tailwind *generator* whose
+self-test is byte-for-byte CSS-source equality against the official Tailwind
+CLI — the opposite equivalence relation from sosie (identical source vs.
+equivalent rendering). See the "Relationship to Cascade and tw" section.
+
+The investigation also confirmed the `tw → cascade` lineage: **cascade is a
+standalone CSS toolkit extracted from tw**, published on opam, and it exposes
+exactly the primitives the original "Relationship to Cascade" section
+speculated about — now verified against its `.mli` surface, not assumed.
+
+### Correction: `Color of int` is too lossy for the trust model
+
+The typed AST (see the Typed AST section) represents colours as
+`Color of int` — a 24-bit `0xRRGGBB`. Given sosie's asymmetry (false
+negatives are fatal), this is a hazard:
+
+- It cannot represent **alpha**, so `rgba(255,0,0,1)` and `rgba(255,0,0,0)`
+  collapse to the same value — a potential missed regression.
+- It cannot represent **wide-gamut** colours (Display-P3, OKLCH), which
+  modern `getComputedStyle` increasingly returns; two distinct wide-gamut
+  colours can map to the same sRGB truncation.
+
+`Cascade.Values.color` + `Cascade.Color_space` model colour to CSS Color 4
+precision (alpha, colour spaces, spec conversions). Adopting cascade's colour
+type for the `Color` case of `css_value` removes both blind spots and makes
+`Canonicalize_colors` a spec-accurate projection rather than a lossy hash.
+This is a whitelist-completeness (Claim 4) improvement and should be made
+before relying on colour comparison in production.
+
+Tracking: fold cascade's colour and value parsing into `css_value`, and
+cascade's selector parser into `simple_selector`, replacing the hand-rolled
+minimal implementations. `cascade.diff` is *not* adopted — it diffs CSS
+source, a different problem from sosie's rendered-tree diff.
