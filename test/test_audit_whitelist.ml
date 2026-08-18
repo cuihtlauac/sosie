@@ -104,6 +104,6 @@ let () =
           test_case "correct CSS format" `Quick reset_format;
           test_case "handles vendor-prefixed names" `Quick
             handles_vendor_prefixed;
-          test_case "whitelist count is 29" `Quick whitelist_has_expected_count;
+          test_case "whitelist count is 49" `Quick whitelist_has_expected_count;
         ] );
     ]
