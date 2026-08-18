@@ -40,7 +40,7 @@ let default_styles_json =
     ("text-combine-upright", `String "none");
     ("text-emphasis-style", `String "none");
     ("text-emphasis-color", `String "rgb(0, 0, 0)");
-    ("text-emphasis-position", `String "over right");
+    ("text-emphasis-position", `String "over");
     ("-webkit-text-stroke-width", `String "0px");
     ("-webkit-text-stroke-color", `String "rgb(0, 0, 0)");
     ("font-palette", `String "normal");

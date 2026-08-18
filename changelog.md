@@ -2,6 +2,32 @@
 
 Completed work, most recent first.
 
+## 2026-08-18 — Fix `C ∘ G` round-trip on `text-emphasis-position`
+
+The `@integration` `test_round_trip` suite failed: fixtures and the
+generator used `over right` as the canonical resolved value of
+`text-emphasis-position`, but Chromium's getComputedStyle normalizes it
+to `over` (verified: `over right` → `over`, `right over` → `over`,
+`over` → `over`; only the non-default `left` component survives, e.g.
+`under left` → `under left`). So `C ∘ G ≠ id` for the hand-crafted and
+qcheck round-trip cases. Fixed by using the true canonical resolved
+value `over` everywhere the initial value is hardcoded: `mutate.ml`'s
+`Reset_to_default` table (where `over right` also produced a spurious
+no-op reset mutation, since resetting `over` → `over right` captures
+back as `over`), and the test fixtures across the suite. The
+trust-critical path (`compare.ml` over two real captures) was never
+affected — both sides come from getComputedStyle and are already
+canonical; `over right` only ever appeared as a hand-authored literal.
+`@integration` `test_round_trip` (4 cases) now passes;
+`test_mutation_integration` passes; unit suite green.
+
+Surfaced (pre-existing, unrelated) while running `@integration`:
+`test_audit_integration` fails with CDP `DOM agent needs to be enabled
+first` — `Audit_whitelist.all_css_properties` calls
+`CSS.getSupportedCSSProperties` without a prior `DOM.enable` (a
+Chromium behavior change). Confirmed failing on the clean tree; queued
+in the backlog.
+
 ## 2026-08-18 — Fix null `document.head` crash on head-less documents
 
 `freeze_page`/`unfreeze_page` fall back to `documentElement` when

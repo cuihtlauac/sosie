@@ -23,7 +23,7 @@ let default_styles : visual_properties =
     text_underline_offset = Str "auto"; text_shadow = Str "none";
     text_combine_upright = Str "none"; text_emphasis_style = Str "none";
     text_emphasis_color = Str "rgb(0, 0, 0)";
-    text_emphasis_position = Str "over right";
+    text_emphasis_position = Str "over";
     webkit_text_stroke_width = Str "0px";
     webkit_text_stroke_color = Str "rgb(0, 0, 0)";
     font_palette = Str "normal"; writing_mode = Str "horizontal-tb";

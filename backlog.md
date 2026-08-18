@@ -3,19 +3,19 @@
 Pending work, current task first. See `plans/wpt-ingestion-campaign.md`
 for the full campaign design and `sosie-roadmap.md` Step 10c for status.
 
-## 1. Round-trip (`C ∘ G`) breaks on `text-emphasis-position`
+## 1. `test_audit_integration` fails: DOM agent not enabled
 
-The `@integration` `test_round_trip` suite fails: the generator emits
-`text-emphasis-position: over right` (the canonical two-value form) but
-Chromium's getComputedStyle returns `over`, so `C ∘ G ≠ id` for the
-hand-crafted (single div, nested divs) and qcheck ("C ∘ G preserves
-structure") cases. Pre-existing, surfaced 2026-08-18 during the
-null-`head` fix (unrelated to it). Likely fallout of the 29 → 49
-whitelist extension that added `text-emphasis` longhands. Fix: align
-the generator's serialization with the resolved-value form (or
-normalize both sides) so the round-trip holds. A round-trip break is
-close to the trust boundary — `C ∘ G = id` validates the capture
-pipeline — so treat as higher priority than the deferred items.
+`@integration` `test_audit_integration` (`all_css_properties`) fails
+with CDP `{"code":-32000,"message":"DOM agent needs to be enabled
+first."}`. `Audit_whitelist.all_css_properties` sends `CSS.enable` then
+`CSS.getSupportedCSSProperties`, but current Chromium requires the DOM
+agent to be enabled first — the call needs a `DOM.enable` (and likely
+the capture path already does this, so factor out a shared
+agent-enable helper). Pre-existing (confirmed failing on the clean tree
+at 2979a02), surfaced 2026-08-18 while running `@integration` for the
+round-trip fix — unrelated to it. Only reachable via the CDP
+`audit-whitelist` command / integration test, not the capture pipeline,
+so lower priority than a trust-boundary break.
 
 ## 2. Whitelist extension: SVG presentation properties
 

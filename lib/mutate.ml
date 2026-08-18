@@ -151,7 +151,7 @@ let prop_table =
     ("text-combine-upright", { default = "none"; keywords = [ "none"; "all" ] });
     ("text-emphasis-style", { default = "none"; keywords = [] });
     ("text-emphasis-color", { default = "rgb(0, 0, 0)"; keywords = [] });
-    ("text-emphasis-position", { default = "over right"; keywords = [] });
+    ("text-emphasis-position", { default = "over"; keywords = [] });
     ("-webkit-text-stroke-width", { default = "0px"; keywords = [] });
     ("-webkit-text-stroke-color", { default = "rgb(0, 0, 0)"; keywords = [] });
     ("font-palette", { default = "normal"; keywords = [] });
