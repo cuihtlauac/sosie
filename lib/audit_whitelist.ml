@@ -6,26 +6,49 @@ module String_set = Set.Make (String)
 
 let whitelist_css_names = Sosie_shared.Property_whitelist.css_names
 
+(* Enumerate the browser's rendering-affecting CSS property names by
+   reading them off a getComputedStyle object, which is an array-like
+   listing every longhand property the engine exposes. Chrome 151 removed
+   the CDP `CSS.getSupportedCSSProperties` command this used to call; the
+   longhand set is in fact the precise (non-redundant) set the blind-spot
+   reset needs — resetting each non-whitelisted longhand to `initial`
+   covers every property that can affect rendering. Uses Runtime.evaluate
+   only, so no CSS/DOM CDP domain enable is required. *)
 let all_css_properties conn =
-  let _enable = Cdp.send conn "CSS.enable" (`Assoc []) in
+  let expr =
+    {|(() => {
+        const cs = getComputedStyle(document.documentElement);
+        const names = [];
+        for (let i = 0; i < cs.length; i++) names.push(cs[i]);
+        return names;
+      })()|}
+  in
   let result =
-    Cdp.send conn "CSS.getSupportedCSSProperties" (`Assoc [])
+    Cdp.send conn "Runtime.evaluate"
+      (`Assoc
+        [
+          ("expression", `String expr);
+          ("returnByValue", `Bool true);
+        ])
   in
   match result with
   | `Assoc fields -> (
-      match List.assoc_opt "cssProperties" fields with
-      | Some (`List props) ->
-          List.filter_map
-            (fun p ->
-              match p with
-              | `Assoc pf -> (
-                  match List.assoc_opt "name" pf with
-                  | Some (`String name) -> Some name
-                  | _ -> None)
-              | _ -> None)
-            props
-      | _ -> failwith "CSS.getSupportedCSSProperties: missing cssProperties")
-  | _ -> failwith "CSS.getSupportedCSSProperties: unexpected response"
+      match List.assoc_opt "exceptionDetails" fields with
+      | Some details ->
+          failwith
+            (Printf.sprintf "all_css_properties: evaluation failed: %s"
+               (Yojson.Safe.to_string details))
+      | None -> (
+          match List.assoc_opt "result" fields with
+          | Some (`Assoc rf) -> (
+              match List.assoc_opt "value" rf with
+              | Some (`List names) ->
+                  List.filter_map
+                    (function `String s -> Some s | _ -> None)
+                    names
+              | _ -> failwith "all_css_properties: no array value returned")
+          | _ -> failwith "all_css_properties: no result returned"))
+  | _ -> failwith "all_css_properties: unexpected response"
 
 let reset_stylesheet ~whitelist ~all_properties =
   let whiteset =

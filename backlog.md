@@ -3,21 +3,7 @@
 Pending work, current task first. See `plans/wpt-ingestion-campaign.md`
 for the full campaign design and `sosie-roadmap.md` Step 10c for status.
 
-## 1. `test_audit_integration` fails: DOM agent not enabled
-
-`@integration` `test_audit_integration` (`all_css_properties`) fails
-with CDP `{"code":-32000,"message":"DOM agent needs to be enabled
-first."}`. `Audit_whitelist.all_css_properties` sends `CSS.enable` then
-`CSS.getSupportedCSSProperties`, but current Chromium requires the DOM
-agent to be enabled first — the call needs a `DOM.enable` (and likely
-the capture path already does this, so factor out a shared
-agent-enable helper). Pre-existing (confirmed failing on the clean tree
-at 2979a02), surfaced 2026-08-18 while running `@integration` for the
-round-trip fix — unrelated to it. Only reachable via the CDP
-`audit-whitelist` command / integration test, not the capture pipeline,
-so lower priority than a trust-boundary break.
-
-## 2. Whitelist extension: SVG presentation properties
+## 1. Whitelist extension: SVG presentation properties
 
 The 29 → 49 whitelist extension raised mismatch-control sensitivity to
 82.4% (TRIAGE.md whitelist re-measurement section). Of the 67 residual
@@ -30,7 +16,7 @@ match-test xfails as before. The rest of the 67 are non-recoverable by
 property capture (pseudo-element internals, glyph-level font selection,
 MathML operator geometry, bitmap/highlight styling).
 
-## 3. Deferred (not scheduled)
+## 2. Deferred (not scheduled)
 
 - `.svg` reftest support in discovery. Now ~1,266 in-scope tests are
   skipped by the walker (`acc_if_reftest` accepts only .html/.xhtml/.xht):

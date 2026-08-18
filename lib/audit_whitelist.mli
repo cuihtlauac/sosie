@@ -4,16 +4,18 @@
     properties to [initial]. If the screenshots differ, a visual property
     outside the whitelist affects the page — a blind spot.
 
-    Uses CDP's [CSS.getSupportedCSSProperties] for the authoritative
-    browser property list. Diff images are produced via ImageMagick
-    [compare] when available, falling back to saving both PNGs. *)
+    The browser property list is read from a [getComputedStyle] object
+    (every longhand the engine exposes). Diff images are produced via
+    ImageMagick [compare] when available, falling back to saving both
+    PNGs. *)
 
 val whitelist_css_names : string list
 (** The 49 whitelisted CSS property names from {!Property_whitelist}. *)
 
 val all_css_properties : Cdp.connection -> string list
-(** Query [CSS.getSupportedCSSProperties] from the browser.
-    Returns the list of all CSS property names the browser supports.
+(** Enumerate the browser's rendering-affecting CSS property names by
+    reading a [getComputedStyle] object via [Runtime.evaluate]. Returns
+    every longhand property the engine exposes.
     @raise Failure if the CDP call fails or the response is malformed. *)
 
 val reset_stylesheet :

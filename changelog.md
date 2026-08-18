@@ -2,6 +2,24 @@
 
 Completed work, most recent first.
 
+## 2026-08-18 — Fix `test_audit_integration`: enumerate CSS props via JS
+
+`Audit_whitelist.all_css_properties` called CDP
+`CSS.getSupportedCSSProperties`, which Chrome 151 has removed entirely
+(the command no longer exists — verified against the live
+`/json/protocol`; an interim `DOM.enable` fix cleared the "DOM agent
+needs to be enabled first" error only to surface `'…' wasn't found`).
+Replaced it with a `Runtime.evaluate` that reads property names off a
+`getComputedStyle(document.documentElement)` object — the array-like set
+of every longhand the engine exposes. That is in fact the precise,
+non-redundant set the blind-spot reset needs: resetting each
+non-whitelisted longhand to `initial` covers everything that can affect
+rendering, without the old command's shorthand/longhand duplication. No
+CSS/DOM CDP domain enable is required anymore. `@integration`
+`test_audit_integration` passes; `audit-whitelist` smoke-tested
+end-to-end (a page using non-whitelisted `margin`/`letter-spacing`/
+`transform` correctly reports blind spots).
+
 ## 2026-08-18 — Fix `C ∘ G` round-trip on `text-emphasis-position`
 
 The `@integration` `test_round_trip` suite failed: fixtures and the
