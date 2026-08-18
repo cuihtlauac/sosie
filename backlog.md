@@ -3,7 +3,7 @@
 Pending work, current task first. See `plans/wpt-ingestion-campaign.md`
 for the full campaign design and `sosie-roadmap.md` Step 10c for status.
 
-## Extractor: null document.head crash on XML documents without <head>
+## 1. Extractor: null document.head crash on XML documents without <head>
 
 `freeze_page` (`js_extractor/extractor.ml`) appends the
 transition-freeze style to `document.head`, which is null in
@@ -28,7 +28,7 @@ The svg `.html` cases are surprising — the HTML parser synthesizes a
 XML case; verify the `documentElement` fallback actually covers them
 and diagnose why `head` is null there. Affected corpus-wide: 15 tests.
 
-## Whitelist extension: SVG presentation properties
+## 2. Whitelist extension: SVG presentation properties
 
 The 29 → 49 whitelist extension raised mismatch-control sensitivity to
 82.4% (TRIAGE.md whitelist re-measurement section). Of the 67 residual
@@ -41,7 +41,7 @@ match-test xfails as before. The rest of the 67 are non-recoverable by
 property capture (pseudo-element internals, glyph-level font selection,
 MathML operator geometry, bitmap/highlight styling).
 
-## Deferred (not scheduled)
+## 3. Deferred (not scheduled)
 
 - `.svg` reftest support in discovery. Now ~1,266 in-scope tests are
   skipped by the walker (`acc_if_reftest` accepts only .html/.xhtml/.xht):
