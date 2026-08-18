@@ -90,6 +90,9 @@ let default_visual_properties : Snapshot_types.visual_properties =
     outline_style = Str "none";
     outline_color = Str "rgb(0, 0, 0)";
     outline_offset = Str "0px";
+    fill = Str "rgb(0, 0, 0)";
+    stroke = Str "none";
+    stroke_width = Str "1px";
   }
 
 let test_visual_properties_construction () =
@@ -198,11 +201,11 @@ let test_snapshot_dark_scheme () =
   Alcotest.(check bool) "dark scheme" true (s.color_scheme = `Dark)
 
 let test_whitelist_count () =
-  Alcotest.(check int) "49 properties" 49
+  Alcotest.(check int) "52 properties" 52
     (List.length Property_whitelist.properties)
 
 let test_css_names_count () =
-  Alcotest.(check int) "49 css names" 49
+  Alcotest.(check int) "52 css names" 52
     (List.length Property_whitelist.css_names)
 
 let test_css_names_match_properties () =
@@ -238,6 +241,7 @@ let test_whitelist_matches_raw_js () =
       "font-palette"; "writing-mode"; "direction"; "appearance";
       "accent-color"; "image-rendering";
       "outline-width"; "outline-style"; "outline-color"; "outline-offset";
+      "fill"; "stroke"; "stroke-width";
     ]
   in
   Alcotest.(check (list string)) "matches raw JS DEFAULT_PROPERTIES"
@@ -301,9 +305,9 @@ let () =
         ] );
       ( "property_whitelist",
         [
-          Alcotest.test_case "has 49 properties" `Quick
+          Alcotest.test_case "has 52 properties" `Quick
             test_whitelist_count;
-          Alcotest.test_case "css_names has 49 entries" `Quick
+          Alcotest.test_case "css_names has 52 entries" `Quick
             test_css_names_count;
           Alcotest.test_case "css_names matches properties" `Quick
             test_css_names_match_properties;

@@ -27,6 +27,7 @@ let default_styles =
     direction = v; appearance = v; accent_color = v; image_rendering = v;
     outline_width = v; outline_style = v; outline_color = v;
     outline_offset = v;
+    fill = v; stroke = v; stroke_width = v;
   }
 
 let make_node ?(tag = "DIV") ?(children = []) ?(text = None)

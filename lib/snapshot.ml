@@ -93,6 +93,9 @@ let styles_of_json j : visual_properties =
     outline_style = css_str "outline-style" j;
     outline_color = css_str "outline-color" j;
     outline_offset = css_str "outline-offset" j;
+    fill = css_str "fill" j;
+    stroke = css_str "stroke" j;
+    stroke_width = css_str "stroke-width" j;
   }
 
 let attributes_of_json = function
@@ -215,6 +218,9 @@ let json_of_styles (vp : visual_properties) : Yojson.Safe.t =
     ("outline-style", json_of_css_value vp.outline_style);
     ("outline-color", json_of_css_value vp.outline_color);
     ("outline-offset", json_of_css_value vp.outline_offset);
+    ("fill", json_of_css_value vp.fill);
+    ("stroke", json_of_css_value vp.stroke);
+    ("stroke-width", json_of_css_value vp.stroke_width);
   ]
 
 let rec json_of_node (n : node) : Yojson.Safe.t =

@@ -34,7 +34,8 @@ function sosieCapture(properties) {
     "-webkit-text-stroke-width", "-webkit-text-stroke-color",
     "font-palette", "writing-mode", "direction", "appearance",
     "accent-color", "image-rendering",
-    "outline-width", "outline-style", "outline-color", "outline-offset"
+    "outline-width", "outline-style", "outline-color", "outline-offset",
+    "fill", "stroke", "stroke-width"
   ];
 
   var props = properties || DEFAULT_PROPERTIES;

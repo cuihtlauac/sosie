@@ -9,7 +9,13 @@
     {!Snapshot_types}. Shorthands that [getComputedStyle] does not reliably
     serialize (outline, text-emphasis, -webkit-text-stroke) are captured as
     individual longhands, so an empty computed value can never hide a real
-    difference. *)
+    difference.
+
+    SVG paint presentation properties (fill, stroke, stroke-width) are
+    captured on every element: they are inherited with constant defaults on
+    HTML content ([fill: rgb(0, 0, 0)], [stroke: none], [stroke-width: 1px]),
+    so their presence adds effectively no spurious diffs while making SVG
+    paint changes visible to the comparison. *)
 
 type property = {
   css_name : string;  (** CSS property name, e.g. ["background-color"]. *)
@@ -18,7 +24,7 @@ type property = {
 (** A single whitelisted CSS property with its CSS and OCaml names. *)
 
 val properties : property list
-(** The 49 whitelisted CSS properties in declaration order. *)
+(** The 52 whitelisted CSS properties in declaration order. *)
 
 val css_names : string list
 (** Just the CSS names, for passing to [getComputedStyle] iteration. *)

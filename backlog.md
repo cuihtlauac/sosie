@@ -3,21 +3,20 @@
 Pending work, current task first. See `plans/wpt-ingestion-campaign.md`
 for the full campaign design and `sosie-roadmap.md` Step 10c for status.
 
-## 1. Whitelist extension: SVG presentation properties
+No task is currently scheduled. The SVG-paint whitelist extension
+(previous item #1) was completed and its recovery hypothesis refuted —
+see the changelog and TRIAGE.md "SVG paint whitelist extension" section.
 
-The 29 → 49 whitelist extension raised mismatch-control sensitivity to
-82.4% (TRIAGE.md whitelist re-measurement section). Of the 67 residual
-false negatives, 9 are recoverable: the `permission-element`
-`icon-css-property-{fill,stroke,stroke-width,height}` reftests differ
-only in SVG presentation properties not yet captured. Add `fill`,
-`stroke`, `stroke-width` (and confirm `height` behaviour on replaced
-SVG) to the whitelist, then re-measure sensitivity and re-triage
-match-test xfails as before. The rest of the 67 are non-recoverable by
-property capture (pseudo-element internals, glyph-level font selection,
-MathML operator geometry, bitmap/highlight styling).
+## Deferred (not scheduled)
 
-## 2. Deferred (not scheduled)
-
+- Capture pseudo-elements beyond `::before`/`::after`. The SVG-paint
+  extension proved that the `::permission-icon`,
+  `::slider-{track,fill,thumb}`, `::placeholder`, and
+  `::file-selector-button` false negatives (~25 sensitivity controls)
+  are unreachable because the extractor walks DOM elements plus only
+  those two pseudos. Recovering them needs the extractor to enumerate
+  and capture additional (and UA shadow) pseudo-elements — schema and
+  both-extractor work.
 - `.svg` reftest support in discovery. Now ~1,266 in-scope tests are
   skipped by the walker (`acc_if_reftest` accepts only .html/.xhtml/.xht):
   1,125 in `svg/` alone after session E ingested that tree, plus 113 in

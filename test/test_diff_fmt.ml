@@ -30,7 +30,8 @@ let default_styles : visual_properties =
     direction = Str "ltr"; appearance = Str "none"; accent_color = Str "auto";
     image_rendering = Str "auto"; outline_width = Str "0px";
     outline_style = Str "none"; outline_color = Str "rgb(0, 0, 0)";
-    outline_offset = Str "0px" }
+    outline_offset = Str "0px";
+    fill = Str "rgb(0, 0, 0)"; stroke = Str "none"; stroke_width = Str "1px" }
 
 let make_node ?(tag = "DIV") ?(children = []) () : node =
   { tag; attributes = []; bounds = { x = 0.0; y = 0.0; w = 100.0; h = 50.0 };

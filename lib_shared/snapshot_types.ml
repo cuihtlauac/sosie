@@ -58,6 +58,9 @@ type visual_properties = {
   outline_style : css_value;
   outline_color : css_value;
   outline_offset : css_value;
+  fill : css_value;
+  stroke : css_value;
+  stroke_width : css_value;
 }
 
 type node = {

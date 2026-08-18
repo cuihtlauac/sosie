@@ -54,6 +54,9 @@ let default_styles : visual_properties =
     outline_style = Str "none";
     outline_color = Str "rgb(0, 0, 0)";
     outline_offset = Str "0px";
+    fill = Str "rgb(0, 0, 0)";
+    stroke = Str "none";
+    stroke_width = Str "1px";
   }
 
 let make_node ?(tag = "DIV") ?(attributes = [])
@@ -175,6 +178,9 @@ let rec compare_nodes ~path (expected : node) (actual : node) : string list =
   cmp_css "outline-style" (fun s -> s.outline_style);
   cmp_css "outline-color" (fun s -> s.outline_color);
   cmp_css "outline-offset" (fun s -> s.outline_offset);
+  cmp_css "fill" (fun s -> s.fill);
+  cmp_css "stroke" (fun s -> s.stroke);
+  cmp_css "stroke-width" (fun s -> s.stroke_width);
   (* Compare children count. *)
   let ec = List.length expected.children in
   let ac = List.length actual.children in
@@ -381,6 +387,9 @@ module Gen_rt = struct
         outline_style = Str "none";
         outline_color = Str "rgb(0, 0, 0)";
         outline_offset = Str "0px";
+        fill = Str "rgb(0, 0, 0)";
+        stroke = Str "none";
+        stroke_width = Str "1px";
       }
 
   let float_bounds ~px ~py ~pw ~ph =

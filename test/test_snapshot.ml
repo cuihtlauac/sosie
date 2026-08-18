@@ -53,6 +53,9 @@ let default_styles_json =
     ("outline-style", `String "none");
     ("outline-color", `String "rgb(0, 0, 0)");
     ("outline-offset", `String "0px");
+    ("fill", `String "rgb(0, 0, 0)");
+    ("stroke", `String "none");
+    ("stroke-width", `String "1px");
   ]
 
 let make_node_json ?(tag = "DIV") ?(attributes = `List [])
@@ -129,8 +132,8 @@ let round_trip_with_attributes () =
   Alcotest.(check string) "json round-trip attributes"
     (Yojson.Safe.to_string json) (Yojson.Safe.to_string json')
 
-let round_trip_all_29_properties () =
-  (* Verify all 29 CSS properties survive the round-trip *)
+let round_trip_all_52_properties () =
+  (* Verify all 52 CSS properties survive the round-trip *)
   let json = make_snapshot_json () in
   let s = Snapshot.of_json json in
   let open Snapshot_types in
@@ -258,8 +261,8 @@ let () =
           Alcotest.test_case "with children" `Quick round_trip_with_children;
           Alcotest.test_case "dark color scheme" `Quick round_trip_dark_scheme;
           Alcotest.test_case "with attributes" `Quick round_trip_with_attributes;
-          Alcotest.test_case "all 29 CSS properties" `Quick
-            round_trip_all_29_properties;
+          Alcotest.test_case "all 52 CSS properties" `Quick
+            round_trip_all_52_properties;
         ] );
       ( "parsing-edge-cases",
         [

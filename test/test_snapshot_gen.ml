@@ -54,6 +54,9 @@ let default_styles : visual_properties =
     outline_style = Str "none";
     outline_color = Str "rgb(0, 0, 0)";
     outline_offset = Str "0px";
+    fill = Str "rgb(0, 0, 0)";
+    stroke = Str "none";
+    stroke_width = Str "1px";
   }
 
 let make_node ?(tag = "DIV") ?(attributes = [])

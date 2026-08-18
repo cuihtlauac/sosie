@@ -157,6 +157,9 @@ let compare_styles config path (a : visual_properties) (b : visual_properties) =
     |> check "outline-style" a.outline_style b.outline_style
     |> check "outline-color" a.outline_color b.outline_color
     |> check "outline-offset" a.outline_offset b.outline_offset
+    |> check "fill" a.fill b.fill
+    |> check "stroke" a.stroke b.stroke
+    |> check "stroke-width" a.stroke_width b.stroke_width
   in
   let diffs = List.rev diffs in
   diffs

@@ -113,6 +113,9 @@ let get_styles (style : Dom_html.cssStyleDeclaration Js.t)
     outline_style = p "outline-style";
     outline_color = p "outline-color";
     outline_offset = p "outline-offset";
+    fill = p "fill";
+    stroke = p "stroke";
+    stroke_width = p "stroke-width";
   }
 
 (* -- Pseudo-elements ------------------------------------------------------ *)
@@ -281,6 +284,9 @@ let styles_to_js (vp : Snapshot_types.visual_properties) : Js.Unsafe.any =
          ("outline-style", css_value_to_js vp.outline_style);
          ("outline-color", css_value_to_js vp.outline_color);
          ("outline-offset", css_value_to_js vp.outline_offset);
+         ("fill", css_value_to_js vp.fill);
+         ("stroke", css_value_to_js vp.stroke);
+         ("stroke-width", css_value_to_js vp.stroke_width);
        |])
 
 let rec node_to_js (n : Snapshot_types.node) : Js.Unsafe.any =

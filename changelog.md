@@ -2,6 +2,50 @@
 
 Completed work, most recent first.
 
+## 2026-08-18 — SVG paint whitelist extension (49→52); recovery hypothesis refuted
+
+Added the SVG paint presentation properties `fill`, `stroke`,
+`stroke-width` to the capture whitelist (49→52), threaded through every
+construction site (shared record + `Property_whitelist`, both extractors,
+native parse/serialize, generator, mutator, comparator, and the color
+canonicalizer for `fill`/`stroke`) with tests and QCheck generators;
+count assertions 49→52. `height` was deliberately **not** added:
+computed height is per-element and highly variable, so whitelisting it
+would inject thousands of corpus-wide spurious Match diffs to recover at
+most two pseudo-element tests.
+
+The backlog goal was to recover the 9 `permission-element`
+`icon-css-property-{fill,stroke,stroke-width,height}` sensitivity false
+negatives. **The hypothesis was refuted: 0 recovered.** Every one styles
+the `::permission-icon` pseudo-element, which the extractor does not
+capture (only `::before`/`::after`, no shadow DOM), so no captured
+element carries the changed value — verified by recapturing all eight,
+which still render equivalent. The prior "recoverable" note was inferred
+from the test source, not from capture behaviour. Reclassified into the
+pseudo-element-internals non-recoverable class; TRIAGE.md corrected.
+
+Re-measured monotonically (recaptured the 3,425 passes + 67 sensitivity
+false-negatives; the other 19,759 xfails are verdict-stable under
+widening). Cost: 5 previously-passing Match reftests now report a genuine
+`fill`/`stroke`/`stroke-width` diff on inline SVG that the reftest
+neutralises visually (`fill-opacity` vs opaque `rgb`; `stroke-width`
+doubling under `zoom`) — the tolerable false-positive class, bulk-xfailed
+by type. Near-zero blast radius (the props are inherited with constant
+defaults on non-SVG content). The properties are kept regardless: a
+changed `fill`/`stroke`/`stroke-width` on inline SVG is exactly the
+regression sosie's use case must catch.
+
+Incidental (unrelated to the new props): the recapture surfaced
+`css-fonts/font-palette-{add,remove}` now stably detected via the
+already-whitelisted `font-palette`; their stale xfails were pruned to
+passes. Sensitivity 314/381 (82.4%) → **316/381 (82.9%)** — the +2 is
+`font-palette`, SVG paint contributed 0; residual false negatives 67→65.
+`css-anchor-position/position-try-switch-from-fixed-anchor` flaked
+(structural diff under batch load, passes on rerun 2/2) — pre-existing
+anchor non-determinism, left as pass.
+Suite: 23,251 tests, 3,422 pass, 19,829 xfail, 0 fail; coverage gate
+23,251/23,251 exact (no tests added).
+
 ## 2026-08-18 — Fix `test_audit_integration`: enumerate CSS props via JS
 
 `Audit_whitelist.all_css_properties` called CDP

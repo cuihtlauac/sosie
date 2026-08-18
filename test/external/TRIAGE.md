@@ -494,11 +494,88 @@ new opportunity:
 - Pixel/bitmap (`mix-blend-mode` image/video, gradient interpolation,
   `highlight-api`/`selection-image` highlight styling, ~10):
   `background-image` and raster content are not compared.
-- **New opportunity (recoverable):** the `permission-element`
-  `icon-css-property-{fill,stroke,stroke-width,height}` reftests (9)
-  differ only in SVG presentation properties (`fill`, `stroke`,
-  `stroke-width`, `height`) not yet whitelisted. A future SVG-property
-  extension would recover these; queued in the backlog.
+- **Conjectured recoverable — tested and refuted (see the SVG paint
+  section below):** the `permission-element`
+  `icon-css-property-{fill,stroke,stroke-width,height}` reftests were
+  thought recoverable by whitelisting the SVG presentation properties
+  they toggle. The 2026-08-18 extension added `fill`/`stroke`/
+  `stroke-width` and recaptured them: **none recovered**. The
+  declarations target the `::permission-icon` pseudo-element, which the
+  extractor does not capture (only `::before`/`::after`); no captured
+  element carries the changed value. These belong with the
+  pseudo-element-internals class above.
+
+## SVG paint whitelist extension (2026-08-18)
+
+The whitelist grew from 49 to 52 with the SVG paint presentation
+properties `fill`, `stroke`, `stroke-width`. The goal was to recover the
+9 `permission-element` icon false negatives the previous section flagged
+as a "recoverable opportunity". `height` was deliberately **not** added:
+computed height is per-element and highly variable, so whitelisting it
+would inject thousands of corpus-wide spurious Match diffs to recover at
+most two pseudo-element tests — and those are pseudo-element geometry,
+non-recoverable by a general element-level property regardless.
+
+**Re-run scope.** Same monotonicity argument as the 49-property section:
+widening only adds diffs. Only the 3,425 passes and the 67 sensitivity
+false-negatives were recaptured (3,492 tests); the other 19,759 xfails
+are verdict-stable by construction.
+
+**The hypothesis was refuted: 0 controls recovered.** All eight
+`icon-css-property-{fill,stroke,stroke-width,height}` reftests still
+render equivalent under the whitelist. Root cause: every one styles the
+`::permission-icon` pseudo-element (e.g. `::permission-icon { fill: red }`),
+and the extractor captures only `::before`/`::after` pseudos and does not
+descend into shadow DOM (`js/sosie-capture.js:73`,
+`js_extractor/extractor.ml:122`). No captured element carries the changed
+`fill`/`stroke`/`stroke-width`, so both sides compare identical. The
+prior "recoverable" note was inferred from the test *source* (the CSS
+declarations), not verified against capture behaviour. These join the
+pseudo-element-internals non-recoverable class.
+
+**Cost — 5 spurious Match diffs.** Five previously-passing Match reftests
+now report a paint diff, bulk-xfailed by dominant type:
+
+| Reason | Test |
+|--------|------|
+| style: fill differs | `css-text-decor/text-shadow/svg-fill-opacity` |
+| style: fill differs | `css-pseudo/svg-text-selection-002` |
+| style: stroke-width differs | `css-pseudo/textpath-selection-011` |
+| style: stroke-width differs | `css-viewport/zoom/stroke` |
+| style: stroke-width differs | `css-viewport/zoom/svg-path` |
+
+Each is a genuine `fill`/`stroke`/`stroke-width` difference on inline SVG
+that the reftest neutralises visually (`fill-opacity` vs opaque `rgb`;
+`stroke-width` doubling under `zoom`). They are the tolerable
+false-positive class, not false negatives. Near-zero blast radius vs the
+675 from the 49-property extension — the props are inherited with
+constant defaults (`fill: rgb(0, 0, 0)`, `stroke: none`,
+`stroke-width: 1px`) on all non-SVG content.
+
+**Kept anyway.** The properties earn their place for sosie's actual use
+case — UI-conservative refactoring of inline SVG, where a changed
+`fill`/`stroke`/`stroke-width` is exactly the kind of visual regression
+the whitelist must catch — even though they recovered no negative
+controls here.
+
+**Incidental, unrelated to the new props.** The recapture surfaced two
+sensitivity controls, `css-fonts/font-palette-add` and
+`font-palette-remove`, now stably detected (3/3 runs) via the
+already-whitelisted `font-palette`; their stale "non-recoverable
+glyph-palette" xfails were pruned to honest passes. Sensitivity thus
+moved 314/381 (82.4%) → **316/381 (82.9%)** — but the +2 is
+`font-palette`, not SVG paint; SVG paint contributed 0. Residual false
+negatives 67 → 65.
+
+**Observed flake (pre-existing, unrelated).**
+`css-anchor-position/position-try-switch-from-fixed-anchor` reported a
+structural diff (`extra baseline node`) once under batch load but passes
+on isolated rerun (2/2) — anchor-position layout non-determinism, the
+same class as the two anchor flips in the 49-property section. Left as
+pass.
+
+Suite: 3,422 pass, 19,829 xfail, 0 fail; coverage gate 23,251/23,251
+exact (no tests added or removed — discovery unchanged).
 
 ## Possible improvement phases (by ROI)
 

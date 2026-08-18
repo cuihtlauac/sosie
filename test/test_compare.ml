@@ -30,7 +30,8 @@ let default_styles : visual_properties =
     direction = Str "ltr"; appearance = Str "none"; accent_color = Str "auto";
     image_rendering = Str "auto"; outline_width = Str "0px";
     outline_style = Str "none"; outline_color = Str "rgb(0, 0, 0)";
-    outline_offset = Str "0px" }
+    outline_offset = Str "0px";
+    fill = Str "rgb(0, 0, 0)"; stroke = Str "none"; stroke_width = Str "1px" }
 
 let make_node ?(tag = "DIV") ?(text = None) ?(children = [])
     ?(bounds = { x = 0.0; y = 0.0; w = 100.0; h = 50.0 })
@@ -337,6 +338,9 @@ let gen_styles =
     let* outline_style = gen_css_value in
     let* outline_color = gen_css_value in
     let* outline_offset = gen_css_value in
+    let* fill = gen_css_value in
+    let* stroke = gen_css_value in
+    let* stroke_width = gen_css_value in
     return { display; visibility; opacity; color; background_color;
              font_family; font_size; font_weight; line_height; text_align;
              text_decoration; border_top; border_right; border_bottom;
@@ -346,7 +350,8 @@ let gen_styles =
              text_emphasis_style; text_emphasis_color; text_emphasis_position;
              webkit_text_stroke_width; webkit_text_stroke_color; font_palette;
              writing_mode; direction; appearance; accent_color; image_rendering;
-             outline_width; outline_style; outline_color; outline_offset })
+             outline_width; outline_style; outline_color; outline_offset;
+             fill; stroke; stroke_width })
 
 let gen_rect =
   QCheck.Gen.(map4 (fun x y w h -> { x; y; w; h })

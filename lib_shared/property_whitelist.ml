@@ -58,6 +58,9 @@ let properties =
     { css_name = "outline-style"; field = "outline_style" };
     { css_name = "outline-color"; field = "outline_color" };
     { css_name = "outline-offset"; field = "outline_offset" };
+    { css_name = "fill"; field = "fill" };
+    { css_name = "stroke"; field = "stroke" };
+    { css_name = "stroke-width"; field = "stroke_width" };
   ]
 
 let css_names = List.map (fun p -> p.css_name) properties

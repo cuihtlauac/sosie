@@ -82,6 +82,9 @@ let style_attr (vp : visual_properties) ~left ~top ~width ~height =
   Printf.bprintf buf "outline-style:%s;" (css_value_to_string vp.outline_style);
   Printf.bprintf buf "outline-color:%s;" (css_value_to_string vp.outline_color);
   Printf.bprintf buf "outline-offset:%s;" (css_value_to_string vp.outline_offset);
+  Printf.bprintf buf "fill:%s;" (css_value_to_string vp.fill);
+  Printf.bprintf buf "stroke:%s;" (css_value_to_string vp.stroke);
+  Printf.bprintf buf "stroke-width:%s;" (css_value_to_string vp.stroke_width);
   Buffer.contents buf
 
 (* -- Node rendering ------------------------------------------------------ *)

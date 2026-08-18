@@ -164,6 +164,9 @@ let prop_table =
     ("outline-style", { default = "none"; keywords = [ "none"; "solid"; "dashed"; "dotted" ] });
     ("outline-color", { default = "rgb(0, 0, 0)"; keywords = [] });
     ("outline-offset", { default = "0px"; keywords = [] });
+    ("fill", { default = "rgb(0, 0, 0)"; keywords = [] });
+    ("stroke", { default = "none"; keywords = [] });
+    ("stroke-width", { default = "1px"; keywords = [] });
   ]
 
 (* Get the value of a named property from a node. *)
@@ -219,6 +222,9 @@ let get_property (n : node) (prop : string) : css_value option =
   | "outline-style" -> Some s.outline_style
   | "outline-color" -> Some s.outline_color
   | "outline-offset" -> Some s.outline_offset
+  | "fill" -> Some s.fill
+  | "stroke" -> Some s.stroke
+  | "stroke-width" -> Some s.stroke_width
   | _ -> None
 
 (* Set the value of a named property on a node. *)
@@ -287,6 +293,9 @@ let set_property (n : node) (prop : string) (v : css_value) : node =
     | "outline-style" -> { s with outline_style = v }
     | "outline-color" -> { s with outline_color = v }
     | "outline-offset" -> { s with outline_offset = v }
+    | "fill" -> { s with fill = v }
+    | "stroke" -> { s with stroke = v }
+    | "stroke-width" -> { s with stroke_width = v }
     | _ -> invalid_arg (Printf.sprintf "set_property: unknown property %S" prop)
   in
   { n with styles }
