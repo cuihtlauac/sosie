@@ -10,7 +10,7 @@
     PNGs. *)
 
 val whitelist_css_names : string list
-(** The 49 whitelisted CSS property names from {!Property_whitelist}. *)
+(** The 52 whitelisted CSS property names from {!Property_whitelist}. *)
 
 val all_css_properties : Cdp.connection -> string list
 (** Enumerate the browser's rendering-affecting CSS property names by

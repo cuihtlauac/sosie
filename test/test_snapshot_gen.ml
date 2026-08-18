@@ -170,6 +170,7 @@ let all_css_properties_present () =
     "font-palette:"; "writing-mode:"; "direction:"; "appearance:";
     "accent-color:"; "image-rendering:";
     "outline-width:"; "outline-style:"; "outline-color:"; "outline-offset:";
+    "fill:"; "stroke:"; "stroke-width:";
   ] in
   List.iter
     (fun prop ->
@@ -296,7 +297,7 @@ let () =
         ] );
       ( "style-output",
         [
-          Alcotest.test_case "all 49 CSS properties" `Quick all_css_properties_present;
+          Alcotest.test_case "all 52 CSS properties" `Quick all_css_properties_present;
           Alcotest.test_case "CSS value forms" `Quick css_value_forms;
         ] );
       ( "attributes",
