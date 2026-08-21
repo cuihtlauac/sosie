@@ -2,7 +2,7 @@
 
 (name sosie)
 
-(version 0.1.0)
+(version 0.1.1)
 
 (generate_opam_files true)
 
@@ -29,6 +29,7 @@
   yojson
   digestif
   base64
+  re
   cmdliner
   js_of_ocaml
   js_of_ocaml-compiler

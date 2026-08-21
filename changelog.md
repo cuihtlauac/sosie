@@ -2,6 +2,22 @@
 
 Completed work, most recent first.
 
+## 2026-08-21 — Fix missing `re` dependency; re-release as 0.1.1
+
+opam-repo-ci caught a packaging bug in 0.1.0: `lib/dune` links `re`
+(`Re.Pcre`/`Re.compile`/`Re.replace` in `config.ml` and `normalize.ml`), but
+`re` was never declared in `dune-project` depends. The local dev switch had
+`re` installed transitively, so `dune build` passed locally and the gap went
+unnoticed; the clean CI switch failed with `Library "re" not found` at
+`dune build -p sosie @install` (cygwin job). The Windows msys2 job failed
+separately on a transient curl/TLS flake fetching the OCaml compiler — not a
+sosie issue.
+
+Added `re` to depends, bumped to 0.1.1, and re-released. Superseded the broken
+0.1.0 (PR closed) with a fresh, self-consistent 0.1.1 tarball + opam.
+Lesson: a clean-switch build (or `dune build` in an empty switch) would have
+caught the undeclared dep that the dev switch masked.
+
 ## 2026-08-21 — Publish sosie 0.1.0 to opam-repository
 
 Cut the first opam release. Added the metadata `opam lint` and
