@@ -13,8 +13,8 @@ function built on standard Web APIs (`getBoundingClientRect`,
 `getComputedStyle`); the Chrome DevTools Protocol is used only as an
 optimization on Chromium.
 
-> **Status:** `0.1.0-dev` — pre-release, under active development. Interfaces
-> and the property whitelist may change.
+> **Status:** `0.1.0` — first release, under active development. Being a `0.x`
+> line, interfaces and the property whitelist may still change.
 
 ## Why
 
