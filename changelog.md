@@ -2,6 +2,28 @@
 
 Completed work, most recent first.
 
+## 2026-08-18 — Document cascade/tw relationship; no redundancy with sosie
+
+Investigated whether sosie duplicates `samoht/tw`. It does not: tw is a
+type-safe Tailwind *generator* whose self-test is byte-for-byte CSS-source
+equality against the official Tailwind CLI — the dual of sosie's
+rendered-equivalence check (identical source vs. equivalent rendering), not
+the same job. Confirmed the `tw → cascade` lineage: cascade is a standalone
+typed-CSS toolkit (AST, parser, pretty-printer, optimiser) extracted from tw
+and published on opam.
+
+Verified against cascade's `.mli` surface the primitives sosie can reuse:
+`Cascade.Values` (value/unit parsing), `Cascade.Color_space` (CSS Color 4
+colour spaces), `Cascade.Selector` (escape-aware `of_string`), and the
+complementary `cascade.diff` (a CSS-*source* diff, not a rendered-tree diff).
+
+Recorded a correction: the typed AST's `Color of int` (24-bit RGB) is lossy —
+no alpha, no wide-gamut — a false-negative hazard under sosie's trust
+asymmetry, fixable by adopting cascade's colour model. Captured as the
+"Cascade integration addendum (2026-08-18)" in `sosie-design.md` and as
+backlog item #4 (future work, not yet done). Docs only; no code touched,
+build and tests unchanged. Commit `040d606`.
+
 ## 2026-08-18 — Capture UA shadow pseudo-elements beyond `::before`/`::after`
 
 Both extractors now capture a fixed, element-type-gated set of UA shadow
