@@ -2,6 +2,21 @@
 
 Completed work, most recent first.
 
+## 2026-08-21 — Lower OCaml floor to 4.14; re-release as 0.1.2
+
+opam-repo-ci on the 0.1.1 PR showed `sosie` "not available" across the whole
+distribution matrix. Root cause: `dune-project` declared `ocaml (>= 5.4)`,
+inherited unchanged from the initial scaffold commit — not required by any
+feature. The only version-sensitive stdlib calls are `String.starts_with`
+(OCaml 4.13+) and `Bytes.{get,set}_uint8` (4.08+); every dependency allows
+OCaml >= 4.13 (js_of_ocaml, re) or lower. The 5.4 floor excluded every test
+compiler below it.
+
+Lowered the floor to `ocaml (>= 4.14)` and released 0.1.2. Superseded the 0.1.1
+PR. (opam-repo-ci also reported "lower bounds failed" on some rows — deps have
+no explicit lower bounds; deferred pending the exact solver log, which
+opam.ci.ocaml.org now hides behind an anti-scraper wall.)
+
 ## 2026-08-21 — Fix missing `re` dependency; re-release as 0.1.1
 
 opam-repo-ci caught a packaging bug in 0.1.0: `lib/dune` links `re`
