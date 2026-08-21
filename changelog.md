@@ -2,6 +2,25 @@
 
 Completed work, most recent first.
 
+## 2026-08-21 — Publish sosie 0.1.0 to opam-repository
+
+Cut the first opam release. Added the metadata `opam lint` and
+opam-repository require but that `dune-project` lacked (`source`/`dev-repo`,
+`homepage`, `bug-reports`, package `description`) and bumped the version from
+`0.1.0-dev` to `0.1.0`; regenerated `sosie.opam`. Build, `runtest`, and lint
+all green.
+
+Tagged `v0.1.0`, pushed, and created the GitHub release. Verified the tag
+tarball is self-contained (js_of_ocaml compiles the extractor at build time
+and embeds it as a string — no network or checked-in artifacts needed).
+
+The publish token is a fine-grained PAT, which — as expected — forked and
+pushed branch `opam-publish-sosie.0.1.0` to the fork but `403`ed at PR
+creation against the org repo. Opened the PR with `gh` instead:
+ocaml/opam-repository#30530 (`[new release] sosie (0.1.0)`). opam-repo-ci
+running at submission time. Deleted the cached publish token; the PAT should
+be revoked/regenerated on GitHub.
+
 ## 2026-08-18 — Document cascade/tw relationship; no redundancy with sosie
 
 Investigated whether sosie duplicates `samoht/tw`. It does not: tw is a
