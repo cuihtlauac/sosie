@@ -2,6 +2,20 @@
 
 Completed work, most recent first.
 
+## 2026-08-24 — Add dependency lower bounds (opam-repo-ci review)
+
+Maintainer review (jmid) on PR #30536 confirmed 8 failing opam-repo-ci
+lower-bounds jobs: with the oldest permitted version of each dependency, the
+build broke — `Unbound module Digestif` (4.14), `Unbound type constructor
+Yojson.Safe.t` (5.2), `Unbound module Base64` (5.4/5.5). Root cause: no
+dependency carried a lower bound, so the solver picked pre-API versions.
+
+Added API-justified floors: `yojson >= 1.6.0` (Safe.t), `base64 >= 3.0.0`
+(encode_exn/decode_exn), `digestif >= 1.0.0` (flat SHA1 + to_raw_string),
+`cmdliner >= 1.1.0` (Cmd module), `re >= 1.7.2` (Re.replace). No source change,
+so no new release — the PR's `sosie.0.1.2/opam` was edited in place (the
+tarball is unaffected); dune-project updated so future releases match.
+
 ## 2026-08-21 — Lower OCaml floor to 4.14; re-release as 0.1.2
 
 opam-repo-ci on the 0.1.1 PR showed `sosie` "not available" across the whole

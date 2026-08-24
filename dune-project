@@ -26,11 +26,11 @@
   "sosie answers whether an HTML/CSS refactoring changed the visual output. It captures the resolved layout and style tree of a page from a real browser using standard Web APIs (getBoundingClientRect, getComputedStyle) and compares two captures structurally. Unlike pixel diffing it is immune to subpixel/GPU/font-rendering noise; unlike CSS diffing it compares rendered effect rather than source. The design prioritises trustworthiness: missed regressions are fatal, spurious diffs are tolerable, and an explicit property whitelist is the trust boundary.")
  (depends
   (ocaml (>= 4.14))
-  yojson
-  digestif
-  base64
-  re
-  cmdliner
+  (yojson (>= 1.6.0))
+  (digestif (>= 1.0.0))
+  (base64 (>= 3.0.0))
+  (re (>= 1.7.2))
+  (cmdliner (>= 1.1.0))
   js_of_ocaml
   js_of_ocaml-compiler
   js_of_ocaml-ppx
